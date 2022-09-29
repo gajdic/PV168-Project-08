@@ -3,9 +3,9 @@ package cz.muni.fi.pv168.cashflowevidence;
 /**
  * Simple application runner.
  */
-public final class AppRunner {
+public final class Main {
 
-    private AppRunner() {
+    private Main() {
         // intentionally private to prevent instantiation
     }
 
