@@ -129,7 +129,8 @@ public class CashFlowEvidence {
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.setTabPlacement(SwingConstants.TOP);
 
-        String[] titles = new String[]{"Transactions", "Categories"};
+        tabbedPane.addTab("Transactions", new TransactionsOverview());
+        String[] titles = new String[]{"Categories"};
         for (String title : titles) {
             // temporary panels to fill up the space in TabbedPane
             JPanel fillerPanel = new JPanel();
