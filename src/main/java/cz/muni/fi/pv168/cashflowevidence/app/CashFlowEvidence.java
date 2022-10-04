@@ -93,6 +93,11 @@ public class CashFlowEvidence {
         JPanel panel = new JPanel();
         panel.add(transactionBtn);
         panel.add(categoryBtn);
+        categoryBtn.addActionListener(e ->
+        {
+            CategoryDialog categoryDialog = new CategoryDialog(frame, "New Category");
+            categoryDialog.setVisible(true);
+        });
 
         return panel;
     }
