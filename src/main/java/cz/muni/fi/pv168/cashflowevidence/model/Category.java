@@ -30,4 +30,9 @@ public class Category {
     public void setColor(Color color) {
         this.color = Objects.requireNonNull(color, "color must not be null");
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

@@ -92,6 +92,11 @@ public class CashFlowEvidence {
     private JPanel getActionsBarPanel() {
         JPanel panel = new JPanel();
         panel.add(transactionBtn);
+        transactionBtn.addActionListener(e ->
+        {
+            TransactionDialog transactionDialog = new TransactionDialog(frame, "New Transaction");
+            transactionDialog.setVisible(true);
+        });
         panel.add(categoryBtn);
         categoryBtn.addActionListener(e ->
         {
