@@ -135,13 +135,7 @@ public class CashFlowEvidence {
         tabbedPane.setTabPlacement(SwingConstants.TOP);
 
         tabbedPane.addTab("Transactions", new TransactionsOverview());
-        String[] titles = new String[]{"Categories"};
-        for (String title : titles) {
-            // temporary panels to fill up the space in TabbedPane
-            JPanel fillerPanel = new JPanel();
-            fillerPanel.add(new Label("Useless tab belonging to " + title));
-            tabbedPane.addTab(title, fillerPanel);
-        }
+        tabbedPane.addTab("Categories", new CategoriesOverview());
 
         panel.add(tabbedPane);
         panel.setMaximumSize(new Dimension(frame.getWidth(), 800));
