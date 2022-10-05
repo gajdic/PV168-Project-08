@@ -3,9 +3,19 @@ package cz.muni.fi.pv168.cashflowevidence.app;
 
 import org.jdatepicker.JDatePicker;
 
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JCheckBox;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JTextField;
+import javax.swing.JTable;
+import javax.swing.JMenuBar;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Dimension;
 
 public class TransactionsOverview extends JPanel {
 
