@@ -135,6 +135,8 @@ public class TransactionDialog extends JDialog {
 
     private void createUIComponents() {
         categoryComboBox = new JComboBox<>(getCategoriesForShowcase());
+        categoryComboBox.insertItemAt(null, 0);
+        categoryComboBox.setSelectedIndex(0);
         frequencyComboBox = new JComboBox<>(TransactionFrequency.values());
 
         datePanel = new JPanel();
