@@ -31,7 +31,6 @@ public class TransactionDialog extends JDialog {
     private JComboBox<Category> categoryComboBox;
     private JTextField amountField;
     private JPanel datePanel;
-    private JRadioButton repeatingTransactionRadioButton;
     private JPanel repeatingTransactionPanel;
     private JLabel repeatToLabel;
     private JLabel repeatFromLabel;
@@ -41,6 +40,7 @@ public class TransactionDialog extends JDialog {
     private JPanel repeatToPanel;
     private JTextField customFrequencyField;
     private JLabel customFrequencyLabel;
+    private JCheckBox repeatingTransactionCheckBox;
     private Transaction transaction;
 
     /**
@@ -94,7 +94,7 @@ public class TransactionDialog extends JDialog {
     private void addActionListenersOnSetup() {
         saveBtn.addActionListener(e -> onSave());
         cancelBtn.addActionListener(e -> onCancel());
-        repeatingTransactionRadioButton.addActionListener(e -> onRepeatingTransaction());
+        repeatingTransactionCheckBox.addActionListener(e -> onRepeatingTransaction());
         frequencyComboBox.addActionListener(e -> onCustomFrequency());
     }
 
@@ -105,7 +105,7 @@ public class TransactionDialog extends JDialog {
     }
 
     private void onRepeatingTransaction() {
-        if (repeatingTransactionRadioButton.isSelected()) {
+        if (repeatingTransactionCheckBox.isSelected()) {
             setBounds(getX(), getY(), 600, 480);
             repeatingTransactionPanel.setVisible(true);
         } else {
