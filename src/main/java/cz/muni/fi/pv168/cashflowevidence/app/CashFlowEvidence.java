@@ -26,6 +26,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 
+
 /**
  * Represents the main layout of CashFlowEvidence application
  */
@@ -61,6 +62,7 @@ public class CashFlowEvidence {
         }
     };
 
+
     public CashFlowEvidence() {
         setLookAndFeel();
 
@@ -74,6 +76,7 @@ public class CashFlowEvidence {
         content.add(Box.createRigidArea(new Dimension(1, 10)));
         content.add(getActionsAndBalancePanel());
         content.add(getTabbedContentPanel());
+
 
         frame.add(content, BorderLayout.CENTER);
         frame.setVisible(true);
@@ -182,4 +185,5 @@ public class CashFlowEvidence {
 
         return panel;
     }
+
 }

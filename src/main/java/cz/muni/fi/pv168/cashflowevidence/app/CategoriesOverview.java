@@ -19,11 +19,10 @@ import java.awt.Dimension;
  */
 public class CategoriesOverview extends AbstractOverview {
 
-    private final JPanel topPanel = new JPanel();
-    private final JTable overviewTable = new JTable(new DefaultTableModel
-            (new String[]{"Category name", "Color"}, 0));
 
     public CategoriesOverview() {
+        super(new JTable(new DefaultTableModel
+                (new String[]{"Category name", "Color"}, 0)), "Category");
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         addComponents();
     }
@@ -44,13 +43,16 @@ public class CategoriesOverview extends AbstractOverview {
         addRow(new Category("Grocery", Color.BLUE)); //temporary
         addRow(new Category("Sport", Color.RED)); //temporary
 
-        JScrollPane scrollPane = new JScrollPane(overviewTable);
+        JScrollPane scrollPane = scrollPane();
 
         JPanel tablePanel = new JPanel();
         tablePanel.add(scrollPane);
+        tablePanel.setInheritsPopupMenu(true);
 
         return tablePanel;
     }
+
+
 
     /**
      * Method for adding new category into the overview table
