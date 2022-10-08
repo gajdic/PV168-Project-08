@@ -1,6 +1,5 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
-
 import org.jdatepicker.JDatePicker;
 
 import javax.swing.JPanel;
@@ -157,8 +156,8 @@ public class TransactionsOverview extends JPanel {
     }
 
     private void addOverview() {
-        addRows(new String[]{"28.2.2022", "132$", "Lidl", "Dinner"}); //temporary
-        addRows(new String[]{"18.8.2022", "534$", "New bicycle", "Mountain bike"}); //temporary
+        addRows(new String[]{"28.2.2022", "132€", "Lidl", "Dinner"}); //temporary
+        addRows(new String[]{"18.8.2022", "534€", "New bicycle", "Mountain bike"}); //temporary
 
         JScrollPane scrollPane = new JScrollPane(overviewTable);
         this.add(scrollPane, BorderLayout.CENTER);

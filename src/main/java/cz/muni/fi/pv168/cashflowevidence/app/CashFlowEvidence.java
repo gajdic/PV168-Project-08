@@ -1,5 +1,7 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -11,14 +13,15 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
 import javax.swing.UIManager;
+import javax.swing.WindowConstants;
+import javax.swing.border.EmptyBorder;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Label;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
 
 /**
  * Represents the main layout of CashFlowEvidence application
@@ -33,11 +36,28 @@ public class CashFlowEvidence {
     // help menu
     private final JMenuItem infoItem = new JMenuItem("Info");
 
-    private final JButton transactionBtn = new JButton("Transaction");
-    private final JButton categoryBtn = new JButton("Category");
+    private final JButton transactionBtn = new JButton("Add transaction");
+    private final JButton categoryBtn = new JButton("Add category");
 
     private final JLabel balanceLabel = new JLabel();
     private final JLabel filteredBalanceLabel = new JLabel();
+
+    private final Action openTransactionDialog = new AbstractAction("Add transaction") {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            TransactionDialog transactionDialog = new TransactionDialog(frame, "New Transaction");
+            transactionDialog.setVisible(true);
+        }
+    };
+
+    private final Action openCategoryDialog = new AbstractAction("Add category") {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            CategoryDialog categoryDialog = new CategoryDialog(frame, "New Category");
+            categoryDialog.setVisible(true);
+        }
+    };
+
 
     public CashFlowEvidence() {
         setLookAndFeel();
@@ -52,7 +72,6 @@ public class CashFlowEvidence {
         content.add(Box.createRigidArea(new Dimension(1, 10)));
         content.add(getActionsAndBalancePanel());
         content.add(getTabbedContentPanel());
-        content.add(getFilteredBalancePanel());
 
         frame.add(content, BorderLayout.CENTER);
         frame.setVisible(true);
@@ -69,6 +88,7 @@ public class CashFlowEvidence {
         frame.setSize(new Dimension(1920, 1080));
         frame.setLayout(new BorderLayout());
         frame.setTitle("Cash Flow Evidence");
+        frame.setMinimumSize(new Dimension(1000, 400));
 
         return frame;
     }
@@ -81,9 +101,23 @@ public class CashFlowEvidence {
         JMenu helpMenu = new JMenu("Help");
         helpMenu.add(infoItem);
 
+        JMenu transactionMenu = new JMenu("Transaction");
+        transactionMenu.add("Add transaction");
+        transactionMenu.add("Edit transaction");
+        transactionMenu.add("Delete transaction");
+        ((JMenuItem)transactionMenu.getMenuComponent(0)).setAction(openTransactionDialog);
+
+        JMenu categoryMenu = new JMenu("Category");
+        categoryMenu.add("Add category");
+        categoryMenu.add("Edit category");
+        categoryMenu.add("Delete category");
+        ((JMenuItem)categoryMenu.getMenuComponent(0)).setAction(openCategoryDialog);
+
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);
         menuBar.add(helpMenu);
+        menuBar.add(transactionMenu);
+        menuBar.add(categoryMenu);
         menuBar.setMaximumSize(new Dimension(frame.getWidth(), 30));
 
         return menuBar;
@@ -92,28 +126,24 @@ public class CashFlowEvidence {
     private JPanel getActionsBarPanel() {
         JPanel panel = new JPanel();
         panel.add(transactionBtn);
-        transactionBtn.addActionListener(e ->
-        {
-            TransactionDialog transactionDialog = new TransactionDialog(frame, "New Transaction");
-            transactionDialog.setVisible(true);
-        });
+        transactionBtn.setAction(openTransactionDialog);
         panel.add(categoryBtn);
-        categoryBtn.addActionListener(e ->
-        {
-            CategoryDialog categoryDialog = new CategoryDialog(frame, "New Category");
-            categoryDialog.setVisible(true);
-        });
+        categoryBtn.setAction(openCategoryDialog);
 
         return panel;
     }
 
     private JPanel getBalancePanel() {
-        JPanel panel = new JPanel();
+        JPanel panel = new JPanel(new GridLayout(2, 2));
 
-        balanceLabel.setText("1234567€"); // temporary
+        // temporary
+        balanceLabel.setText("1234567€");
+        filteredBalanceLabel.setText("987€");
 
         panel.add(new JLabel("Total balance:"));
         panel.add(balanceLabel);
+        panel.add(new JLabel("Filtered balance:"));
+        panel.add(filteredBalanceLabel);
 
         return panel;
     }
@@ -123,6 +153,7 @@ public class CashFlowEvidence {
         panel.add(getActionsBarPanel(), BorderLayout.WEST);
         panel.add(getBalancePanel(), BorderLayout.EAST);
         panel.setMaximumSize(new Dimension(frame.getWidth(), 50));
+        panel.setBorder(new EmptyBorder(0, 10, 0, 10));
 
         return panel;
     }
@@ -138,19 +169,8 @@ public class CashFlowEvidence {
         tabbedPane.addTab("Categories", new CategoriesOverview());
 
         panel.add(tabbedPane);
-        panel.setMaximumSize(new Dimension(frame.getWidth(), 800));
-
-        return panel;
-    }
-
-    private JPanel getFilteredBalancePanel() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEADING));
-
-        filteredBalanceLabel.setText("987€"); // temporary
-
-        panel.add(new JLabel("Filtered balance:"));
-        panel.add(filteredBalanceLabel);
-        panel.setMaximumSize(new Dimension(frame.getWidth(), 200));
+        panel.setMaximumSize(new Dimension(frame.getWidth(), 900));
+        panel.setBorder(new EmptyBorder(0, 10, 0, 10));
 
         return panel;
     }
