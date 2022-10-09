@@ -53,6 +53,22 @@ public class Transaction {
         return amount;
     }
 
+    /**
+     * Converts the amount to String and adds space as a separator between thousands
+     *
+     * @return Amount in String with spaces between thousands
+     */
+    public String getAmountStr() {
+        String[] parts = String.valueOf(amount).split("\\.");
+        StringBuilder sb = new StringBuilder(parts[0]);
+        
+        sb.reverse();
+        sb.replace(0, sb.length(), sb.toString().replaceAll("(\\d{3})", "$1 "));
+        parts[0] = sb.reverse().toString();
+
+        return String.join(".", parts);
+    }
+
     public void setAmount(double amount) {
         this.amount = amount;
     }
