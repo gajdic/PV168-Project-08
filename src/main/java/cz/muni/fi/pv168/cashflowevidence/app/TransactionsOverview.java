@@ -3,21 +3,14 @@ package cz.muni.fi.pv168.cashflowevidence.app;
 
 import org.jdatepicker.JDatePicker;
 
-import javax.swing.JPanel;
-import javax.swing.JCheckBox;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JTextField;
-import javax.swing.JTable;
-import javax.swing.JMenuBar;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Dimension;
+import javax.swing.table.TableColumn;
+import javax.swing.text.NumberFormatter;
+import java.awt.*;
+import java.text.NumberFormat;
 
-public class TransactionsOverview extends JPanel {
+public class TransactionsOverview extends AbstractOverview {
 
     private final JPanel topPanel = new JPanel(new BorderLayout(5, 5));
     private final JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 5));
@@ -26,13 +19,16 @@ public class TransactionsOverview extends JPanel {
     private final JCheckBox outgoingCheckbox = new JCheckBox("Outgoing");
     private final JDatePicker dateFrom = new JDatePicker();
     private final JDatePicker dateTo = new JDatePicker();
-    private final JTextField valueFrom = new JTextField();
-    private final JTextField valueTo = new JTextField();
+    private final JFormattedTextField valueFrom = new JFormattedTextField
+            (new NumberFormatter(NumberFormat.getIntegerInstance()));
+    private final JFormattedTextField valueTo = new JFormattedTextField
+            (new NumberFormatter(NumberFormat.getIntegerInstance()));
     private final JMenu categoriesMenu = new JMenu("All");
-    private final JMenu currencyMenu = new JMenu("All");
     private final JMenu repeatingTransactionsMenu = new JMenu("None");
+    private final JButton filterButton = new JButton("Filter");
+    private final JButton resetFilterButton = new JButton("Reset filter");
     private final JTable overviewTable = new JTable(new DefaultTableModel
-            (new String[]{"Date", "Amount", "Name", "Description"}, 0));
+            (new Object[]{"Date", "Amount", "Name", "Description", "Color"}, 0));
 
     /**
      * Represents the panel of transactions
@@ -54,8 +50,9 @@ public class TransactionsOverview extends JPanel {
         addFromValue();
         addToValue();
         addCategories();
-        addCurrency();
         addRepeatingTransactions();
+        addFilterButton();
+        addResetFilterButton();
         addOverview();
     }
 
@@ -92,7 +89,12 @@ public class TransactionsOverview extends JPanel {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setPreferredSize(new Dimension(50, 30));
 
+        NumberFormatter numberFormatter = (NumberFormatter) valueFrom.getFormatter();
+        numberFormatter.setValueClass(Long.class);
+        numberFormatter.setAllowsInvalid(false);
+
         panel.add(new JLabel("Value from"), BorderLayout.NORTH);
+        panel.add(new JLabel("€"), BorderLayout.EAST);
         valueFrom.setEditable(true);
         panel.add(valueFrom, BorderLayout.CENTER);
         optionsPanel.add(panel);
@@ -102,7 +104,12 @@ public class TransactionsOverview extends JPanel {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setPreferredSize(new Dimension(50, 30));
 
+        NumberFormatter numberFormatter = (NumberFormatter) valueFrom.getFormatter();
+        numberFormatter.setValueClass(Long.class);
+        numberFormatter.setAllowsInvalid(false);
+
         panel.add(new JLabel("Value to"), BorderLayout.NORTH);
+        panel.add(new JLabel("€"), BorderLayout.EAST);
         valueFrom.setEditable(true);
         panel.add(valueTo, BorderLayout.CENTER);
         optionsPanel.add(panel);
@@ -123,22 +130,6 @@ public class TransactionsOverview extends JPanel {
         optionsPanel.add(categoriesPanel);
     }
 
-    private void addCurrency() {
-        JPanel currencyPanel = new JPanel(new BorderLayout());
-        JMenuBar currencyBar = new JMenuBar();
-
-        String[] titles = new String[]{"Currency 1", "Currency 2", "Currency 3"}; //temporary currency
-        for (String title : titles) {
-            currencyMenu.add(new JMenuItem(title));
-        }
-
-        currencyMenu.setPreferredSize(new Dimension(50, 20));
-        currencyBar.add(currencyMenu);
-        currencyPanel.add(new JLabel("Currency"), BorderLayout.NORTH);
-        currencyPanel.add(currencyBar, BorderLayout.CENTER);
-        optionsPanel.add(currencyPanel);
-    }
-
     private void addRepeatingTransactions() {
         JPanel repeatingTransactionsPanel = new JPanel(new BorderLayout());
         JMenuBar repeatingTransactionsBar = new JMenuBar();
@@ -156,9 +147,17 @@ public class TransactionsOverview extends JPanel {
         optionsPanel.add(repeatingTransactionsPanel);
     }
 
+    private void addFilterButton() {
+        optionsPanel.add(filterButton);
+    }
+
+    private void addResetFilterButton() {
+        optionsPanel.add(resetFilterButton);
+    }
+
     private void addOverview() {
-        addRows(new String[]{"28.2.2022", "132$", "Lidl", "Dinner"}); //temporary
-        addRows(new String[]{"18.8.2022", "534$", "New bicycle", "Mountain bike"}); //temporary
+        addRows(new Object[]{"28.2.2022", "132$", "Lidl", "Dinner", Color.RED}); //temporary
+        addRows(new Object[]{"18.8.2022", "534$", "New bicycle", "Mountain bike", Color.YELLOW});
 
         JScrollPane scrollPane = new JScrollPane(overviewTable);
         this.add(scrollPane, BorderLayout.CENTER);
@@ -168,8 +167,17 @@ public class TransactionsOverview extends JPanel {
      * Temporary method for adding temporary data to fill out the table
      * @param data to be added
      */
-    private void addRows(String[] data) {
+    private void addRows(Object[] data) {
         DefaultTableModel model = (DefaultTableModel) overviewTable.getModel();
+
+        TableColumn col = overviewTable.getColumnModel().getColumn(4);
+        col.setCellRenderer(new CellRenderer());
+
+        Color color = (Color) data[4];
+        int rgb = color.getRGB();
+        JLabel label = new JLabel(new ImageIcon(createImage(rgb)));
+        data[4] = label;
+
         model.addRow(data);
     }
 }
