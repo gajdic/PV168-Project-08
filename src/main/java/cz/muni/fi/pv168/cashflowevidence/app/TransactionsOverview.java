@@ -28,13 +28,14 @@ public class TransactionsOverview extends AbstractOverview {
     private final JButton filterButton = new JButton("Filter");
     private final JButton resetFilterButton = new JButton("Reset filter");
     private final JTable overviewTable = new JTable(new DefaultTableModel
-            (new Object[]{"Date", "Amount", "Name", "Description", "Color"}, 0));
+            (new Object[]{"Date", "Amount", "Name", "Description", "Category"}, 0));
 
     /**
      * Represents the panel of transactions
      */
     public TransactionsOverview() {
         this.setLayout(new BorderLayout(30, 30));
+        this.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 10));
 
         addComponents();
 
@@ -43,79 +44,84 @@ public class TransactionsOverview extends AbstractOverview {
     }
 
     private void addComponents() {
-        addLabel();
-        addIncomingOutgoingPanel();
-        addFromCalendar();
-        addToCalendar();
-        addFromValue();
-        addToValue();
-        addCategories();
-        addRepeatingTransactions();
-        addFilterButton();
-        addResetFilterButton();
-        addOverview();
+        topPanel.add(mainLabel(), BorderLayout.NORTH);
+        optionsPanel.add(incomingOutgoingPanel());
+        optionsPanel.add(fromCalendar());
+        optionsPanel.add(toCalendar());
+        optionsPanel.add(fromValue());
+        optionsPanel.add(toValue());
+        optionsPanel.add(categories());
+        optionsPanel.add(repeatingTransactions());
+        optionsPanel.add(filterButton());
+        optionsPanel.add(resetFilterButton());
+        this.add(overview(), BorderLayout.CENTER);
     }
 
-    private void addLabel() {
+    private JLabel mainLabel() {
         JLabel label = new JLabel("Transactions");
-        topPanel.add(label, BorderLayout.NORTH);
+        Font font = label.getFont();
+        label.setFont(font.deriveFont(Font.BOLD));
+        return label;
     }
 
-    private void addIncomingOutgoingPanel() {
+    private JPanel incomingOutgoingPanel() {
         JPanel incomingOutgoingPanel = new JPanel(new BorderLayout());
 
         incomingOutgoingPanel.add(incomingCheckbox, BorderLayout.NORTH);
         incomingOutgoingPanel.add(outgoingCheckbox, BorderLayout.CENTER);
-        optionsPanel.add(incomingOutgoingPanel);
+
+        return incomingOutgoingPanel;
     }
 
-    private void addFromCalendar() {
+    private JPanel fromCalendar() {
         JPanel panel = new JPanel(new BorderLayout());
 
         panel.add(new JLabel("From"), BorderLayout.NORTH);
         panel.add(dateFrom, BorderLayout.CENTER);
-        optionsPanel.add(panel);
+
+        return panel;
     }
 
-    private void addToCalendar() {
+    private JPanel toCalendar() {
         JPanel panel = new JPanel(new BorderLayout());
 
         panel.add(new JLabel("To"), BorderLayout.NORTH);
         panel.add(dateTo, BorderLayout.CENTER);
-        optionsPanel.add(panel);
+
+        return panel;
     }
 
-    private void addFromValue() {
+    private JPanel fromValue() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setPreferredSize(new Dimension(50, 30));
 
         NumberFormatter numberFormatter = (NumberFormatter) valueFrom.getFormatter();
-        numberFormatter.setValueClass(Long.class);
+        numberFormatter.setValueClass(Integer.class);
         numberFormatter.setAllowsInvalid(false);
 
         panel.add(new JLabel("Value from"), BorderLayout.NORTH);
         panel.add(new JLabel("€"), BorderLayout.EAST);
-        valueFrom.setEditable(true);
         panel.add(valueFrom, BorderLayout.CENTER);
-        optionsPanel.add(panel);
+
+        return panel;
     }
 
-    private void addToValue() {
+    private JPanel toValue() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setPreferredSize(new Dimension(50, 30));
 
-        NumberFormatter numberFormatter = (NumberFormatter) valueFrom.getFormatter();
-        numberFormatter.setValueClass(Long.class);
+        NumberFormatter numberFormatter = (NumberFormatter) valueTo.getFormatter();
+        numberFormatter.setValueClass(Integer.class);
         numberFormatter.setAllowsInvalid(false);
 
         panel.add(new JLabel("Value to"), BorderLayout.NORTH);
         panel.add(new JLabel("€"), BorderLayout.EAST);
-        valueFrom.setEditable(true);
         panel.add(valueTo, BorderLayout.CENTER);
-        optionsPanel.add(panel);
+
+        return panel;
     }
 
-    private void addCategories() {
+    private JPanel categories() {
         JPanel categoriesPanel = new JPanel(new BorderLayout());
         JMenuBar categoriesBar = new JMenuBar();
 
@@ -127,10 +133,11 @@ public class TransactionsOverview extends AbstractOverview {
         categoriesBar.add(categoriesMenu);
         categoriesPanel.add(new JLabel("Category"), BorderLayout.NORTH);
         categoriesPanel.add(categoriesBar, BorderLayout.CENTER);
-        optionsPanel.add(categoriesPanel);
+
+        return categoriesPanel;
     }
 
-    private void addRepeatingTransactions() {
+    private JPanel repeatingTransactions() {
         JPanel repeatingTransactionsPanel = new JPanel(new BorderLayout());
         JMenuBar repeatingTransactionsBar = new JMenuBar();
 
@@ -144,23 +151,23 @@ public class TransactionsOverview extends AbstractOverview {
         repeatingTransactionsBar.add(repeatingTransactionsMenu);
         repeatingTransactionsPanel.add(new JLabel("Repeating transactions"), BorderLayout.NORTH);
         repeatingTransactionsPanel.add(repeatingTransactionsBar, BorderLayout.CENTER);
-        optionsPanel.add(repeatingTransactionsPanel);
+
+        return repeatingTransactionsPanel;
     }
 
-    private void addFilterButton() {
-        optionsPanel.add(filterButton);
+    private JButton filterButton() {
+        return filterButton;
     }
 
-    private void addResetFilterButton() {
-        optionsPanel.add(resetFilterButton);
+    private JButton resetFilterButton() {
+        return resetFilterButton;
     }
 
-    private void addOverview() {
+    private JScrollPane overview() {
         addRows(new Object[]{"28.2.2022", "132$", "Lidl", "Dinner", Color.RED}); //temporary
-        addRows(new Object[]{"18.8.2022", "534$", "New bicycle", "Mountain bike", Color.YELLOW});
+        addRows(new Object[]{"18.8.2022", "534$", "New bicycle", "Mountain bike", Color.YELLOW}); //temporary
 
-        JScrollPane scrollPane = new JScrollPane(overviewTable);
-        this.add(scrollPane, BorderLayout.CENTER);
+        return new JScrollPane(overviewTable);
     }
 
     /**

@@ -3,15 +3,10 @@ package cz.muni.fi.pv168.cashflowevidence.app;
 import cz.muni.fi.pv168.cashflowevidence.model.Category;
 
 
-import javax.swing.JTable;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.ImageIcon;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.*;
 
 /**
  * Represents the panel of categories
@@ -23,28 +18,32 @@ public class CategoriesOverview extends AbstractOverview {
 
     public CategoriesOverview() {
         this.setLayout(new BorderLayout(30, 30));
+        this.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 10));
         addComponents();
     }
 
     private void addComponents() {
-        addLabel();
-        addOverview();
+        this.add(mainLabel(), BorderLayout.NORTH);
+        this.add(overview(), BorderLayout.CENTER);
     }
 
-    private void addLabel() {
-        this.add(new JLabel("Categories"), BorderLayout.NORTH);
+    private JLabel mainLabel() {
+        JLabel label = new JLabel("Categories");
+        Font font = label.getFont();
+        label.setFont(font.deriveFont(Font.BOLD));
+        return label;
     }
 
-    private void addOverview() {
+    private JPanel overview() {
         addRows(new Category("Grocery", Color.BLUE)); //temporary
         addRows(new Category("Sport", Color.RED)); //temporary
 
-        overviewTable.getColumnModel().getColumn(0).setPreferredWidth(250);
-        overviewTable.getColumnModel().getColumn(1).setPreferredWidth(150);
         JScrollPane scrollPane = new JScrollPane(overviewTable);
-        scrollPane.setPreferredSize(new Dimension(400, 400));
 
-        this.add(scrollPane, BorderLayout.WEST);
+        JPanel tablePanel = new JPanel();
+        tablePanel.add(scrollPane);
+
+        return tablePanel;
     }
 
     /**
