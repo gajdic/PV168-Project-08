@@ -1,5 +1,7 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
+import cz.muni.fi.pv168.cashflowevidence.action.ExitApplication;
+
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
@@ -58,7 +60,6 @@ public class CashFlowEvidence {
         }
     };
 
-
     public CashFlowEvidence() {
         setLookAndFeel();
 
@@ -98,8 +99,11 @@ public class CashFlowEvidence {
         fileMenu.add(importItem);
         fileMenu.add(exportItem);
 
-        JMenu helpMenu = new JMenu("Help");
-        helpMenu.add(infoItem);
+        JMenuItem exitItem = new JMenuItem();
+        exitItem.setAction(new ExitApplication());
+        exitItem.setText("Exit");
+        fileMenu.add(exitItem);
+
 
         JMenu transactionMenu = new JMenu("Transaction");
         transactionMenu.add("Add transaction");
@@ -113,11 +117,14 @@ public class CashFlowEvidence {
         categoryMenu.add("Delete category");
         ((JMenuItem)categoryMenu.getMenuComponent(0)).setAction(openCategoryDialog);
 
+        JMenu helpMenu = new JMenu("Help");
+        helpMenu.add(infoItem);
+
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);
-        menuBar.add(helpMenu);
         menuBar.add(transactionMenu);
         menuBar.add(categoryMenu);
+        menuBar.add(helpMenu);
         menuBar.setMaximumSize(new Dimension(frame.getWidth(), 30));
 
         return menuBar;
@@ -126,8 +133,8 @@ public class CashFlowEvidence {
     private JPanel getActionsBarPanel() {
         JPanel panel = new JPanel();
         panel.add(transactionBtn);
-        transactionBtn.setAction(openTransactionDialog);
         panel.add(categoryBtn);
+        transactionBtn.setAction(openTransactionDialog);
         categoryBtn.setAction(openCategoryDialog);
 
         return panel;

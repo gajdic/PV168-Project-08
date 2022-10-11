@@ -61,7 +61,7 @@ public class Transaction {
     public String getAmountStr() {
         String[] parts = String.valueOf(amount).split("\\.");
         StringBuilder sb = new StringBuilder(parts[0]);
-        
+
         sb.reverse();
         sb.replace(0, sb.length(), sb.toString().replaceAll("(\\d{3})", "$1 "));
         parts[0] = sb.reverse().toString();
