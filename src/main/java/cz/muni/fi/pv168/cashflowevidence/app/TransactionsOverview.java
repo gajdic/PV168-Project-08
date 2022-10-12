@@ -9,6 +9,8 @@ import javax.swing.table.TableColumn;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Objects;
 
 public class TransactionsOverview extends AbstractOverview {
 
@@ -20,9 +22,9 @@ public class TransactionsOverview extends AbstractOverview {
     private final JDatePicker dateFrom = new JDatePicker();
     private final JDatePicker dateTo = new JDatePicker();
     private final JFormattedTextField valueFrom = new JFormattedTextField
-            (new NumberFormatter(NumberFormat.getIntegerInstance()));
+            (new CustomNumberFormatter(NumberFormat.getIntegerInstance()));
     private final JFormattedTextField valueTo = new JFormattedTextField
-            (new NumberFormatter(NumberFormat.getIntegerInstance()));
+            (new CustomNumberFormatter(NumberFormat.getIntegerInstance()));
     private final JMenu categoriesMenu = new JMenu("All");
     private final JMenu repeatingTransactionsMenu = new JMenu("None");
     private final JButton filterButton = new JButton("Filter");
@@ -95,10 +97,6 @@ public class TransactionsOverview extends AbstractOverview {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setPreferredSize(new Dimension(50, 30));
 
-        NumberFormatter numberFormatter = (NumberFormatter) valueFrom.getFormatter();
-        numberFormatter.setValueClass(Integer.class);
-        numberFormatter.setAllowsInvalid(false);
-
         panel.add(new JLabel("Value from"), BorderLayout.NORTH);
         panel.add(new JLabel("€"), BorderLayout.EAST);
         panel.add(valueFrom, BorderLayout.CENTER);
@@ -109,10 +107,6 @@ public class TransactionsOverview extends AbstractOverview {
     private JPanel toValue() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setPreferredSize(new Dimension(50, 30));
-
-        NumberFormatter numberFormatter = (NumberFormatter) valueTo.getFormatter();
-        numberFormatter.setValueClass(Integer.class);
-        numberFormatter.setAllowsInvalid(false);
 
         panel.add(new JLabel("Value to"), BorderLayout.NORTH);
         panel.add(new JLabel("€"), BorderLayout.EAST);
@@ -186,5 +180,32 @@ public class TransactionsOverview extends AbstractOverview {
         data[4] = label;
 
         model.addRow(data);
+    }
+
+    /**
+     * Custom number formatter used in 'ValueFrom' and 'ValueTo' text fields.
+     */
+    static class CustomNumberFormatter extends NumberFormatter {
+
+        CustomNumberFormatter(NumberFormat numberFormat) {
+            super(numberFormat);
+        }
+        @Override
+        public Object stringToValue(String text) throws ParseException {
+            if (Objects.equals(text, "")) {
+                return null;
+            }
+            return super.stringToValue(text);
+        }
+
+        @Override
+        public void setAllowsInvalid(boolean allowsInvalid) {
+            super.setAllowsInvalid(false);
+        }
+
+        @Override
+        public void setValueClass(Class<?> valueClass) {
+            super.setValueClass(Integer.class);
+        }
     }
 }
