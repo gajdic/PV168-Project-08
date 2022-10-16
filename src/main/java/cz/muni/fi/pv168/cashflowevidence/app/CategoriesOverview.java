@@ -2,24 +2,30 @@ package cz.muni.fi.pv168.cashflowevidence.app;
 
 import cz.muni.fi.pv168.cashflowevidence.model.Category;
 
-import javax.swing.JPanel;
-import javax.swing.JTable;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 
 /**
  * Represents the panel of categories
  */
 public class CategoriesOverview extends JPanel {
+
+    private final JPanel topPanel = new JPanel(new BorderLayout());
+
+    private final JButton editRowButton = new JButton("Edit");
+    private final JButton deleteRowButton = new JButton("Delete");
 
     private final JTable overviewTable = new JTable(new DefaultTableModel
             (new String[]{"Category name", "Color"}, 0));
@@ -30,12 +36,17 @@ public class CategoriesOverview extends JPanel {
     }
 
     private void addComponents() {
-        addLabel();
+        this.add(topPanel, BorderLayout.NORTH);
         addOverview();
+        addRowActionsPanel();
     }
 
-    private void addLabel() {
-        this.add(new JLabel("Categories"), BorderLayout.NORTH);
+    private void addRowActionsPanel() {
+        JPanel panel = new JPanel();
+        panel.add(editRowButton);
+        panel.add(deleteRowButton);
+
+        topPanel.add(panel, BorderLayout.WEST);
     }
 
     private void addOverview() {

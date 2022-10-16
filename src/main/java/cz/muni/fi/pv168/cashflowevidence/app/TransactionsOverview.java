@@ -2,15 +2,16 @@ package cz.muni.fi.pv168.cashflowevidence.app;
 
 import org.jdatepicker.JDatePicker;
 
-import javax.swing.JPanel;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JTextField;
-import javax.swing.JTable;
-import javax.swing.JMenuBar;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -30,8 +31,13 @@ public class TransactionsOverview extends JPanel {
     private final JMenu categoriesMenu = new JMenu("All");
     private final JMenu currencyMenu = new JMenu("All");
     private final JMenu repeatingTransactionsMenu = new JMenu("None");
+
+    private final JButton editRowButton = new JButton("Edit");
+    private final JButton deleteRowButton = new JButton("Delete");
+
     private final JTable overviewTable = new JTable(new DefaultTableModel
             (new String[]{"Date", "Amount", "Name", "Description"}, 0));
+
 
     /**
      * Represents the panel of transactions
@@ -46,7 +52,6 @@ public class TransactionsOverview extends JPanel {
     }
 
     private void addComponents() {
-        addLabel();
         addIncomingOutgoingPanel();
         addFromCalendar();
         addToCalendar();
@@ -56,11 +61,7 @@ public class TransactionsOverview extends JPanel {
         addCurrency();
         addRepeatingTransactions();
         addOverview();
-    }
-
-    private void addLabel() {
-        JLabel label = new JLabel("Transactions");
-        topPanel.add(label, BorderLayout.NORTH);
+        addRowActionsPanel();
     }
 
     private void addIncomingOutgoingPanel() {
@@ -153,6 +154,14 @@ public class TransactionsOverview extends JPanel {
         repeatingTransactionsPanel.add(new JLabel("Repeating transactions"), BorderLayout.NORTH);
         repeatingTransactionsPanel.add(repeatingTransactionsBar, BorderLayout.CENTER);
         optionsPanel.add(repeatingTransactionsPanel);
+    }
+
+    private void addRowActionsPanel() {
+        JPanel panel = new JPanel();
+        panel.add(editRowButton);
+        panel.add(deleteRowButton);
+
+        topPanel.add(panel, BorderLayout.EAST);
     }
 
     private void addOverview() {
