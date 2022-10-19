@@ -1,13 +1,28 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
 
+import cz.muni.fi.pv168.cashflowevidence.model.Category;
 import org.jdatepicker.JDatePicker;
 
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JComboBox;
+import javax.swing.JRadioButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.text.NumberFormatter;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.FlowLayout;
+import java.awt.Dimension;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Objects;
@@ -17,18 +32,35 @@ public class TransactionsOverview extends AbstractOverview {
     private final JPanel topPanel = new JPanel(new BorderLayout(5, 5));
     private final JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 5));
 
+    //incoming/outgoing
     private final JCheckBox incomingCheckbox = new JCheckBox("Incoming");
     private final JCheckBox outgoingCheckbox = new JCheckBox("Outgoing");
+
+    //dates
     private final JDatePicker dateFrom = new JDatePicker();
     private final JDatePicker dateTo = new JDatePicker();
+
+    //values
     private final JFormattedTextField valueFrom = new JFormattedTextField
             (new CustomNumberFormatter(NumberFormat.getIntegerInstance()));
     private final JFormattedTextField valueTo = new JFormattedTextField
             (new CustomNumberFormatter(NumberFormat.getIntegerInstance()));
-    private final JMenu categoriesMenu = new JMenu("All");
-    private final JMenu repeatingTransactionsMenu = new JMenu("None");
+
+    //categorises
+    private final JRadioButton allCategories = new JRadioButton("All", true);
+    private final JRadioButton specifiedCategories = new JRadioButton("Choose", false);
+    private final JComboBox<Category> categoriesJComboBox = new JComboBox<>();
+
+    //repeating transactions
+    private final JRadioButton allTransactions = new JRadioButton("All", true);
+    private final JRadioButton onlyNonRepeating = new JRadioButton("Only non-repeating", false);
+    private final JRadioButton onlyRepeating = new JRadioButton("Only repeating", false);
+
+    //filtration
     private final JButton filterButton = new JButton("Filter");
     private final JButton resetFilterButton = new JButton("Reset filter");
+
+    //overview
     private final JTable overviewTable = new JTable(new DefaultTableModel
             (new Object[]{"Date", "Amount", "Name", "Description", "Category"}, 0));
 
@@ -36,17 +68,17 @@ public class TransactionsOverview extends AbstractOverview {
      * Represents the panel of transactions
      */
     public TransactionsOverview() {
-        this.setLayout(new BorderLayout(30, 30));
-        this.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 10));
-
+        setLayout();
         addComponents();
 
         topPanel.add(optionsPanel, BorderLayout.WEST);
         this.add(topPanel, BorderLayout.NORTH);
+
+        generateCategories();
     }
 
     private void addComponents() {
-        topPanel.add(mainLabel(), BorderLayout.NORTH);
+        topPanel.add(mainLabel("Transactions"), BorderLayout.NORTH);
         optionsPanel.add(incomingOutgoingPanel());
         optionsPanel.add(fromCalendar());
         optionsPanel.add(toCalendar());
@@ -57,13 +89,6 @@ public class TransactionsOverview extends AbstractOverview {
         optionsPanel.add(filterButton());
         optionsPanel.add(resetFilterButton());
         this.add(overview(), BorderLayout.CENTER);
-    }
-
-    private JLabel mainLabel() {
-        JLabel label = new JLabel("Transactions");
-        Font font = label.getFont();
-        label.setFont(font.deriveFont(Font.BOLD));
-        return label;
     }
 
     private JPanel incomingOutgoingPanel() {
@@ -95,7 +120,7 @@ public class TransactionsOverview extends AbstractOverview {
 
     private JPanel fromValue() {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setPreferredSize(new Dimension(50, 30));
+        panel.setPreferredSize(new Dimension(65, 30));
 
         panel.add(new JLabel("Value from"), BorderLayout.NORTH);
         panel.add(new JLabel("€"), BorderLayout.EAST);
@@ -106,7 +131,7 @@ public class TransactionsOverview extends AbstractOverview {
 
     private JPanel toValue() {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setPreferredSize(new Dimension(50, 30));
+        panel.setPreferredSize(new Dimension(65, 30));
 
         panel.add(new JLabel("Value to"), BorderLayout.NORTH);
         panel.add(new JLabel("€"), BorderLayout.EAST);
@@ -117,34 +142,56 @@ public class TransactionsOverview extends AbstractOverview {
 
     private JPanel categories() {
         JPanel categoriesPanel = new JPanel(new BorderLayout());
-        JMenuBar categoriesBar = new JMenuBar();
+        JPanel checkboxPanel = new JPanel(new GridLayout(2, 1));
+        JPanel comboPanel = new JPanel();
 
-        String[] titles = new String[]{"Category 1", "Category 2", "Category 3"}; //temporary categories
-        for (String title : titles) {
-            categoriesMenu.add(new JMenuItem(title));
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(allCategories);
+        buttonGroup.add(specifiedCategories);
+
+        checkboxPanel.add(allCategories);
+        checkboxPanel.add(specifiedCategories);
+
+        categoriesJComboBox.setVisible(false);
+        allCategories.addActionListener(e -> specifiedCategorySetTrue());
+        specifiedCategories.addActionListener(e -> specifiedCategorySetTrue());
+
+        Category[] temporaryCategories = generateCategories(); //temporary
+        for (Category temporaryCategory : temporaryCategories) {
+            categoriesJComboBox.addItem(temporaryCategory);
         }
-        categoriesMenu.setPreferredSize(new Dimension(50, 20));
-        categoriesBar.add(categoriesMenu);
-        categoriesPanel.add(new JLabel("Category"), BorderLayout.NORTH);
-        categoriesPanel.add(categoriesBar, BorderLayout.CENTER);
+
+        comboPanel.add(categoriesJComboBox);
+        categoriesJComboBox.setPreferredSize(new Dimension(
+                (int) categoriesJComboBox.getPreferredSize().getWidth() + 10,
+                (int) categoriesJComboBox.getPreferredSize().getHeight()));
+
+        categoriesPanel.add(new JLabel("Categories"), BorderLayout.NORTH);
+        categoriesPanel.add(checkboxPanel, BorderLayout.WEST);
+        categoriesPanel.add(comboPanel, BorderLayout.CENTER);
 
         return categoriesPanel;
     }
 
+    private void specifiedCategorySetTrue() {
+        categoriesJComboBox.setVisible(specifiedCategories.isSelected());
+    }
+
     private JPanel repeatingTransactions() {
         JPanel repeatingTransactionsPanel = new JPanel(new BorderLayout());
-        JMenuBar repeatingTransactionsBar = new JMenuBar();
+        JPanel checkboxPanel = new JPanel(new GridLayout(3, 1));
 
-        String[] titles = new String[]{"Repeating transaction 1",
-                "Repeating transaction 2", "Repeating transaction 3"}; //temporary repeating transactions
-        for (String title : titles) {
-            repeatingTransactionsMenu.add(new JMenuItem(title));
-        }
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(allTransactions);
+        buttonGroup.add(onlyRepeating);
+        buttonGroup.add(onlyNonRepeating);
 
-        repeatingTransactionsMenu.setPreferredSize(new Dimension(110, 20));
-        repeatingTransactionsBar.add(repeatingTransactionsMenu);
+        checkboxPanel.add(allTransactions);
+        checkboxPanel.add(onlyRepeating);
+        checkboxPanel.add(onlyNonRepeating);
+
         repeatingTransactionsPanel.add(new JLabel("Repeating transactions"), BorderLayout.NORTH);
-        repeatingTransactionsPanel.add(repeatingTransactionsBar, BorderLayout.CENTER);
+        repeatingTransactionsPanel.add(checkboxPanel, BorderLayout.WEST);
 
         return repeatingTransactionsPanel;
     }
@@ -165,7 +212,7 @@ public class TransactionsOverview extends AbstractOverview {
     }
 
     /**
-     * Temporary method for adding temporary data to fill out the table
+     * Method for adding data to the table
      * @param data to be added
      */
     private void addRows(Object[] data) {
@@ -181,6 +228,7 @@ public class TransactionsOverview extends AbstractOverview {
 
         model.addRow(data);
     }
+
 
     /**
      * Custom number formatter used in 'ValueFrom' and 'ValueTo' text fields.
@@ -207,5 +255,20 @@ public class TransactionsOverview extends AbstractOverview {
         public void setValueClass(Class<?> valueClass) {
             super.setValueClass(Integer.class);
         }
+    }
+
+    /**
+     * Temporary data generator
+     * @return an array of Categories
+     */
+    private Category[] generateCategories() {
+        Category[] categories = new Category[3];
+        String[] titles = new String[]{"Category 1", "Category 2", "Category 3"};
+        Color[] colors = new Color[]{Color.RED, Color.BLUE, Color.GREEN};
+
+        for (int i = 0; i < titles.length; i++) {
+            categories[i] = new Category(titles[i], colors[i]);
+        }
+        return categories;
     }
 }

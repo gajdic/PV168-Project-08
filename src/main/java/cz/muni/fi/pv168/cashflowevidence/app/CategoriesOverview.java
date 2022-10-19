@@ -1,7 +1,7 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
-import cz.muni.fi.pv168.cashflowevidence.model.Category;
 
+import cz.muni.fi.pv168.cashflowevidence.model.Category;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -17,21 +17,13 @@ public class CategoriesOverview extends AbstractOverview {
             (new String[]{"Category name", "Color"}, 0));
 
     public CategoriesOverview() {
-        this.setLayout(new BorderLayout(30, 30));
-        this.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 10));
+        setLayout();
         addComponents();
     }
 
     private void addComponents() {
-        this.add(mainLabel(), BorderLayout.NORTH);
+        this.add(mainLabel("Categories"), BorderLayout.NORTH);
         this.add(overview(), BorderLayout.CENTER);
-    }
-
-    private JLabel mainLabel() {
-        JLabel label = new JLabel("Categories");
-        Font font = label.getFont();
-        label.setFont(font.deriveFont(Font.BOLD));
-        return label;
     }
 
     private JPanel overview() {
