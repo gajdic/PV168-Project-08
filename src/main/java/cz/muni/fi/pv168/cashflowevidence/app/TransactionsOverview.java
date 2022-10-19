@@ -77,6 +77,7 @@ public class TransactionsOverview extends AbstractOverview {
         generateCategories();
     }
 
+
     private void addComponents() {
         optionsPanel.add(incomingOutgoingPanel());
         optionsPanel.add(fromCalendar());

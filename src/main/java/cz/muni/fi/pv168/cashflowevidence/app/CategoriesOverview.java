@@ -3,10 +3,14 @@ package cz.muni.fi.pv168.cashflowevidence.app;
 
 import cz.muni.fi.pv168.cashflowevidence.model.Category;
 
-import javax.swing.*;
+import javax.swing.JTable;
+import javax.swing.JScrollPane;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
-import java.awt.*;
+import java.awt.Color;
 
 /**
  * Represents the panel of categories
