@@ -22,13 +22,12 @@ public class CategoriesOverview extends AbstractOverview {
     }
 
     private void addComponents() {
-        this.add(mainLabel("Categories"), BorderLayout.NORTH);
-        this.add(overview(), BorderLayout.CENTER);
+        this.add(overview());
     }
 
     private JPanel overview() {
-        addRows(new Category("Grocery", Color.BLUE)); //temporary
-        addRows(new Category("Sport", Color.RED)); //temporary
+        addRow(new Category("Grocery", Color.BLUE)); //temporary
+        addRow(new Category("Sport", Color.RED)); //temporary
 
         JScrollPane scrollPane = new JScrollPane(overviewTable);
 
@@ -42,7 +41,7 @@ public class CategoriesOverview extends AbstractOverview {
      * Method for adding new category into the overview table
      * @param category to be added
      */
-    public void addRows(Category category) {
+    public void addRow(Category category) {
         DefaultTableModel model = (DefaultTableModel) overviewTable.getModel();
 
         TableColumn col = overviewTable.getColumnModel().getColumn(1);

@@ -78,7 +78,6 @@ public class TransactionsOverview extends AbstractOverview {
     }
 
     private void addComponents() {
-        topPanel.add(mainLabel("Transactions"), BorderLayout.NORTH);
         optionsPanel.add(incomingOutgoingPanel());
         optionsPanel.add(fromCalendar());
         optionsPanel.add(toCalendar());
@@ -205,8 +204,8 @@ public class TransactionsOverview extends AbstractOverview {
     }
 
     private JScrollPane overview() {
-        addRows(new Object[]{"28.2.2022", "132$", "Lidl", "Dinner", Color.RED}); //temporary
-        addRows(new Object[]{"18.8.2022", "534$", "New bicycle", "Mountain bike", Color.YELLOW}); //temporary
+        addRow(new Object[]{"28.2.2022", "132$", "Lidl", "Dinner", Color.RED}); //temporary
+        addRow(new Object[]{"18.8.2022", "534$", "New bicycle", "Mountain bike", Color.YELLOW}); //temporary
 
         return new JScrollPane(overviewTable);
     }
@@ -215,7 +214,7 @@ public class TransactionsOverview extends AbstractOverview {
      * Method for adding data to the table
      * @param data to be added
      */
-    private void addRows(Object[] data) {
+    private void addRow(Object[] data) {
         DefaultTableModel model = (DefaultTableModel) overviewTable.getModel();
 
         TableColumn col = overviewTable.getColumnModel().getColumn(4);

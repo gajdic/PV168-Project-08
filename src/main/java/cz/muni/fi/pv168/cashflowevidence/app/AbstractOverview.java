@@ -7,7 +7,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.BorderLayout;
-import java.awt.Font;
 import java.awt.Component;
 import java.awt.image.BufferedImage;
 
@@ -22,18 +21,6 @@ public class AbstractOverview extends JPanel {
     public void setLayout() {
         this.setLayout(new BorderLayout(30, 30));
         this.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 10));
-    }
-
-    /**
-     * Creates a new JLabel with bolded passed text
-     * @param text on the label
-     * @return new JLabel
-     */
-    public JLabel mainLabel(String text) {
-        JLabel label = new JLabel(text);
-        Font font = label.getFont();
-        label.setFont(font.deriveFont(Font.BOLD));
-        return label;
     }
 
     /**
