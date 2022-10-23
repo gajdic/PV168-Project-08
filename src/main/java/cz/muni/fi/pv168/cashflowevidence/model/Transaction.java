@@ -58,7 +58,7 @@ public class Transaction {
      *
      * @return Amount in String with spaces between thousands
      */
-     public String getAmountStr() {
+     public static String formatAmount(double amount) {
          return String.format("%,.0f", amount).replace(",", " ");
      }
     public void setAmount(double amount) {

@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
 import cz.muni.fi.pv168.cashflowevidence.action.ExitApplication;
+import cz.muni.fi.pv168.cashflowevidence.model.Transaction;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -143,9 +144,9 @@ public class CashFlowEvidence {
     private JPanel getBalancePanel() {
         JPanel panel = new JPanel(new GridLayout(2, 2));
 
-        // temporary
-        balanceLabel.setText("1234567€");
-        filteredBalanceLabel.setText("987€");
+        // temporary vals and currency
+        balanceLabel.setText(Transaction.formatAmount(12345678) + "€");
+        filteredBalanceLabel.setText(Transaction.formatAmount(987) + "€");
 
         panel.add(new JLabel("Total balance:"));
         panel.add(balanceLabel);
