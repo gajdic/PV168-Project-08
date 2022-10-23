@@ -58,17 +58,9 @@ public class Transaction {
      *
      * @return Amount in String with spaces between thousands
      */
-    public String getAmountStr() {
-        String[] parts = String.valueOf(amount).split("\\.");
-        StringBuilder sb = new StringBuilder(parts[0]);
-
-        sb.reverse();
-        sb.replace(0, sb.length(), sb.toString().replaceAll("(\\d{3})", "$1 "));
-        parts[0] = sb.reverse().toString();
-
-        return String.join(".", parts);
-    }
-
+     public String getAmountStr() {
+         return String.format("%,.0f", amount).replace(",", " ");
+     }
     public void setAmount(double amount) {
         this.amount = amount;
     }
