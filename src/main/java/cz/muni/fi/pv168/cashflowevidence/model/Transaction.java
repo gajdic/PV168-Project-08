@@ -53,6 +53,14 @@ public class Transaction {
         return amount;
     }
 
+    /**
+     * Converts the amount to String and adds space as a separator between thousands
+     *
+     * @return Amount in String with spaces between thousands
+     */
+     public static String formatAmount(double amount) {
+         return String.format("%,.0f", amount).replace(",", " ");
+     }
     public void setAmount(double amount) {
         this.amount = amount;
     }

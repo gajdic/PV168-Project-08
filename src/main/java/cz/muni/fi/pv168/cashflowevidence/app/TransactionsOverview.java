@@ -4,17 +4,18 @@ package cz.muni.fi.pv168.cashflowevidence.app;
 import cz.muni.fi.pv168.cashflowevidence.model.Category;
 import org.jdatepicker.JDatePicker;
 
-import javax.swing.JPanel;
-import javax.swing.JButton;
-import javax.swing.JFormattedTextField;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JComboBox;
-import javax.swing.JRadioButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.text.NumberFormatter;
@@ -79,6 +80,8 @@ public class TransactionsOverview extends AbstractOverview {
 
 
     private void addComponents() {
+        optionsPanel.add(rowActionsPanel());
+        optionsPanel.add(new JSeparator(JSeparator.VERTICAL));
         optionsPanel.add(incomingOutgoingPanel());
         optionsPanel.add(fromCalendar());
         optionsPanel.add(toCalendar());

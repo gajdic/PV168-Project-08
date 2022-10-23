@@ -1,13 +1,15 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
 
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.BorderFactory;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.GridLayout;
 import java.awt.image.BufferedImage;
 
 /**
@@ -15,12 +17,26 @@ import java.awt.image.BufferedImage;
  */
 public class AbstractOverview extends JPanel {
 
+    protected final JButton editRowButton = new JButton("Edit selected");
+    protected final JButton deleteRowButton = new JButton("Delete selected");
+
     /**
-     * Sets the basic layout and boarders
+     * Sets the basic layout and borders
      */
     public void setLayout() {
         this.setLayout(new BorderLayout(30, 30));
         this.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 10));
+    }
+
+    protected JPanel rowActionsPanel() {
+        JPanel panel = new JPanel(new GridLayout(0, 1));
+        panel.add(editRowButton);
+        panel.add(deleteRowButton);
+
+        JPanel wrapper = new JPanel(new BorderLayout());
+        wrapper.add(panel, BorderLayout.EAST);
+
+        return panel;
     }
 
     /**

@@ -1,6 +1,6 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
-import javax.swing.*;
+import javax.swing.JFormattedTextField;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
