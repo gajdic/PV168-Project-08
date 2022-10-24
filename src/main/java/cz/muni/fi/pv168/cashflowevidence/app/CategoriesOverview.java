@@ -3,6 +3,7 @@ package cz.muni.fi.pv168.cashflowevidence.app;
 
 import cz.muni.fi.pv168.cashflowevidence.model.Category;
 
+import javax.swing.Action;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -11,8 +12,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.util.ArrayList;
 
 /**
  * Represents the panel of categories
@@ -20,26 +23,17 @@ import java.awt.Dimension;
 public class CategoriesOverview extends AbstractOverview {
 
 
-    public CategoriesOverview() {
+    public CategoriesOverview(ArrayList<Action> actions) {
         super(new JTable(new DefaultTableModel
-                (new String[]{"Category name", "Color"}, 0)), "Category");
+                (new String[]{"Category name", "Color"}, 0)), actions);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        addComponents();
+
+        this.add(topPanel(), BorderLayout.NORTH);
+        this.add(overview(), BorderLayout.CENTER);
     }
 
-    private void addComponents() {
-        setupTopPanel();
-        this.add(topPanel);
-        this.add(overview());
-    }
 
-    private void setupTopPanel() {
-        topPanel.add(editRowButton);
-        topPanel.add(deleteRowButton);
-        topPanel.setMaximumSize(new Dimension(1920, 50));
-    }
-
-    private JPanel overview() {
+    protected JPanel overview() {
         addRow(new Category("Grocery", Color.BLUE)); //temporary
         addRow(new Category("Sport", Color.RED)); //temporary
 
@@ -68,5 +62,12 @@ public class CategoriesOverview extends AbstractOverview {
         JLabel label = new JLabel(new ImageIcon(createImage(rgb)));
 
         model.addRow(new Object[]{category.getName(), label});
+    }
+
+    protected JPanel topPanel() {
+        JPanel topPanel = new JPanel();
+        topPanel.setMaximumSize(new Dimension(1920, 50));
+        addActionsToPanel(topPanel);
+        return topPanel;
     }
 }

@@ -4,6 +4,7 @@ package cz.muni.fi.pv168.cashflowevidence.app;
 import cz.muni.fi.pv168.cashflowevidence.model.Category;
 import org.jdatepicker.JDatePicker;
 
+import javax.swing.Action;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -24,14 +25,14 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.FlowLayout;
 import java.awt.Dimension;
+import java.awt.event.KeyEvent;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Objects;
 
+// TODO: This class is too long. Consider splitting in multiple separate (Maybe more reusable?) Ones.
 public class TransactionsOverview extends AbstractOverview {
-
-    private final JPanel topPanel = new JPanel(new BorderLayout(5, 5));
-    private final JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 5));
 
     //incoming/outgoing
     private final JCheckBox incomingCheckbox = new JCheckBox("Incoming");
@@ -65,21 +66,30 @@ public class TransactionsOverview extends AbstractOverview {
     /**
      * Represents the panel of transactions
      */
-    public TransactionsOverview() {
+    public TransactionsOverview(ArrayList<Action> actions) {
         super(new JTable(new DefaultTableModel
-                (new Object[]{"Date", "Amount", "Name", "Description", "Category"}, 0)), "Transactions");
+                (new Object[]{"Date", "Amount", "Name", "Description", "Category"}, 0)),
+                actions);
         setLayout();
-        addComponents();
 
-        topPanel.add(optionsPanel, BorderLayout.WEST);
-        this.add(topPanel, BorderLayout.NORTH);
+        // TODO: Refactor and move this to AbstractOverview using abstract topPanel and Overview methods
+        // TODO: Needed to not initialize fields in this class, as they are null;
+        this.add(topPanel(), BorderLayout.NORTH);
+        this.add(overview(), BorderLayout.CENTER);
 
         generateCategories();
 
     }
 
+    private JPanel topPanel(){
+        JPanel topPanel = new JPanel(new BorderLayout(5, 5));
+        JPanel optionsPanel = optionsPanel();
+        topPanel.add(optionsPanel, BorderLayout.WEST);
+        return topPanel;
+    }
 
-    private void addComponents() {
+    private JPanel optionsPanel() {
+        JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 5));
         optionsPanel.add(rowActionsPanel());
         optionsPanel.add(new JSeparator(JSeparator.VERTICAL));
         optionsPanel.add(incomingOutgoingPanel());
@@ -91,7 +101,7 @@ public class TransactionsOverview extends AbstractOverview {
         optionsPanel.add(repeatingTransactions());
         optionsPanel.add(filterButton());
         optionsPanel.add(resetFilterButton());
-        this.add(overview(), BorderLayout.CENTER);
+        return optionsPanel;
     }
 
     private JPanel incomingOutgoingPanel() {
@@ -102,6 +112,7 @@ public class TransactionsOverview extends AbstractOverview {
 
         return incomingOutgoingPanel;
     }
+
 
     private JPanel fromCalendar() {
         JPanel panel = new JPanel(new BorderLayout());
@@ -143,6 +154,17 @@ public class TransactionsOverview extends AbstractOverview {
         return panel;
     }
 
+    private JPanel rowActionsPanel() {
+        JPanel panel = new JPanel(new GridLayout(0, 1));
+        addActionsToPanel(panel);
+
+        JPanel wrapper = new JPanel(new BorderLayout());
+        wrapper.add(panel, BorderLayout.EAST);
+
+        return panel;
+    }
+
+    // TODO: Split in multiple functions
     private JPanel categories() {
         JPanel categoriesPanel = new JPanel(new BorderLayout());
         JPanel checkboxPanel = new JPanel(new GridLayout(2, 1));
@@ -200,10 +222,13 @@ public class TransactionsOverview extends AbstractOverview {
     }
 
     private JButton filterButton() {
+        filterButton.setMnemonic(KeyEvent.VK_I);
         return filterButton;
     }
 
-    private JButton resetFilterButton() {
+    private JButton resetFilterButton()
+    {
+        resetFilterButton.setMnemonic(KeyEvent.VK_R);
         return resetFilterButton;
     }
 
