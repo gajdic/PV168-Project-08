@@ -31,6 +31,16 @@ public class CategoryTableModel extends AbstractTableModel {
     }
 
     @Override
+    public String getColumnName(int columnIndex) {
+        return columns.get(columnIndex).getName();
+    }
+
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        return columns.get(columnIndex).getColumnType();
+    }
+
+    @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         var category = getEntity(rowIndex);
         return columns.get(columnIndex).getValue(category);
@@ -47,5 +57,11 @@ public class CategoryTableModel extends AbstractTableModel {
 
     public List<Category> getEntities() {
         return Collections.unmodifiableList(categories);
+    }
+
+    public void addRow(Category category) {
+        int newRowIndex = categories.size();
+        categories.add(category);
+        fireTableRowsInserted(newRowIndex, newRowIndex);
     }
 }

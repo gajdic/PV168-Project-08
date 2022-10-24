@@ -1,30 +1,18 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
 import cz.muni.fi.pv168.cashflowevidence.action.ExitApplication;
+import cz.muni.fi.pv168.cashflowevidence.model.Category;
+import cz.muni.fi.pv168.cashflowevidence.model.CategoryTableModel;
 import cz.muni.fi.pv168.cashflowevidence.model.Transaction;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -45,6 +33,8 @@ public class CashFlowEvidence {
 
     private final JLabel balanceLabel = new JLabel();
     private final JLabel filteredBalanceLabel = new JLabel();
+
+    private final JTable categoryTable;
 
     private final Action openTransactionDialog = new AbstractAction("Add transaction") {
         @Override
@@ -70,6 +60,10 @@ public class CashFlowEvidence {
         filteredBalanceLabel.setFont(balanceFont);
         balanceLabel.setFont(balanceFont);
 
+        List<Category> categories = new ArrayList<>();
+        categories.add(new Category("Jou", Color.RED));
+        categoryTable = createCategoryTable(categories);
+
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
         content.add(getMenuBar());
@@ -77,9 +71,27 @@ public class CashFlowEvidence {
         content.add(getActionsAndBalancePanel());
         content.add(getTabbedContentPanel());
 
-
         frame.add(content, BorderLayout.CENTER);
         frame.setVisible(true);
+    }
+
+    private JTable createCategoryTable(List<Category> categories) {
+        var model = new CategoryTableModel(categories);
+        var table = new JTable(model);
+        table.setAutoCreateRowSorter(true);
+        table.getSelectionModel().addListSelectionListener(this::rowSelectionChanged);
+        return table;
+    }
+
+    private void rowSelectionChanged(ListSelectionEvent listSelectionEvent) {
+        var selectionModel = (ListSelectionModel) listSelectionEvent.getSource();
+        var count = selectionModel.getSelectedItemsCount();
+        changeActionsState(count);
+    }
+
+    private void changeActionsState(int selectedItemsCount) {
+        //editAction.setEnabled(selectedItemsCount == 1);
+        //deleteAction.setEnabled(selectedItemsCount >= 1);
     }
 
     private void setLookAndFeel() {
@@ -177,7 +189,7 @@ public class CashFlowEvidence {
         tabbedPane.setTabPlacement(SwingConstants.TOP);
 
         tabbedPane.addTab("Transactions", new TransactionsOverview());
-        tabbedPane.addTab("Categories", new CategoriesOverview());
+        tabbedPane.addTab("Categories", new CategoriesOverview(categoryTable));
 
         panel.add(tabbedPane);
         panel.setMaximumSize(new Dimension(frame.getWidth(), 900));

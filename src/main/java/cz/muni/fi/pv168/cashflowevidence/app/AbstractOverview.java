@@ -1,11 +1,13 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
 
+import cz.muni.fi.pv168.cashflowevidence.model.CategoryTableModel;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.GridLayout;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /**
@@ -24,8 +26,10 @@ public class AbstractOverview extends JPanel {
         this.setComponentPopupMenu(new RightClickMenu(containerContextName));
         this.overviewTable.setInheritsPopupMenu(true);
 
+        var colIndex = overviewTable.getModel().getClass() == CategoryTableModel.class ? 1 : 4;
+        TableColumn col = overviewTable.getColumnModel().getColumn(colIndex);
+        col.setCellRenderer(new ColorCellRenderer());
     }
-
     /**
      * Sets the basic layout and borders
      */
@@ -80,5 +84,14 @@ public class AbstractOverview extends JPanel {
                 return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             }
         }
+    }
+}
+
+class ColorCellRenderer extends JPanel implements TableCellRenderer {
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                                                   boolean hasFocus, int rowIndex, int vColIndex) {
+        setBackground((Color) value);
+
+        return this;
     }
 }
