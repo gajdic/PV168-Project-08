@@ -1,0 +1,70 @@
+package cz.muni.fi.pv168.cashflowevidence.model;
+
+import javax.swing.table.AbstractTableModel;
+import java.awt.*;
+import java.util.*;
+import java.util.List;
+
+public class TransactionTableModel extends AbstractTableModel {
+
+    private final List<Transaction> transactions;
+
+    private final List<Column<Transaction, ?>> columns = List.of(
+            Column.editable("Name", String.class, Transaction::getName, Transaction::setName),
+            Column.editable("Description", String.class, Transaction::getDescription, Transaction::setDescription),
+            Column.editable("Amount", Double.class, Transaction::getAmount, Transaction::setAmount), // TODO use getAmountStr somehow
+            Column.editable("Date", Date.class, Transaction::getDate, Transaction::setDate),
+            Column.editable("Time", Integer.class, Transaction::getTime, Transaction::setTime),
+            Column.editable("Category", Category.class, Transaction::getCategory, Transaction::setCategory),
+            Column.readonly("Repeating", TransactionType.class, Transaction::getTransactionType)
+    );
+
+    public TransactionTableModel(Collection<Transaction> transactions) {
+        this.transactions = new ArrayList<>(transactions);
+    }
+
+    @Override
+    public int getRowCount() {
+        return transactions.size();
+    }
+
+    @Override
+    public int getColumnCount() {
+        return columns.size();
+    }
+
+    @Override
+    public String getColumnName(int columnIndex) {
+        return columns.get(columnIndex).getName();
+    }
+
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        return columns.get(columnIndex).getColumnType();
+    }
+
+    @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        var transaction = getEntity(rowIndex);
+        return columns.get(columnIndex).getValue(transaction);
+    }
+
+    public void setValueAt(Object value, int rowIndex, int columnIndex) {
+        var transaction = getEntity(rowIndex);
+        columns.get(columnIndex).setValue(value, transaction);
+    }
+
+    public Transaction getEntity(int rowIndex) {
+        return transactions.get(rowIndex);
+    }
+
+    public List<Transaction> getEntities() {
+        return Collections.unmodifiableList(transactions);
+    }
+
+    public void addRow(Transaction transaction) {
+        int newRowIndex = transactions.size();
+        transactions.add(transaction);
+        fireTableRowsInserted(newRowIndex, newRowIndex);
+    }
+}

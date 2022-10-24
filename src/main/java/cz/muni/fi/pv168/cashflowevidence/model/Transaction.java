@@ -61,7 +61,12 @@ public class Transaction {
      public static String formatAmount(double amount) {
          return String.format("%,.0f", amount).replace(",", " ");
      }
-    public void setAmount(double amount) {
+
+     public String getAmountStr() {
+         return formatAmount(amount);
+     }
+
+     public void setAmount(double amount) {
         this.amount = amount;
     }
 
