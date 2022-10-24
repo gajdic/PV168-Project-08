@@ -68,7 +68,7 @@ public class TransactionDialog extends JDialog {
     }
 
     private void displayDialog() {
-        setBounds(600, 300, 600, 350);
+        setBounds(600, 300, 600, 380);
         setContentPane(contentPane);
         setModal(true);
         setResizable(false);
@@ -106,10 +106,10 @@ public class TransactionDialog extends JDialog {
 
     private void onRepeatingTransaction() {
         if (repeatingTransactionCheckBox.isSelected()) {
-            setBounds(getX(), getY(), 600, 480);
+            setBounds(getX(), getY(), 600, 530);
             repeatingTransactionPanel.setVisible(true);
         } else {
-            setBounds(getX(), getY(), 600, 350);
+            setBounds(getX(), getY(), 600, 380);
             repeatingTransactionPanel.setVisible(false);
         }
     }
