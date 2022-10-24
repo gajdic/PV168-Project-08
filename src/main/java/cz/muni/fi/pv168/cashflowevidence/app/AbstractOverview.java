@@ -1,11 +1,7 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -19,6 +15,16 @@ public class AbstractOverview extends JPanel {
 
     protected final JButton editRowButton = new JButton("Edit selected");
     protected final JButton deleteRowButton = new JButton("Delete selected");
+
+    protected final JPanel topPanel = new JPanel();
+    protected final JTable overviewTable;
+
+    public AbstractOverview(JTable overviewTable, String containerContextName) {
+        this.overviewTable = overviewTable;
+        this.setComponentPopupMenu(new RightClickMenu(containerContextName));
+        this.overviewTable.setInheritsPopupMenu(true);
+
+    }
 
     /**
      * Sets the basic layout and borders
@@ -37,6 +43,12 @@ public class AbstractOverview extends JPanel {
         wrapper.add(panel, BorderLayout.EAST);
 
         return panel;
+    }
+
+    protected JScrollPane scrollPane() {
+        JScrollPane scrollPane = new JScrollPane(overviewTable);
+        scrollPane.setInheritsPopupMenu(true);
+        return scrollPane;
     }
 
     /**

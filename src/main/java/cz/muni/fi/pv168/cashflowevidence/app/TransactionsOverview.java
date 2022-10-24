@@ -61,14 +61,13 @@ public class TransactionsOverview extends AbstractOverview {
     private final JButton filterButton = new JButton("Filter");
     private final JButton resetFilterButton = new JButton("Reset filter");
 
-    //overview
-    private final JTable overviewTable = new JTable(new DefaultTableModel
-            (new Object[]{"Date", "Amount", "Name", "Description", "Category"}, 0));
 
     /**
      * Represents the panel of transactions
      */
     public TransactionsOverview() {
+        super(new JTable(new DefaultTableModel
+                (new Object[]{"Date", "Amount", "Name", "Description", "Category"}, 0)), "Transactions");
         setLayout();
         addComponents();
 
@@ -76,6 +75,7 @@ public class TransactionsOverview extends AbstractOverview {
         this.add(topPanel, BorderLayout.NORTH);
 
         generateCategories();
+
     }
 
 
@@ -211,7 +211,8 @@ public class TransactionsOverview extends AbstractOverview {
         addRow(new Object[]{"28.2.2022", "132$", "Lidl", "Dinner", Color.RED}); //temporary
         addRow(new Object[]{"18.8.2022", "534$", "New bicycle", "Mountain bike", Color.YELLOW}); //temporary
 
-        return new JScrollPane(overviewTable);
+        return scrollPane();
+
     }
 
     /**
@@ -228,6 +229,8 @@ public class TransactionsOverview extends AbstractOverview {
         int rgb = color.getRGB();
         JLabel label = new JLabel(new ImageIcon(createImage(rgb)));
         data[4] = label;
+
+        overviewTable.setInheritsPopupMenu(true);
 
         model.addRow(data);
     }
