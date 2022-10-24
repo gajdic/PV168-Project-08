@@ -1,17 +1,17 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
 import cz.muni.fi.pv168.cashflowevidence.action.ExitApplication;
-import cz.muni.fi.pv168.cashflowevidence.model.Category;
-import cz.muni.fi.pv168.cashflowevidence.model.CategoryTableModel;
-import cz.muni.fi.pv168.cashflowevidence.model.Transaction;
+import cz.muni.fi.pv168.cashflowevidence.model.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.table.AbstractTableModel;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -35,6 +35,8 @@ public class CashFlowEvidence {
     private final JLabel filteredBalanceLabel = new JLabel();
 
     private final JTable categoryTable;
+    private final JTable transactionTable;
+
 
     private final Action openTransactionDialog = new AbstractAction("Add transaction") {
         @Override
@@ -60,9 +62,14 @@ public class CashFlowEvidence {
         filteredBalanceLabel.setFont(balanceFont);
         balanceLabel.setFont(balanceFont);
 
-        List<Category> categories = new ArrayList<>();
-        categories.add(new Category("Jou", Color.RED));
+        var categories = new ArrayList<Category>();
+        var category = new Category("Jou", Color.RED);
+        categories.add(category);
         categoryTable = createCategoryTable(categories);
+
+        var transactions = new ArrayList<Transaction>();
+        transactions.add(new Transaction(TransactionType.Incoming, "name", "desc", 1, new Date(), 1, category));
+        transactionTable = createTransactionTable(transactions);
 
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
@@ -76,10 +83,18 @@ public class CashFlowEvidence {
     }
 
     private JTable createCategoryTable(List<Category> categories) {
-        var model = new CategoryTableModel(categories);
+        return createTable(new CategoryTableModel(categories));
+    }
+
+    private JTable createTransactionTable(List<Transaction> transactions) {
+        return createTable(new TransactionTableModel(transactions));
+    }
+
+    private JTable createTable(AbstractTableModel model) {
         var table = new JTable(model);
         table.setAutoCreateRowSorter(true);
         table.getSelectionModel().addListSelectionListener(this::rowSelectionChanged);
+
         return table;
     }
 
@@ -188,7 +203,7 @@ public class CashFlowEvidence {
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.setTabPlacement(SwingConstants.TOP);
 
-        tabbedPane.addTab("Transactions", new TransactionsOverview());
+        tabbedPane.addTab("Transactions", new TransactionsOverview(transactionTable));
         tabbedPane.addTab("Categories", new CategoriesOverview(categoryTable));
 
         panel.add(tabbedPane);

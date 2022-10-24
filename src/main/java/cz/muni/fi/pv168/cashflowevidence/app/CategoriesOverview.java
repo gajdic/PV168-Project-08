@@ -1,8 +1,5 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
-
-import cz.muni.fi.pv168.cashflowevidence.model.Category;
-
 import javax.swing.BoxLayout;
 import javax.swing.JTable;
 import java.awt.Dimension;

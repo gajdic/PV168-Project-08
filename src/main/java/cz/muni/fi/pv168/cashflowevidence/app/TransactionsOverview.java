@@ -65,9 +65,8 @@ public class TransactionsOverview extends AbstractOverview {
     /**
      * Represents the panel of transactions
      */
-    public TransactionsOverview() {
-        super(new JTable(new DefaultTableModel
-                (new Object[]{"Date", "Amount", "Name", "Description", "Category"}, 0)), "Transactions");
+    public TransactionsOverview(JTable transactionTable) {
+        super(transactionTable, "Transaction");
         setLayout();
         addComponents();
 
@@ -91,7 +90,7 @@ public class TransactionsOverview extends AbstractOverview {
         optionsPanel.add(repeatingTransactions());
         optionsPanel.add(filterButton());
         optionsPanel.add(resetFilterButton());
-        this.add(overview(), BorderLayout.CENTER);
+        add(overviewTable);
     }
 
     private JPanel incomingOutgoingPanel() {
@@ -206,35 +205,6 @@ public class TransactionsOverview extends AbstractOverview {
     private JButton resetFilterButton() {
         return resetFilterButton;
     }
-
-    private JScrollPane overview() {
-        addRow(new Object[]{"28.2.2022", "132$", "Lidl", "Dinner", Color.RED}); //temporary
-        addRow(new Object[]{"18.8.2022", "534$", "New bicycle", "Mountain bike", Color.YELLOW}); //temporary
-
-        return scrollPane();
-
-    }
-
-    /**
-     * Method for adding data to the table
-     * @param data to be added
-     */
-    private void addRow(Object[] data) {
-        DefaultTableModel model = (DefaultTableModel) overviewTable.getModel();
-
-        TableColumn col = overviewTable.getColumnModel().getColumn(4);
-        col.setCellRenderer(new CellRenderer());
-
-        Color color = (Color) data[4];
-        int rgb = color.getRGB();
-        JLabel label = new JLabel(new ImageIcon(createImage(rgb)));
-        data[4] = label;
-
-        overviewTable.setInheritsPopupMenu(true);
-
-        model.addRow(data);
-    }
-
 
     /**
      * Custom number formatter used in 'ValueFrom' and 'ValueTo' text fields.
