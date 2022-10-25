@@ -21,6 +21,8 @@ public class TransactionTableModel extends AbstractTableModel {
 
     public TransactionTableModel(Collection<Transaction> transactions) {
         this.transactions = new ArrayList<>(transactions);
+
+        //tmp
     }
 
     @Override

@@ -8,10 +8,13 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.AbstractTableModel;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -55,22 +58,23 @@ public class CashFlowEvidence {
         }
     };
 
-
     public CashFlowEvidence() {
-        setLookAndFeel();
-
         Font balanceFont = new Font("Courier", Font.BOLD, 20);
         filteredBalanceLabel.setFont(balanceFont);
         balanceLabel.setFont(balanceFont);
 
+        // tmp
         var categories = new ArrayList<Category>();
         var category = new Category("Jou", Color.RED);
         categories.add(category);
+
         categoryTable = createCategoryTable(categories);
 
+        // tmp
         var transactions = new ArrayList<Transaction>();
         transactions.add(new Transaction(TransactionType.Incoming, "name", "desc", 1, new Date(), 1, category));
-        transactions.add(new Transaction(TransactionType.Incoming, "name2", "desc2", 1, new Date(System.currentTimeMillis()-24*60*60*1000), 1, category));
+        transactions.add(new Transaction(TransactionType.Incoming, "name2", "desc2", 1, new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000), 1, category));
+
         transactionTable = createTransactionTable(transactions);
 
         JPanel content = new JPanel();
@@ -111,15 +115,11 @@ public class CashFlowEvidence {
         //deleteAction.setEnabled(selectedItemsCount >= 1);
     }
 
-    private void setLookAndFeel() {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception ignored) {}
-    }
     private JFrame getFrame() {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        frame.setSize(new Dimension(1920, 1080));
+        frame.setSize(new Dimension(1600, 800));
+        frame.setLocationRelativeTo(null);
         frame.setLayout(new BorderLayout());
         frame.setTitle("Cash Flow Evidence");
         frame.setMinimumSize(new Dimension(1000, 400));
@@ -142,13 +142,13 @@ public class CashFlowEvidence {
         transactionMenu.add("Add transaction");
         transactionMenu.add("Edit transaction");
         transactionMenu.add("Delete transaction");
-        ((JMenuItem)transactionMenu.getMenuComponent(0)).setAction(openTransactionDialog);
+        ((JMenuItem) transactionMenu.getMenuComponent(0)).setAction(openTransactionDialog);
 
         JMenu categoryMenu = new JMenu("Category");
         categoryMenu.add("Add category");
         categoryMenu.add("Edit category");
         categoryMenu.add("Delete category");
-        ((JMenuItem)categoryMenu.getMenuComponent(0)).setAction(openCategoryDialog);
+        ((JMenuItem) categoryMenu.getMenuComponent(0)).setAction(openCategoryDialog);
 
         JMenu helpMenu = new JMenu("Help");
         helpMenu.add(infoItem);
