@@ -6,19 +6,19 @@ import java.util.List;
 
 public class TransactionListModel extends AbstractListModel<Transaction> {
 
-    private final List<Transaction> categories;
+    private final List<Transaction> transactions;
 
-    public TransactionListModel(List<Transaction> categories) {
-        this.categories = categories;
+    public TransactionListModel(List<Transaction> transactions) {
+        this.transactions = transactions;
     }
 
     @Override
     public int getSize() {
-        return categories.size();
+        return transactions.size();
     }
 
     @Override
     public Transaction getElementAt(int index) {
-        return categories.get(index);
+        return transactions.get(index);
     }
 }

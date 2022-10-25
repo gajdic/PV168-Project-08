@@ -74,7 +74,6 @@ public class TransactionsOverview extends AbstractOverview {
         this.add(topPanel, BorderLayout.NORTH);
 
         generateCategories();
-
     }
 
 
@@ -90,7 +89,7 @@ public class TransactionsOverview extends AbstractOverview {
         optionsPanel.add(repeatingTransactions());
         optionsPanel.add(filterButton());
         optionsPanel.add(resetFilterButton());
-        add(overviewTable);
+        this.add(new JScrollPane(overviewTable));
     }
 
     private JPanel incomingOutgoingPanel() {

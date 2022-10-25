@@ -1,7 +1,6 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
-import javax.swing.BoxLayout;
-import javax.swing.JTable;
+import javax.swing.*;
 import java.awt.Dimension;
 
 /**
@@ -18,7 +17,7 @@ public class CategoriesOverview extends AbstractOverview {
     private void addComponents() {
         setupTopPanel();
         this.add(topPanel);
-        this.add(overviewTable);
+        this.add(new JScrollPane(overviewTable));
     }
 
     private void setupTopPanel() {

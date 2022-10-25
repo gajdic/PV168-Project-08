@@ -11,6 +11,7 @@ import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -69,6 +70,7 @@ public class CashFlowEvidence {
 
         var transactions = new ArrayList<Transaction>();
         transactions.add(new Transaction(TransactionType.Incoming, "name", "desc", 1, new Date(), 1, category));
+        transactions.add(new Transaction(TransactionType.Incoming, "name2", "desc2", 1, new Date(System.currentTimeMillis()-24*60*60*1000), 1, category));
         transactionTable = createTransactionTable(transactions);
 
         JPanel content = new JPanel();
