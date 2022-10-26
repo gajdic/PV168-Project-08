@@ -16,7 +16,8 @@ public class TransactionTableModel extends AbstractTableModel {
             Column.editable("Date", Date.class, Transaction::getDate, Transaction::setDate),
             Column.editable("Time", Integer.class, Transaction::getTime, Transaction::setTime),
             Column.editable("Category", Category.class, Transaction::getCategory, Transaction::setCategory),
-            Column.readonly("Repeating", TransactionType.class, Transaction::getTransactionType)
+            Column.readonly("Type", TransactionType.class, Transaction::getTransactionType),
+            Column.readonly("Repeating", String.class, t -> String.valueOf(t.getClass().equals(RepeatingTransaction.class)))
     );
 
     public TransactionTableModel(Collection<Transaction> transactions) {

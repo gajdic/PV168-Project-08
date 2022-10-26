@@ -3,9 +3,11 @@ package cz.muni.fi.pv168.cashflowevidence.app;
 
 import cz.muni.fi.pv168.cashflowevidence.model.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.CategoryTableModel;
+import cz.muni.fi.pv168.cashflowevidence.model.Transaction;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
@@ -31,9 +33,7 @@ public class AbstractOverview extends JPanel {
         this.setComponentPopupMenu(new RightClickMenu(containerContextName));
         this.overviewTable.setInheritsPopupMenu(true);
 
-        var colIndex = overviewTable.getModel().getClass().equals(CategoryTableModel.class) ? 1 : 5;
-        TableColumn col = overviewTable.getColumnModel().getColumn(colIndex);
-        col.setCellRenderer(new ColorCellRenderer());
+        setColorCellRenderer();
     }
     /**
      * Sets the basic layout and borders
@@ -53,6 +53,12 @@ public class AbstractOverview extends JPanel {
 
         return panel;
     }
+
+    private void setColorCellRenderer() {
+        int colorColIndex = overviewTable.getModel().getClass().equals(CategoryTableModel.class) ? 1 : 5;
+        TableColumn col = overviewTable.getColumnModel().getColumn(colorColIndex);
+        col.setCellRenderer(new ColorCellRenderer());
+    }
 }
 
 class ColorCellRenderer extends JPanel implements TableCellRenderer {
@@ -64,6 +70,14 @@ class ColorCellRenderer extends JPanel implements TableCellRenderer {
         }
 
         setBackground((Color) value);
+        return this;
+    }
+}
+
+class AmountCellRenderer extends JLabel implements TableCellRenderer {
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                                                   boolean hasFocus, int rowIndex, int vColIndex) {
+        setText(Transaction.formatAmount((double) value));
         return this;
     }
 }

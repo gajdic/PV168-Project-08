@@ -69,10 +69,7 @@ public class TransactionsOverview extends AbstractOverview {
         super(transactionTable, "Transaction");
         setLayout();
         addComponents();
-
-        topPanel.add(optionsPanel, BorderLayout.WEST);
-        this.add(topPanel, BorderLayout.NORTH);
-
+        setAmountCellRenderer();
         generateCategories();
     }
 
@@ -89,7 +86,9 @@ public class TransactionsOverview extends AbstractOverview {
         optionsPanel.add(repeatingTransactions());
         optionsPanel.add(filterButton());
         optionsPanel.add(resetFilterButton());
-        this.add(new JScrollPane(overviewTable));
+        add(new JScrollPane(overviewTable));
+        topPanel.add(optionsPanel, BorderLayout.WEST);
+        add(topPanel, BorderLayout.NORTH);
     }
 
     private JPanel incomingOutgoingPanel() {
@@ -203,6 +202,10 @@ public class TransactionsOverview extends AbstractOverview {
 
     private JButton resetFilterButton() {
         return resetFilterButton;
+    }
+
+    private void setAmountCellRenderer() {
+        overviewTable.getColumnModel().getColumn(2).setCellRenderer(new AmountCellRenderer());
     }
 
     /**
