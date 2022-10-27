@@ -12,11 +12,8 @@ import java.awt.event.KeyEvent;
 
 public class EditCategoryAction extends AbstractAction {
 
-    private final JFrame frame;
-
-    public EditCategoryAction(JFrame frame) {
+    public EditCategoryAction() {
         super("Edit", UIManager.getIcon("FileChooser.fileIcon"));
-        this.frame = frame;
         putValue(SHORT_DESCRIPTION, "Edits selected record");
         putValue(MNEMONIC_KEY, KeyEvent.VK_E);
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl E"));

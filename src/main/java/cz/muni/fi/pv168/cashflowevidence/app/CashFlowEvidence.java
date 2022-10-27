@@ -10,22 +10,9 @@ import cz.muni.fi.pv168.cashflowevidence.action.ExitApplicationAction;
 import cz.muni.fi.pv168.cashflowevidence.action.ExportAction;
 import cz.muni.fi.pv168.cashflowevidence.action.HelpAction;
 import cz.muni.fi.pv168.cashflowevidence.action.ImportAction;
-import cz.muni.fi.pv168.cashflowevidence.model.Transaction;
+import cz.muni.fi.pv168.cashflowevidence.model.*;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.AbstractTableModel;
@@ -37,6 +24,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -62,12 +50,14 @@ public class CashFlowEvidence {
 
     private final Action helpAction = new HelpAction();
 
-
     // help menu
     private final JMenuItem infoItem = new JMenuItem("Info");
     
     private final JLabel balanceLabel = new JLabel();
     private final JLabel filteredBalanceLabel = new JLabel();
+
+    private final JTable categoryTable;
+    private final JTable transactionTable;
 
     private final Action openCategoryDialog = new AbstractAction("Add category") {
         @Override
@@ -78,20 +68,33 @@ public class CashFlowEvidence {
     };
 
     public CashFlowEvidence() {
-        addTAction = new AddTransactionAction(frame);
-        editTAction = new EditTransactionAction(frame);
-        deleteTAction = new DeleteTransactionAction(frame);
+        addTAction = new AddTransactionAction();
+        editTAction = new EditTransactionAction();
+        deleteTAction = new DeleteTransactionAction();
 
-        addCAction = new AddCategoryAction(frame);
-        editCAction = new EditCategoryAction(frame);
-        deleteCAction = new DeleteCategoryAction(frame);
+        addCAction = new AddCategoryAction();
+        editCAction = new EditCategoryAction();
+        deleteCAction = new DeleteCategoryAction();
 
-        setLookAndFeel();
+        setBalanceFont();
+
+        // tmp
+        var categories = new ArrayList<Category>();
+        var category = new Category("Jou", Color.RED);
+        categories.add(category);
+
+        categoryTable = createCategoryTable(categories);
+
+        // tmp
+        var transactions = new ArrayList<Transaction>();
+        transactions.add(new Transaction(TransactionType.Incoming, "name", "desc", 10000000, LocalDateTime.now(), category));
+        transactions.add(new Transaction(TransactionType.Incoming, "name2", "desc2", 9999, LocalDateTime.now().minusDays(1), category));
+
+        transactionTable = createTransactionTable(transactions);
 
         JPanel content = getContent();
         frame.add(content, BorderLayout.CENTER);
         frame.setVisible(true);
-
     }
 
     private JPanel getContent(){
@@ -104,15 +107,14 @@ public class CashFlowEvidence {
         return content;
     }
 
-    private void setLookAndFeel() {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception ignored) {}
-
+    private void setBalanceFont() {
         Font balanceFont = new Font("Courier", Font.BOLD, 20);
         filteredBalanceLabel.setFont(balanceFont);
         balanceLabel.setFont(balanceFont);
+    }
 
+    private JTable createCategoryTable(List<Category> categories) {
+        return createTable(new CategoryTableModel(categories));
     }
 
     private JTable createTransactionTable(List<Transaction> transactions) {
@@ -213,10 +215,10 @@ public class CashFlowEvidence {
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.setTabPlacement(SwingConstants.TOP);
 
-        tabbedPane.addTab("Transactions", new TransactionsOverview(
-                new ArrayList<Action>(Arrays.asList(addTAction, editTAction, deleteTAction))));
-        tabbedPane.addTab("Categories", new CategoriesOverview(
-               new ArrayList<Action>(Arrays.asList(addCAction, editCAction, deleteCAction))));
+        tabbedPane.addTab("Transactions", new TransactionsOverview(transactionTable,
+                new ArrayList<>(Arrays.asList(addTAction, editTAction, deleteTAction))));
+        tabbedPane.addTab("Categories", new CategoriesOverview(categoryTable,
+               new ArrayList<>(Arrays.asList(addCAction, editCAction, deleteCAction))));
 
         panel.add(tabbedPane);
         panel.setMaximumSize(new Dimension(frame.getWidth(), 900));

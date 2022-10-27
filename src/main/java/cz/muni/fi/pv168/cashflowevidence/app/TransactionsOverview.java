@@ -63,21 +63,19 @@ public class TransactionsOverview extends AbstractOverview {
     /**
      * Represents the panel of transactions
      */
-    public TransactionsOverview(ArrayList<Action> actions) {
-        super(new JTable(new DefaultTableModel
-                (new Object[]{"Date", "Amount", "Name", "Description", "Category"}, 0)),
-                actions);
+    public TransactionsOverview(JTable transactionsTable, ArrayList<Action> actions) {
+        super(transactionsTable, actions);
         setLayout();
 
         // TODO: Refactor and move this to AbstractOverview using abstract topPanel and Overview methods
         // TODO: Needed to not initialize fields in this class, as they are null;
-        this.add(topPanel(), BorderLayout.NORTH);
-        this.add(overview(), BorderLayout.CENTER);
-
+        add(topPanel(), BorderLayout.NORTH);
+        add(new JScrollPane(overviewTable));
+        setAmountCellRenderer();
         generateCategories();
     }
 
-    private JPanel topPanel(){
+    private JPanel topPanel() {
         JPanel topPanel = new JPanel(new BorderLayout(5, 5));
         JPanel optionsPanel = optionsPanel();
         topPanel.add(optionsPanel, BorderLayout.WEST);
@@ -144,7 +142,7 @@ public class TransactionsOverview extends AbstractOverview {
         panel.setPreferredSize(new Dimension(65, 30));
 
         panel.add(new JLabel("Value to"), BorderLayout.NORTH);
-        panel.add(new JLabel("€"), BorderLayout.EAST);
+        panel.add(new JLabel("$"), BorderLayout.EAST);
         panel.add(valueTo, BorderLayout.CENTER);
 
         return panel;
@@ -222,8 +220,7 @@ public class TransactionsOverview extends AbstractOverview {
         return filterButton;
     }
 
-    private JButton resetFilterButton()
-    {
+    private JButton resetFilterButton() {
         resetFilterButton.setMnemonic(KeyEvent.VK_R);
         return resetFilterButton;
     }
@@ -240,6 +237,7 @@ public class TransactionsOverview extends AbstractOverview {
         CustomNumberFormatter(NumberFormat numberFormat) {
             super(numberFormat);
         }
+
         @Override
         public Object stringToValue(String text) throws ParseException {
             if (Objects.equals(text, "")) {
@@ -261,6 +259,7 @@ public class TransactionsOverview extends AbstractOverview {
 
     /**
      * Temporary data generator
+     *
      * @return an array of Categories
      */
     private Category[] generateCategories() {

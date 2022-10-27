@@ -15,19 +15,16 @@ import java.awt.event.KeyEvent;
 // TODO: Category/Transaction action based on shared implementation
 public class AddTransactionAction extends AbstractAction {
 
-    private final JFrame frame;
-
-    public AddTransactionAction(JFrame frame) {
+    public AddTransactionAction() {
         super("Add", UIManager.getIcon("FileChooser.fileIcon"));
         putValue(SHORT_DESCRIPTION, "Adds new record");
         putValue(MNEMONIC_KEY, KeyEvent.VK_A);
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl N"));
-        this.frame = frame;
     }
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        TransactionDialog transactionDialog = new TransactionDialog(frame, "New Transaction");
+        TransactionDialog transactionDialog = new TransactionDialog("New Transaction");
         transactionDialog.setVisible(true);
     }
 }

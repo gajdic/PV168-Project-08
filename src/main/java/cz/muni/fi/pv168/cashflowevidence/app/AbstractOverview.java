@@ -1,6 +1,10 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
 
+import cz.muni.fi.pv168.cashflowevidence.model.Category;
+import cz.muni.fi.pv168.cashflowevidence.model.CategoryTableModel;
+import cz.muni.fi.pv168.cashflowevidence.model.Transaction;
+
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -27,14 +31,12 @@ abstract public class AbstractOverview extends JPanel {
     protected final JTable overviewTable;
 
     public AbstractOverview(JTable overviewTable, ArrayList<Action> actions) {
-        // TODO: Actions now need JFrame frame, which is defined in CategoriesOverview,
-        // so they are passed here as parameter. This may change with the introduction of table models.
         this.actions = actions;
         this.overviewTable = overviewTable;
         this.setComponentPopupMenu(new RightClickMenu(actions));
         this.overviewTable.setInheritsPopupMenu(true);
 
-
+        setColorCellRenderer();
     }
     /**
      * Sets the basic layout and borders
@@ -42,11 +44,9 @@ abstract public class AbstractOverview extends JPanel {
     public void setLayout() {
         this.setLayout(new BorderLayout(30, 30));
         this.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 10));
-
     }
 
     protected void addActionsToPanel(JPanel panel) {
-
         for (Action action: actions) {
             JButton button = new JButton();
             button.setAction(action);

@@ -12,11 +12,8 @@ import java.awt.event.KeyEvent;
 
 public class DeleteCategoryAction extends AbstractAction {
 
-    private final JFrame frame;
-
-    public DeleteCategoryAction(JFrame frame) {
+    public DeleteCategoryAction() {
         super("Delete", UIManager.getIcon("FileChooser.fileIcon"));
-        this.frame = frame;
 
         putValue(SHORT_DESCRIPTION, "Deletes selected record");
         putValue(MNEMONIC_KEY, KeyEvent.VK_D);

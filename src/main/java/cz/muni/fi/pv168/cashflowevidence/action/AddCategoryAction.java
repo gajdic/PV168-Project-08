@@ -16,19 +16,16 @@ import java.awt.event.KeyEvent;
 
 public class AddCategoryAction extends AbstractAction {
 
-    private final JFrame frame;
-
-    public AddCategoryAction(JFrame frame) {
+    public AddCategoryAction() {
         super("Add", UIManager.getIcon("FileChooser.fileIcon"));
         putValue(SHORT_DESCRIPTION, "Adds new record");
         putValue(MNEMONIC_KEY, KeyEvent.VK_A);
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl N"));
-        this.frame = frame;
     }
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        CategoryDialog CategoryDialog = new CategoryDialog(frame, "New Category");
+        CategoryDialog CategoryDialog = new CategoryDialog("New Category");
         CategoryDialog.setVisible(true);
     }
 }
