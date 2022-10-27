@@ -1,14 +1,12 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
 
-import cz.muni.fi.pv168.cashflowevidence.model.Category;
-import cz.muni.fi.pv168.cashflowevidence.model.CategoryTableModel;
-import cz.muni.fi.pv168.cashflowevidence.model.Transaction;
-
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
@@ -16,25 +14,27 @@ import javax.swing.table.TableColumn;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.GridLayout;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Serving as a common superclass form all overviews.
  */
-public class AbstractOverview extends JPanel {
+abstract public class AbstractOverview extends JPanel {
 
-    protected final JButton editRowButton = new JButton("Edit selected");
-    protected final JButton deleteRowButton = new JButton("Delete selected");
-
-    protected final JPanel topPanel = new JPanel();
+    private final List<Action> actions;
     protected final JTable overviewTable;
 
-    public AbstractOverview(JTable overviewTable, String containerContextName) {
+    public AbstractOverview(JTable overviewTable, ArrayList<Action> actions) {
+        // TODO: Actions now need JFrame frame, which is defined in CategoriesOverview,
+        // so they are passed here as parameter. This may change with the introduction of table models.
+        this.actions = actions;
         this.overviewTable = overviewTable;
-        this.setComponentPopupMenu(new RightClickMenu(containerContextName));
+        this.setComponentPopupMenu(new RightClickMenu(actions));
         this.overviewTable.setInheritsPopupMenu(true);
 
-        setColorCellRenderer();
+
     }
     /**
      * Sets the basic layout and borders
@@ -42,17 +42,19 @@ public class AbstractOverview extends JPanel {
     public void setLayout() {
         this.setLayout(new BorderLayout(30, 30));
         this.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 10));
+
     }
 
-    protected JPanel rowActionsPanel() {
-        JPanel panel = new JPanel(new GridLayout(0, 1));
-        panel.add(editRowButton);
-        panel.add(deleteRowButton);
+    protected void addActionsToPanel(JPanel panel) {
+
+        for (Action action: actions) {
+            JButton button = new JButton();
+            button.setAction(action);
+            panel.add(button);
+        }
 
         JPanel wrapper = new JPanel(new BorderLayout());
         wrapper.add(panel, BorderLayout.EAST);
-
-        return panel;
     }
 
     private void setColorCellRenderer() {
