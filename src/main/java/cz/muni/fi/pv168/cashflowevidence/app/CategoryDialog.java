@@ -28,11 +28,10 @@ public class CategoryDialog extends JDialog {
 
     /**
      * Constructor used to create new categories
-     * @param owner Frame which the dialog is bound to
      * @param title Title used for the dialog
      */
-    public CategoryDialog(Frame owner, String title) {
-        super(owner, title);
+    public CategoryDialog(String title) {
+        super(CashFlowEvidence.frame, title);
         dialogSetup();
     }
 

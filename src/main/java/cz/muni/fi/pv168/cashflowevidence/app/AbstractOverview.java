@@ -10,6 +10,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.BorderLayout;
@@ -55,13 +56,14 @@ public class AbstractOverview extends JPanel {
     }
 
     private void setColorCellRenderer() {
-        int colorColIndex = overviewTable.getModel().getClass().equals(CategoryTableModel.class) ? 1 : 5;
+        int colorColIndex = overviewTable.getModel().getClass().equals(CategoryTableModel.class) ? 1 : 4;
         TableColumn col = overviewTable.getColumnModel().getColumn(colorColIndex);
         col.setCellRenderer(new ColorCellRenderer());
     }
 }
 
-class ColorCellRenderer extends JPanel implements TableCellRenderer {
+class ColorCellRenderer extends DefaultTableCellRenderer {
+    @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
                                                    boolean hasFocus, int rowIndex, int vColIndex) {
         if (value.getClass().equals(Category.class)) {
@@ -74,10 +76,13 @@ class ColorCellRenderer extends JPanel implements TableCellRenderer {
     }
 }
 
-class AmountCellRenderer extends JLabel implements TableCellRenderer {
+class AmountCellRenderer extends DefaultTableCellRenderer {
+
+    @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
                                                    boolean hasFocus, int rowIndex, int vColIndex) {
-        setText(Transaction.formatAmount((double) value));
-        return this;
+
+        String formattedAmount = Transaction.formatAmount((double) value);
+        return super.getTableCellRendererComponent(table, formattedAmount, isSelected, hasFocus, rowIndex, vColIndex);
     }
 }

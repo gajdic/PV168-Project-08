@@ -1,6 +1,8 @@
 package cz.muni.fi.pv168.cashflowevidence.model;
 
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Class representing repeating transactions which are an extension
@@ -13,8 +15,8 @@ public class RepeatingTransaction extends Transaction{
     private int repeating;
 
     public RepeatingTransaction(TransactionType transactionType, String name, String description,
-                                double amount, Date date, int time, Category category) {
-        super(transactionType, name, description, amount, date, time, category);
+                                double amount, LocalDateTime dateTime, Category category) {
+        super(transactionType, name, description, amount, dateTime, category);
     }
 
     public Date getRepeatFrom() {

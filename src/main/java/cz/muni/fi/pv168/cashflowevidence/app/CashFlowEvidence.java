@@ -14,8 +14,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 
@@ -23,7 +23,7 @@ import java.util.List;
  * Represents the main layout of CashFlowEvidence application
  */
 public class CashFlowEvidence {
-    private final JFrame frame = getFrame();
+    public static final JFrame frame = getFrame();
 
     // file menu
     private final JMenuItem importItem = new JMenuItem("Import");
@@ -45,7 +45,7 @@ public class CashFlowEvidence {
     private final Action openTransactionDialog = new AbstractAction("Add transaction") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            TransactionDialog transactionDialog = new TransactionDialog(frame, "New Transaction");
+            TransactionDialog transactionDialog = new TransactionDialog("New Transaction");
             transactionDialog.setVisible(true);
         }
     };
@@ -53,7 +53,7 @@ public class CashFlowEvidence {
     private final Action openCategoryDialog = new AbstractAction("Add category") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            CategoryDialog categoryDialog = new CategoryDialog(frame, "New Category");
+            CategoryDialog categoryDialog = new CategoryDialog("New Category");
             categoryDialog.setVisible(true);
         }
     };
@@ -72,8 +72,8 @@ public class CashFlowEvidence {
 
         // tmp
         var transactions = new ArrayList<Transaction>();
-        transactions.add(new Transaction(TransactionType.Incoming, "name", "desc", 10000000, new Date(), 1, category));
-        transactions.add(new Transaction(TransactionType.Incoming, "name2", "desc2", 9999, new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000), 1, category));
+        transactions.add(new Transaction(TransactionType.Incoming, "name", "desc", 10000000, LocalDateTime.now(), category));
+        transactions.add(new Transaction(TransactionType.Incoming, "name2", "desc2", 9999, LocalDateTime.now().minusDays(1), category));
 
         transactionTable = createTransactionTable(transactions);
 
@@ -115,7 +115,7 @@ public class CashFlowEvidence {
         //deleteAction.setEnabled(selectedItemsCount >= 1);
     }
 
-    private JFrame getFrame() {
+    private static JFrame getFrame() {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setSize(new Dimension(1600, 800));

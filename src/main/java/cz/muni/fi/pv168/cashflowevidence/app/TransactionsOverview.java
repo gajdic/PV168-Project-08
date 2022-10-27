@@ -1,11 +1,10 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
 
+import com.github.lgooddatepicker.components.DatePicker;
 import cz.muni.fi.pv168.cashflowevidence.model.Category;
-import org.jdatepicker.JDatePicker;
 
 import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -16,8 +15,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
 import javax.swing.text.NumberFormatter;
 import java.awt.Color;
 import java.awt.BorderLayout;
@@ -38,8 +35,8 @@ public class TransactionsOverview extends AbstractOverview {
     private final JCheckBox outgoingCheckbox = new JCheckBox("Outgoing");
 
     //dates
-    private final JDatePicker dateFrom = new JDatePicker();
-    private final JDatePicker dateTo = new JDatePicker();
+    private final DatePicker dateFrom = new DatePicker();
+    private final DatePicker dateTo = new DatePicker();
 
     //values
     private final JFormattedTextField valueFrom = new JFormattedTextField
