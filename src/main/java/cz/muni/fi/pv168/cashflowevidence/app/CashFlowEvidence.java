@@ -72,14 +72,6 @@ public class CashFlowEvidence {
     private final JTable transactionTable;
 
     public CashFlowEvidence() {
-        addTAction = new AddTransactionAction();
-        editTAction = new EditTransactionAction();
-        deleteTAction = new DeleteTransactionAction();
-
-        addCAction = new AddCategoryAction();
-        editCAction = new EditCategoryAction();
-        deleteCAction = new DeleteCategoryAction();
-
         setBalanceFont();
 
         // tmp
@@ -95,6 +87,16 @@ public class CashFlowEvidence {
         transactions.add(new Transaction(TransactionType.Incoming, "name2", "desc2", 9999, LocalDateTime.now().minusDays(1), category));
 
         transactionTable = createTransactionTable(transactions);
+
+        addTAction = new AddTransactionAction();
+        editTAction = new EditTransactionAction();
+        deleteTAction = new DeleteTransactionAction();
+
+        addCAction = new AddCategoryAction(categoryTable);
+        editCAction = new EditCategoryAction(categoryTable);
+        deleteCAction = new DeleteCategoryAction(categoryTable);
+
+        changeActionsState(0);
 
         JPanel content = getContent();
         frame.add(content, BorderLayout.CENTER);
@@ -141,9 +143,8 @@ public class CashFlowEvidence {
     }
 
     private void changeActionsState(int selectedItemsCount) {
-        // TODO
-        //editAction.setEnabled(selectedItemsCount == 1);
-        //deleteAction.setEnabled(selectedItemsCount >= 1);
+        editCAction.setEnabled(selectedItemsCount == 1);
+        deleteCAction.setEnabled(selectedItemsCount >= 1);
     }
 
     private static JFrame getFrame() {

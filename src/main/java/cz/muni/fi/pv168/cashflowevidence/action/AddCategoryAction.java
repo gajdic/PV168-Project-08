@@ -1,12 +1,11 @@
 package cz.muni.fi.pv168.cashflowevidence.action;
 
 import cz.muni.fi.pv168.cashflowevidence.app.CategoryDialog;
+import cz.muni.fi.pv168.cashflowevidence.model.Category;
+import cz.muni.fi.pv168.cashflowevidence.model.CategoryTableModel;
 
 
-import javax.swing.AbstractAction;
-import javax.swing.JFrame;
-import javax.swing.KeyStroke;
-import javax.swing.UIManager;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
@@ -16,16 +15,23 @@ import java.awt.event.KeyEvent;
 
 public class AddCategoryAction extends AbstractAction {
 
-    public AddCategoryAction() {
+    private final JTable categoryTable;
+
+    public AddCategoryAction(JTable categoryTable) {
         super("Add", UIManager.getIcon("FileChooser.fileIcon"));
         putValue(SHORT_DESCRIPTION, "Adds new record");
         putValue(MNEMONIC_KEY, KeyEvent.VK_A);
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl N"));
+
+        this.categoryTable = categoryTable;
     }
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        CategoryDialog CategoryDialog = new CategoryDialog("New Category");
-        CategoryDialog.setVisible(true);
+        var categoryTableModel = (CategoryTableModel) categoryTable.getModel();
+
+        var categoryDialog = new CategoryDialog("Add Category");
+        var category = categoryDialog.showDialog();
+        categoryTableModel.addRow(category);
     }
 }

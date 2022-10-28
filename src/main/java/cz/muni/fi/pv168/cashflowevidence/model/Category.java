@@ -10,6 +10,10 @@ public class Category {
     private String name;
     private Color color;
 
+    public Category() {
+        setColor(Color.RED);
+    }
+
     public Category(String name, Color color) {
         setName(name);
         setColor(color);

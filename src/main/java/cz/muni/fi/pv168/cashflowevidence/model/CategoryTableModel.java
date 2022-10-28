@@ -1,5 +1,7 @@
 package cz.muni.fi.pv168.cashflowevidence.model;
 
+import cz.muni.fi.pv168.cashflowevidence.validation.CategoryValidator;
+
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.util.ArrayList;
@@ -60,8 +62,26 @@ public class CategoryTableModel extends AbstractTableModel {
     }
 
     public void addRow(Category category) {
+        if (!CategoryValidator.isValid(category)) {
+            return;
+        }
+
         int newRowIndex = categories.size();
         categories.add(category);
         fireTableRowsInserted(newRowIndex, newRowIndex);
+    }
+
+    public void updateRow(Category category) {
+        if (!CategoryValidator.isValid(category)) {
+            return;
+        }
+
+        int rowIndex = categories.indexOf(category);
+        fireTableRowsUpdated(rowIndex, rowIndex);
+    }
+
+    public void deleteRow(int rowIndex) {
+        categories.remove(rowIndex);
+        fireTableRowsDeleted(rowIndex, rowIndex);
     }
 }
