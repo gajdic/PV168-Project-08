@@ -12,7 +12,20 @@ import cz.muni.fi.pv168.cashflowevidence.action.HelpAction;
 import cz.muni.fi.pv168.cashflowevidence.action.ImportAction;
 import cz.muni.fi.pv168.cashflowevidence.model.*;
 
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.AbstractTableModel;
@@ -22,7 +35,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -58,14 +70,6 @@ public class CashFlowEvidence {
 
     private final JTable categoryTable;
     private final JTable transactionTable;
-
-    private final Action openCategoryDialog = new AbstractAction("Add category") {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            CategoryDialog categoryDialog = new CategoryDialog("New Category");
-            categoryDialog.setVisible(true);
-        }
-    };
 
     public CashFlowEvidence() {
         addTAction = new AddTransactionAction();
@@ -104,6 +108,7 @@ public class CashFlowEvidence {
         content.add(Box.createRigidArea(new Dimension(1, 10)));
         content.add(getActionsAndBalancePanel());
         content.add(getTabbedContentPanel());
+
         return content;
     }
 
@@ -136,6 +141,7 @@ public class CashFlowEvidence {
     }
 
     private void changeActionsState(int selectedItemsCount) {
+        // TODO
         //editAction.setEnabled(selectedItemsCount == 1);
         //deleteAction.setEnabled(selectedItemsCount >= 1);
     }
@@ -178,9 +184,11 @@ public class CashFlowEvidence {
     private JMenu getMenu(String name, int keyEvent, List<Action> actions) {
         JMenu menu = new JMenu(name);
         menu.setMnemonic(keyEvent);
+
         for (Action action: actions) {
             menu.add(action);
         }
+
         return menu;
     }
 

@@ -3,6 +3,8 @@ package cz.muni.fi.pv168.cashflowevidence.app;
 
 import com.github.lgooddatepicker.components.DatePicker;
 import cz.muni.fi.pv168.cashflowevidence.model.Category;
+import cz.muni.fi.pv168.cashflowevidence.renderer.AmountCellRenderer;
+import cz.muni.fi.pv168.cashflowevidence.renderer.DateTimeCellRenderer;
 
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
@@ -72,6 +74,7 @@ public class TransactionsOverview extends AbstractOverview {
         add(topPanel(), BorderLayout.NORTH);
         add(new JScrollPane(overviewTable));
         setAmountCellRenderer();
+        setDateTimeCellRenderer();
         generateCategories();
     }
 
@@ -131,7 +134,7 @@ public class TransactionsOverview extends AbstractOverview {
         panel.setPreferredSize(new Dimension(65, 30));
 
         panel.add(new JLabel("Value from"), BorderLayout.NORTH);
-        panel.add(new JLabel("€"), BorderLayout.EAST);
+        panel.add(new JLabel("$"), BorderLayout.EAST);
         panel.add(valueFrom, BorderLayout.CENTER);
 
         return panel;
@@ -227,6 +230,10 @@ public class TransactionsOverview extends AbstractOverview {
 
     private void setAmountCellRenderer() {
         overviewTable.getColumnModel().getColumn(2).setCellRenderer(new AmountCellRenderer());
+    }
+
+    private void setDateTimeCellRenderer() {
+        overviewTable.getColumnModel().getColumn(3).setCellRenderer(new DateTimeCellRenderer());
     }
 
     /**
