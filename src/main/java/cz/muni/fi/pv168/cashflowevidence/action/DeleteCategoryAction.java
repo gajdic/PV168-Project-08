@@ -29,11 +29,8 @@ public class DeleteCategoryAction extends AbstractAction {
     public void actionPerformed(ActionEvent actionEvent) {
         var categoryTableModel = (CategoryTableModel) categoryTable.getModel();
         Arrays.stream(categoryTable.getSelectedRows())
-                // view row index must be converted to model row index
                 .map(categoryTable::convertRowIndexToModel)
                 .boxed()
-                // We need to delete rows in descending order to not change index of rows
-                // which are not deleted yet
                 .sorted(Comparator.reverseOrder())
                 .forEach(categoryTableModel::deleteRow);
     }
