@@ -96,7 +96,7 @@ public class CashFlowEvidence {
         editCAction = new EditCategoryAction(categoryTable);
         deleteCAction = new DeleteCategoryAction(categoryTable);
 
-        changeActionsState(0);
+        initializeActionsState();
 
         JPanel content = getContent();
         frame.add(content, BorderLayout.CENTER);
@@ -131,20 +131,24 @@ public class CashFlowEvidence {
     private JTable createTable(AbstractTableModel model) {
         var table = new JTable(model);
         table.setAutoCreateRowSorter(true);
-        table.getSelectionModel().addListSelectionListener(this::rowSelectionChanged);
+        table.getSelectionModel().addListSelectionListener(this::categoryRowSelectionChanged);
 
         return table;
     }
 
-    private void rowSelectionChanged(ListSelectionEvent listSelectionEvent) {
+    private void categoryRowSelectionChanged(ListSelectionEvent listSelectionEvent) {
         var selectionModel = (ListSelectionModel) listSelectionEvent.getSource();
         var count = selectionModel.getSelectedItemsCount();
-        changeActionsState(count);
+
+        editCAction.setEnabled(count == 1);
+        deleteCAction.setEnabled(count >= 1);
     }
 
-    private void changeActionsState(int selectedItemsCount) {
-        editCAction.setEnabled(selectedItemsCount == 1);
-        deleteCAction.setEnabled(selectedItemsCount >= 1);
+    private void initializeActionsState() {
+        editTAction.setEnabled(false);
+        deleteTAction.setEnabled(false);
+        editCAction.setEnabled(false);
+        deleteCAction.setEnabled(false);
     }
 
     private static JFrame getFrame() {

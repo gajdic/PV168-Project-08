@@ -27,10 +27,10 @@ public class AddCategoryAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        var categoryTableModel = (CategoryTableModel) categoryTable.getModel();
+        CategoryTableModel categoryTableModel = (CategoryTableModel) categoryTable.getModel();
 
-        var categoryDialog = new CategoryDialog("Add Category");
-        var category = categoryDialog.showDialog();
+        CategoryDialog categoryDialog = new CategoryDialog("Add Category");
+        Category category = categoryDialog.showDialog();
         categoryTableModel.addRow(category);
     }
 }

@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.cashflowevidence.action;
 
 import cz.muni.fi.pv168.cashflowevidence.app.CategoryDialog;
+import cz.muni.fi.pv168.cashflowevidence.model.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.CategoryTableModel;
 
 import javax.swing.AbstractAction;
@@ -33,11 +34,11 @@ public class EditCategoryAction extends AbstractAction {
         if (categoryTable.isEditing()) {
             categoryTable.getCellEditor().cancelCellEditing();
         }
-        var categoryTableModel = (CategoryTableModel) categoryTable.getModel();
+        CategoryTableModel categoryTableModel = (CategoryTableModel) categoryTable.getModel();
         int modelRow = categoryTable.convertRowIndexToModel(selectedRows[0]);
 
-        var categoryDialog = new CategoryDialog("Edit Category", categoryTableModel.getEntity(modelRow));
-        var category = categoryDialog.showDialog();
+        CategoryDialog categoryDialog = new CategoryDialog("Edit Category", categoryTableModel.getEntity(modelRow));
+        Category category = categoryDialog.showDialog();
         categoryTableModel.updateRow(category);
     }
 }

@@ -27,7 +27,7 @@ public class DeleteCategoryAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        var categoryTableModel = (CategoryTableModel) categoryTable.getModel();
+        CategoryTableModel categoryTableModel = (CategoryTableModel) categoryTable.getModel();
         Arrays.stream(categoryTable.getSelectedRows())
                 .map(categoryTable::convertRowIndexToModel)
                 .boxed()
