@@ -188,7 +188,7 @@ public class TransactionDialog extends JDialog {
             transaction = new Transaction();
         }
 
-        var validatedTransaction = validateInputs();
+        Transaction validatedTransaction = validateInputs();
         if (validatedTransaction == null) {
             Object[] options = { "OK" };
             JOptionPane.showOptionDialog(null, "Invalid values.", "Warning",
@@ -202,7 +202,7 @@ public class TransactionDialog extends JDialog {
     }
 
     private Transaction validateInputs() {
-        var tmpTransaction = new Transaction();
+        Transaction tmpTransaction = new Transaction();
 
         if (repeatingTransactionCheckBox.isSelected() && (tmpTransaction = validateRepeatingInputs()) == null) {
             return null;
@@ -225,7 +225,7 @@ public class TransactionDialog extends JDialog {
     }
 
     private Transaction validateRepeatingInputs() {
-        var tmpTransaction = new Transaction();
+        Transaction tmpTransaction = new Transaction();
 
         var frequency = (TransactionFrequency) frequencyComboBox.getSelectedItem();
         tmpTransaction.setFrequencyType(frequency);
