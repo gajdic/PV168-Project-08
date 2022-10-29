@@ -57,6 +57,10 @@ public class CategoryDialog extends JDialog {
         color = category.getColor();
     }
 
+    /**
+     * Shows the dialog and makes it possible to return category when dialog is closed.
+     * @return Category, which was either created or edited
+     */
     public Category showDialog() {
         setVisible(true);
 
