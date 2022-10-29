@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.cashflowevidence.model;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -10,18 +11,16 @@ public class Transaction {
     private String name;
     private String description;
     private double amount;
-    private Date date;
-    private int time;
+    private LocalDateTime dateTime;
     private Category category;
 
     public Transaction(TransactionType transactionType, String name, String description,
-                       double amount, Date date, int time, Category category) {
+                       double amount, LocalDateTime dateTime, Category category) {
         this.transactionType = transactionType;
         this.name = name;
         this.description = description;
         this.amount = amount;
-        this.date = date;
-        this.time = time;
+        this.dateTime = dateTime;
         this.category = category;
     }
 
@@ -61,24 +60,21 @@ public class Transaction {
      public static String formatAmount(double amount) {
          return String.format("%,.0f", amount).replace(",", " ");
      }
-    public void setAmount(double amount) {
+
+     public String getAmountStr() {
+         return formatAmount(amount);
+     }
+
+     public void setAmount(double amount) {
         this.amount = amount;
     }
 
-    public Date getDate() {
-        return date;
+    public LocalDateTime getDate() {
+        return dateTime;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    public int getTime() {
-        return time;
-    }
-
-    public void setTime(int time) {
-        this.time = time;
+    public void setDate(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
     }
 
     public Category getCategory() {

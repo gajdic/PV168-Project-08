@@ -2,9 +2,19 @@ package cz.muni.fi.pv168.cashflowevidence.app;
 
 import cz.muni.fi.pv168.cashflowevidence.model.Category;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import javax.swing.JButton;
+import javax.swing.JColorChooser;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import java.awt.Color;
+import java.awt.Frame;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
  * Class representing category dialog
@@ -28,11 +38,10 @@ public class CategoryDialog extends JDialog {
 
     /**
      * Constructor used to create new categories
-     * @param owner Frame which the dialog is bound to
      * @param title Title used for the dialog
      */
-    public CategoryDialog(Frame owner, String title) {
-        super(owner, title);
+    public CategoryDialog(String title) {
+        super(CashFlowEvidence.frame, title);
         dialogSetup();
     }
 

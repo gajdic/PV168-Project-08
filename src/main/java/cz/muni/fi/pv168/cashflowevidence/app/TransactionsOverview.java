@@ -1,11 +1,13 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
 
+import com.github.lgooddatepicker.components.DatePicker;
 import cz.muni.fi.pv168.cashflowevidence.model.Category;
-import org.jdatepicker.JDatePicker;
+import cz.muni.fi.pv168.cashflowevidence.renderer.AmountCellRenderer;
+import cz.muni.fi.pv168.cashflowevidence.renderer.DateTimeCellRenderer;
 
+import javax.swing.Action;
 import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -16,30 +18,28 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
 import javax.swing.text.NumberFormatter;
 import java.awt.Color;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.FlowLayout;
 import java.awt.Dimension;
+import java.awt.event.KeyEvent;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Objects;
 
+// TODO: This class is too long. Consider splitting in multiple separate (Maybe more reusable?) Ones.
 public class TransactionsOverview extends AbstractOverview {
-
-    private final JPanel topPanel = new JPanel(new BorderLayout(5, 5));
-    private final JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 5));
 
     //incoming/outgoing
     private final JCheckBox incomingCheckbox = new JCheckBox("Incoming");
     private final JCheckBox outgoingCheckbox = new JCheckBox("Outgoing");
 
     //dates
-    private final JDatePicker dateFrom = new JDatePicker();
-    private final JDatePicker dateTo = new JDatePicker();
+    private final DatePicker dateFrom = new DatePicker();
+    private final DatePicker dateTo = new DatePicker();
 
     //values
     private final JFormattedTextField valueFrom = new JFormattedTextField
@@ -65,21 +65,28 @@ public class TransactionsOverview extends AbstractOverview {
     /**
      * Represents the panel of transactions
      */
-    public TransactionsOverview() {
-        super(new JTable(new DefaultTableModel
-                (new Object[]{"Date", "Amount", "Name", "Description", "Category"}, 0)), "Transactions");
+    public TransactionsOverview(JTable transactionsTable, ArrayList<Action> actions) {
+        super(transactionsTable, actions);
         setLayout();
-        addComponents();
 
-        topPanel.add(optionsPanel, BorderLayout.WEST);
-        this.add(topPanel, BorderLayout.NORTH);
-
+        // TODO: Refactor and move this to AbstractOverview using abstract topPanel and Overview methods
+        // TODO: Needed to not initialize fields in this class, as they are null;
+        add(topPanel(), BorderLayout.NORTH);
+        add(new JScrollPane(overviewTable));
+        setAmountCellRenderer();
+        setDateTimeCellRenderer();
         generateCategories();
-
     }
 
+    private JPanel topPanel() {
+        JPanel topPanel = new JPanel(new BorderLayout(5, 5));
+        JPanel optionsPanel = optionsPanel();
+        topPanel.add(optionsPanel, BorderLayout.WEST);
+        return topPanel;
+    }
 
-    private void addComponents() {
+    private JPanel optionsPanel() {
+        JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 5));
         optionsPanel.add(rowActionsPanel());
         optionsPanel.add(new JSeparator(JSeparator.VERTICAL));
         optionsPanel.add(incomingOutgoingPanel());
@@ -91,7 +98,7 @@ public class TransactionsOverview extends AbstractOverview {
         optionsPanel.add(repeatingTransactions());
         optionsPanel.add(filterButton());
         optionsPanel.add(resetFilterButton());
-        this.add(overview(), BorderLayout.CENTER);
+        return optionsPanel;
     }
 
     private JPanel incomingOutgoingPanel() {
@@ -102,6 +109,7 @@ public class TransactionsOverview extends AbstractOverview {
 
         return incomingOutgoingPanel;
     }
+
 
     private JPanel fromCalendar() {
         JPanel panel = new JPanel(new BorderLayout());
@@ -126,7 +134,7 @@ public class TransactionsOverview extends AbstractOverview {
         panel.setPreferredSize(new Dimension(65, 30));
 
         panel.add(new JLabel("Value from"), BorderLayout.NORTH);
-        panel.add(new JLabel("€"), BorderLayout.EAST);
+        panel.add(new JLabel("$"), BorderLayout.EAST);
         panel.add(valueFrom, BorderLayout.CENTER);
 
         return panel;
@@ -137,12 +145,23 @@ public class TransactionsOverview extends AbstractOverview {
         panel.setPreferredSize(new Dimension(65, 30));
 
         panel.add(new JLabel("Value to"), BorderLayout.NORTH);
-        panel.add(new JLabel("€"), BorderLayout.EAST);
+        panel.add(new JLabel("$"), BorderLayout.EAST);
         panel.add(valueTo, BorderLayout.CENTER);
 
         return panel;
     }
 
+    private JPanel rowActionsPanel() {
+        JPanel panel = new JPanel(new GridLayout(0, 1));
+        addActionsToPanel(panel);
+
+        JPanel wrapper = new JPanel(new BorderLayout());
+        wrapper.add(panel, BorderLayout.EAST);
+
+        return panel;
+    }
+
+    // TODO: Split in multiple functions
     private JPanel categories() {
         JPanel categoriesPanel = new JPanel(new BorderLayout());
         JPanel checkboxPanel = new JPanel(new GridLayout(2, 1));
@@ -200,41 +219,22 @@ public class TransactionsOverview extends AbstractOverview {
     }
 
     private JButton filterButton() {
+        filterButton.setMnemonic(KeyEvent.VK_I);
         return filterButton;
     }
 
     private JButton resetFilterButton() {
+        resetFilterButton.setMnemonic(KeyEvent.VK_R);
         return resetFilterButton;
     }
 
-    private JScrollPane overview() {
-        addRow(new Object[]{"28.2.2022", "132$", "Lidl", "Dinner", Color.RED}); //temporary
-        addRow(new Object[]{"18.8.2022", "534$", "New bicycle", "Mountain bike", Color.YELLOW}); //temporary
-
-        return scrollPane();
-
+    private void setAmountCellRenderer() {
+        overviewTable.getColumnModel().getColumn(2).setCellRenderer(new AmountCellRenderer());
     }
 
-    /**
-     * Method for adding data to the table
-     * @param data to be added
-     */
-    private void addRow(Object[] data) {
-        DefaultTableModel model = (DefaultTableModel) overviewTable.getModel();
-
-        TableColumn col = overviewTable.getColumnModel().getColumn(4);
-        col.setCellRenderer(new CellRenderer());
-
-        Color color = (Color) data[4];
-        int rgb = color.getRGB();
-        JLabel label = new JLabel(new ImageIcon(createImage(rgb)));
-        data[4] = label;
-
-        overviewTable.setInheritsPopupMenu(true);
-
-        model.addRow(data);
+    private void setDateTimeCellRenderer() {
+        overviewTable.getColumnModel().getColumn(3).setCellRenderer(new DateTimeCellRenderer());
     }
-
 
     /**
      * Custom number formatter used in 'ValueFrom' and 'ValueTo' text fields.
@@ -244,6 +244,7 @@ public class TransactionsOverview extends AbstractOverview {
         CustomNumberFormatter(NumberFormat numberFormat) {
             super(numberFormat);
         }
+
         @Override
         public Object stringToValue(String text) throws ParseException {
             if (Objects.equals(text, "")) {
@@ -265,6 +266,7 @@ public class TransactionsOverview extends AbstractOverview {
 
     /**
      * Temporary data generator
+     *
      * @return an array of Categories
      */
     private Category[] generateCategories() {

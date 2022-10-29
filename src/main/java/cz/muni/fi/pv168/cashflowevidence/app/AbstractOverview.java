@@ -1,31 +1,35 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
 
-import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
+import cz.muni.fi.pv168.cashflowevidence.model.CategoryTableModel;
+import cz.muni.fi.pv168.cashflowevidence.renderer.ColorCellRenderer;
+
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.table.TableColumn;
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.GridLayout;
-import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Serving as a common superclass form all overviews.
  */
-public class AbstractOverview extends JPanel {
+abstract public class AbstractOverview extends JPanel {
 
-    protected final JButton editRowButton = new JButton("Edit selected");
-    protected final JButton deleteRowButton = new JButton("Delete selected");
-
-    protected final JPanel topPanel = new JPanel();
+    private final List<Action> actions;
     protected final JTable overviewTable;
 
-    public AbstractOverview(JTable overviewTable, String containerContextName) {
+    public AbstractOverview(JTable overviewTable, ArrayList<Action> actions) {
+        this.actions = actions;
         this.overviewTable = overviewTable;
-        this.setComponentPopupMenu(new RightClickMenu(containerContextName));
+        this.setComponentPopupMenu(new RightClickMenu(actions));
         this.overviewTable.setInheritsPopupMenu(true);
 
+        setColorCellRenderer();
     }
-
     /**
      * Sets the basic layout and borders
      */
@@ -34,51 +38,21 @@ public class AbstractOverview extends JPanel {
         this.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 10));
     }
 
-    protected JPanel rowActionsPanel() {
-        JPanel panel = new JPanel(new GridLayout(0, 1));
-        panel.add(editRowButton);
-        panel.add(deleteRowButton);
+    protected void addActionsToPanel(JPanel panel) {
+        for (Action action: actions) {
+            JButton button = new JButton();
+            button.setAction(action);
+            panel.add(button);
+        }
 
         JPanel wrapper = new JPanel(new BorderLayout());
         wrapper.add(panel, BorderLayout.EAST);
-
-        return panel;
     }
 
-    protected JScrollPane scrollPane() {
-        JScrollPane scrollPane = new JScrollPane(overviewTable);
-        scrollPane.setInheritsPopupMenu(true);
-        return scrollPane;
-    }
+    private void setColorCellRenderer() {
+        int colorColIndex = overviewTable.getModel().getClass().equals(CategoryTableModel.class) ? 1 : 4;
+        TableColumn col = overviewTable.getColumnModel().getColumn(colorColIndex);
 
-    /**
-     * Method that creates a new image
-     * @param rgb of the image
-     * @return new image
-     */
-    public BufferedImage createImage(int rgb) {
-        BufferedImage image = new BufferedImage(30, 10, BufferedImage.TYPE_INT_RGB);
-        for (int i = 0; i < 30; i++) {
-            for (int j = 0; j < 10; j++) {
-                image.setRGB(i, j, rgb);
-            }
-        }
-        return image;
-    }
-
-    /**
-     * Custom cell renderer
-     */
-    static class CellRenderer extends DefaultTableCellRenderer {
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                                                       boolean hasFocus, int row, int column) {
-            if (value instanceof JLabel) {
-                return (JLabel)value;
-            }
-            else {
-                return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            }
-        }
+        col.setCellRenderer(new ColorCellRenderer());
     }
 }

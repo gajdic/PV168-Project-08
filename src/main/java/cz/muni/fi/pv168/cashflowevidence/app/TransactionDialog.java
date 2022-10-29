@@ -1,13 +1,28 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
+import com.github.lgooddatepicker.components.DatePicker;
+import com.github.lgooddatepicker.components.DateTimePicker;
 import cz.muni.fi.pv168.cashflowevidence.model.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.Transaction;
 import cz.muni.fi.pv168.cashflowevidence.model.TransactionFrequency;
-import org.jdatepicker.JDatePicker;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import java.awt.Color;
+import java.awt.Frame;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 /**
@@ -30,26 +45,25 @@ public class TransactionDialog extends JDialog {
     private JLabel categoryLabel;
     private JComboBox<Category> categoryComboBox;
     private JTextField amountField;
-    private JPanel datePanel;
     private JPanel repeatingTransactionPanel;
     private JLabel repeatToLabel;
     private JLabel repeatFromLabel;
     private JLabel frequencyLabel;
     private JComboBox<TransactionFrequency> frequencyComboBox;
-    private JPanel repeatFromPanel;
-    private JPanel repeatToPanel;
     private JTextField customFrequencyField;
     private JLabel customFrequencyLabel;
     private JCheckBox repeatingTransactionCheckBox;
+    private DateTimePicker dateTimePicker;
+    private DatePicker fromDatePicker;
+    private DatePicker toDatePicker;
     private Transaction transaction;
 
     /**
      * Constructor used to create new transaction
-     * @param owner Frame which the dialog is bound to
      * @param title Title used for the dialog
      */
-    public TransactionDialog(Frame owner, String title) {
-        super(owner, title);
+    public TransactionDialog(String title) {
+        super(CashFlowEvidence.frame, title);
         displayDialog();
     }
 
@@ -68,7 +82,7 @@ public class TransactionDialog extends JDialog {
     }
 
     private void displayDialog() {
-        setBounds(600, 300, 600, 350);
+        setBounds(600, 300, 600, 380);
         setContentPane(contentPane);
         setModal(true);
         setResizable(false);
@@ -106,10 +120,10 @@ public class TransactionDialog extends JDialog {
 
     private void onRepeatingTransaction() {
         if (repeatingTransactionCheckBox.isSelected()) {
-            setBounds(getX(), getY(), 600, 480);
+            setBounds(getX(), getY(), 600, 530);
             repeatingTransactionPanel.setVisible(true);
         } else {
-            setBounds(getX(), getY(), 600, 350);
+            setBounds(getX(), getY(), 600, 380);
             repeatingTransactionPanel.setVisible(false);
         }
     }
@@ -126,6 +140,7 @@ public class TransactionDialog extends JDialog {
     }
 
     private void onSave() {
+        System.out.println(dateTimePicker.getDateTimeStrict());
         dispose();
     }
 
@@ -139,14 +154,15 @@ public class TransactionDialog extends JDialog {
         categoryComboBox.setSelectedIndex(0);
         frequencyComboBox = new JComboBox<>(TransactionFrequency.values());
 
-        datePanel = new JPanel();
-        datePanel.add(new JDatePicker());
+        dateTimePicker = new DateTimePicker();
+        dateTimePicker.setDateTimeStrict(LocalDateTime.now());
 
-        repeatFromPanel = new JPanel();
-        repeatFromPanel.add(new JDatePicker());
+        fromDatePicker = new DatePicker();
+        fromDatePicker.setDate(LocalDate.now());
 
-        repeatToPanel = new JPanel();
-        repeatToPanel.add(new JDatePicker());
+        toDatePicker = new DatePicker();
+        toDatePicker.setDate(LocalDate.now());
+
     }
 
     // only for gui showcase
