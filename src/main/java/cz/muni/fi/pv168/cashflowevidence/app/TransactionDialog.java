@@ -91,7 +91,7 @@ public class TransactionDialog extends JDialog {
     private void setupForEdit() {
         nameField.setText(transaction.getName());
         descriptionField.setText(transaction.getDescription());
-        amountField.setText(String.valueOf(transaction.getAmount()));
+        amountField.setText(String.format("%.2f", transaction.getAmount()));
         dateTimePicker.setDateTimeStrict(transaction.getDateTime());
 
         int index = Arrays.stream(categories.getCategories()).toList().indexOf(transaction.getCategory());
