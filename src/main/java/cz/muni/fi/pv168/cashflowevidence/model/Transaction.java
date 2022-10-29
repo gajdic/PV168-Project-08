@@ -169,17 +169,4 @@ public class Transaction {
         frequencyType = transaction.getFrequencyType();
         frequency = transaction.getFrequency();
     }
-
-    @Override
-    public String toString() {
-        return String.format("""
-                Type:\t%s
-                Name:\t%s
-                Description:\t%s
-                Amount ($):\t%s
-                Date:\t%s
-                Category:\t%s
-                Repeats from %s to %s, every %s days (%s)
-                """, transactionType, name, description, amount, dateTime, category, repeatFrom, repeatTo, frequency, frequencyType);
-    }
 }

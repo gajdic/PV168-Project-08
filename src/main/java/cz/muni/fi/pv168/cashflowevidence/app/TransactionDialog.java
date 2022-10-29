@@ -2,12 +2,24 @@ package cz.muni.fi.pv168.cashflowevidence.app;
 
 import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.components.DateTimePicker;
-import cz.muni.fi.pv168.cashflowevidence.model.*;
+import cz.muni.fi.pv168.cashflowevidence.model.Category;
+import cz.muni.fi.pv168.cashflowevidence.model.CategoryListModel;
+import cz.muni.fi.pv168.cashflowevidence.model.Transaction;
+import cz.muni.fi.pv168.cashflowevidence.model.TransactionFrequency;
+import cz.muni.fi.pv168.cashflowevidence.model.TransactionType;
 import cz.muni.fi.pv168.cashflowevidence.validation.TransactionValidator;
 
-import javax.swing.*;
-import java.awt.Color;
-import java.awt.Frame;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -192,22 +204,8 @@ public class TransactionDialog extends JDialog {
     private Transaction validateInputs() {
         var tmpTransaction = new Transaction();
 
-        if (repeatingTransactionCheckBox.isSelected()) {
-            var frequency = (TransactionFrequency) frequencyComboBox.getSelectedItem();
-            tmpTransaction.setFrequencyType(frequency);
-
-            if (frequency == TransactionFrequency.Custom) {
-                try {
-                    tmpTransaction.setFrequency(Integer.parseInt(customFrequencyField.getText()));
-                } catch (NumberFormatException ex) {
-                    return null;
-                }
-            } else {
-                tmpTransaction.setFrequency(frequency.frequencyValue);
-            }
-
-            tmpTransaction.setRepeatFrom(fromDatePicker.getDate());
-            tmpTransaction.setRepeatTo(toDatePicker.getDate());
+        if (repeatingTransactionCheckBox.isSelected() && (tmpTransaction = validateRepeatingInputs()) == null) {
+            return null;
         }
 
         tmpTransaction.setCategory((Category) categoryComboBox.getSelectedItem());
@@ -224,6 +222,28 @@ public class TransactionDialog extends JDialog {
         tmpTransaction.setName(nameField.getText());
 
         return TransactionValidator.isValid(tmpTransaction) ? tmpTransaction : null;
+    }
+
+    private Transaction validateRepeatingInputs() {
+        var tmpTransaction = new Transaction();
+
+        var frequency = (TransactionFrequency) frequencyComboBox.getSelectedItem();
+        tmpTransaction.setFrequencyType(frequency);
+
+        if (frequency == TransactionFrequency.Custom) {
+            try {
+                tmpTransaction.setFrequency(Integer.parseInt(customFrequencyField.getText()));
+            } catch (NumberFormatException ex) {
+                return null;
+            }
+        } else {
+            tmpTransaction.setFrequency(frequency.frequencyValue);
+        }
+
+        tmpTransaction.setRepeatFrom(fromDatePicker.getDate());
+        tmpTransaction.setRepeatTo(toDatePicker.getDate());
+
+        return tmpTransaction;
     }
 
     private void createUIComponents() {

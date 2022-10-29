@@ -8,9 +8,6 @@ import java.awt.event.KeyEvent;
 import java.util.Arrays;
 import java.util.Comparator;
 
-// TODO: Consider parametrization of either add/edit/delete actions or
-// TODO: Category/Transaction action based on shared implementation
-
 public class DeleteCategoryAction extends AbstractAction {
 
     private final JTable categoryTable;

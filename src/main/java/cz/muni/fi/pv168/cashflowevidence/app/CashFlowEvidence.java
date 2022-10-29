@@ -133,6 +133,7 @@ public class CashFlowEvidence {
     private JTable createTransactionTable(List<Transaction> transactions) {
         var table = createTable(new TransactionTableModel(transactions));
         table.getSelectionModel().addListSelectionListener(this::transactionRowSelectionChanged);
+
         return table;
     }
 
