@@ -10,6 +10,8 @@ import cz.muni.fi.pv168.cashflowevidence.action.ExitApplicationAction;
 import cz.muni.fi.pv168.cashflowevidence.action.ExportAction;
 import cz.muni.fi.pv168.cashflowevidence.action.HelpAction;
 import cz.muni.fi.pv168.cashflowevidence.action.ImportAction;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.JsonTransactionExporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.JsonTransactionImporter;
 import cz.muni.fi.pv168.cashflowevidence.model.*;
 
 import javax.swing.Action;
@@ -49,8 +51,8 @@ public class CashFlowEvidence {
     public static final JFrame frame = getFrame();
 
     // file menu
-    private final Action importAction = new ImportAction();
-    private final Action exportAction = new ExportAction();
+    private final Action importAction;
+    private final Action exportAction;
     private final Action exitAction = new ExitApplicationAction();
 
     private final Action addTAction;
@@ -89,6 +91,9 @@ public class CashFlowEvidence {
 
         transactionTable = createTransactionTable(transactions);
 
+        JsonTransactionImporter jsonImporter = new JsonTransactionImporter();
+        JsonTransactionExporter jsonExporter = new JsonTransactionExporter();
+
         categoryListModel = new CategoryListModel(categories);
 
         addTAction = new AddTransactionAction(transactionTable, categoryListModel);
@@ -98,6 +103,9 @@ public class CashFlowEvidence {
         addCAction = new AddCategoryAction(categoryTable, categoryListModel);
         editCAction = new EditCategoryAction(categoryTable);
         deleteCAction = new DeleteCategoryAction(categoryTable);
+
+        importAction = new ImportAction(transactionTable, jsonImporter);
+        exportAction = new ExportAction(transactionTable, jsonExporter);
 
         initializeActionsState();
 
