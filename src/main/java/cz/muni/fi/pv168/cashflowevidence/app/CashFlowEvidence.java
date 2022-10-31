@@ -29,7 +29,6 @@ import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableModel;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -93,6 +92,15 @@ public class CashFlowEvidence {
         transactions.add(new Transaction(TransactionType.Outgoing, "name4", "desc4", 200, LocalDateTime.now().minusDays(7), category2));
 
         transactionTable = createTransactionTable(transactions);
+
+        TransactionTableModel transactionTableModel = (TransactionTableModel) transactionTable.getModel();
+
+        balanceLabel.setText(calculateBalance(transactionTableModel));
+
+        transactionTable.getModel().addTableModelListener(e -> {
+            balanceLabel.setText(calculateBalance(transactionTableModel));
+            filteredBalanceLabel.setText(calculateBalance(transactionTableModel));
+        });
 
         categoryListModel = new CategoryListModel(categories);
 
@@ -257,5 +265,18 @@ public class CashFlowEvidence {
         panel.setBorder(new EmptyBorder(0, 10, 0, 10));
 
         return panel;
+    }
+    private String calculateBalance(TransactionTableModel tableModel) {
+        double amount = 0;
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            double cellAmount = tableModel.getEntity(i).getAmount();
+            if (tableModel.getEntity(i).getTransactionType() == TransactionType.Incoming) {
+                amount += cellAmount;
+            }
+            else {
+                amount -= cellAmount;
+            }
+        }
+        return Transaction.formatAmount(amount) + " $";
     }
 }
