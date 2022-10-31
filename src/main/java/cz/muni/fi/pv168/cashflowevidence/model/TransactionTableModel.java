@@ -1,7 +1,6 @@
 package cz.muni.fi.pv168.cashflowevidence.model;
 
 import javax.swing.table.AbstractTableModel;
-import java.awt.*;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.List;
@@ -13,11 +12,11 @@ public class TransactionTableModel extends AbstractTableModel {
     private final List<Column<Transaction, ?>> columns = List.of(
             Column.editable("Name", String.class, Transaction::getName, Transaction::setName),
             Column.editable("Description", String.class, Transaction::getDescription, Transaction::setDescription),
-            Column.editable("Amount ($)", Double.class, Transaction::getAmount, Transaction::setAmount), // TODO use getAmountStr somehow
-            Column.editable("Date", LocalDateTime.class, Transaction::getDate, Transaction::setDate),
+            Column.editable("Amount ($)", Double.class, Transaction::getAmount, Transaction::setAmount),
+            Column.editable("Date", LocalDateTime.class, Transaction::getDateTime, Transaction::setDate),
             Column.editable("Category", Category.class, Transaction::getCategory, Transaction::setCategory),
             Column.readonly("Type", TransactionType.class, Transaction::getTransactionType),
-            Column.readonly("Repeating", String.class, t -> String.valueOf(t.getClass().equals(RepeatingTransaction.class)))
+            Column.readonly("Repeating", String.class, t -> String.valueOf(t.isRepeating()))
     );
 
     public TransactionTableModel(Collection<Transaction> transactions) {
@@ -69,5 +68,15 @@ public class TransactionTableModel extends AbstractTableModel {
         int newRowIndex = transactions.size();
         transactions.add(transaction);
         fireTableRowsInserted(newRowIndex, newRowIndex);
+    }
+
+    public void updateRow(Transaction transaction) {
+        int rowIndex = transactions.indexOf(transaction);
+        fireTableRowsUpdated(rowIndex, rowIndex);
+    }
+
+    public void deleteRow(int rowIndex) {
+        transactions.remove(rowIndex);
+        fireTableRowsDeleted(rowIndex, rowIndex);
     }
 }

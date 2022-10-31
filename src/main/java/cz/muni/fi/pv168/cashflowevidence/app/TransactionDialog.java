@@ -3,8 +3,11 @@ package cz.muni.fi.pv168.cashflowevidence.app;
 import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.components.DateTimePicker;
 import cz.muni.fi.pv168.cashflowevidence.model.Category;
+import cz.muni.fi.pv168.cashflowevidence.model.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.model.Transaction;
 import cz.muni.fi.pv168.cashflowevidence.model.TransactionFrequency;
+import cz.muni.fi.pv168.cashflowevidence.model.TransactionType;
+import cz.muni.fi.pv168.cashflowevidence.validation.TransactionValidator;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -12,17 +15,17 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import java.awt.Color;
-import java.awt.Frame;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 
 /**
@@ -58,27 +61,57 @@ public class TransactionDialog extends JDialog {
     private DatePicker toDatePicker;
     private Transaction transaction;
 
+    private CategoryListModel categories;
+
     /**
      * Constructor used to create new transaction
      * @param title Title used for the dialog
      */
-    public TransactionDialog(String title) {
+    public TransactionDialog(String title, CategoryListModel categories) {
         super(CashFlowEvidence.frame, title);
+        this.categories = categories;
+
         displayDialog();
     }
 
     /**
      * Constructor used to edit existing transaction
-     * @param owner Frame which the dialog is bound to
      * @param title Title used for the dialog
      * @param transaction Transaction that is being edited
      */
-    public TransactionDialog(Frame owner, String title, Transaction transaction) {
-        super(owner, title);
-        displayDialog();
-
+    public TransactionDialog(String title, Transaction transaction, CategoryListModel categories) {
+        super(CashFlowEvidence.frame, title);
         this.transaction = transaction;
-        //  todo for next milestone: fill values on edit
+        this.categories = categories;
+
+        displayDialog();
+        setupForEdit();
+    }
+
+    private void setupForEdit() {
+        nameField.setText(transaction.getName());
+        descriptionField.setText(transaction.getDescription());
+        amountField.setText(String.format("%.2f", transaction.getAmount()));
+        dateTimePicker.setDateTimeStrict(transaction.getDateTime());
+
+        int index = Arrays.stream(categories.getCategories()).toList().indexOf(transaction.getCategory());
+        categoryComboBox.setSelectedIndex(index + 1); // +1 to skip empty category
+
+        if (transaction.isRepeating()) {
+            repeatingTransactionCheckBox.setSelected(true);
+            fromDatePicker.setDate(transaction.getRepeatFrom());
+            toDatePicker.setDate(transaction.getRepeatTo());
+            fromDatePicker.setDate(transaction.getRepeatFrom());
+            frequencyComboBox.setSelectedIndex(
+                    Arrays.stream(TransactionFrequency.values()).toList().indexOf(transaction.getFrequencyType()));
+
+            onRepeatingTransaction();
+
+            if (transaction.getFrequencyType() == TransactionFrequency.Custom) {
+                customFrequencyField.setText(String.valueOf(transaction.getFrequency()));
+                onCustomFrequency();
+            }
+        }
     }
 
     private void displayDialog() {
@@ -140,17 +173,81 @@ public class TransactionDialog extends JDialog {
         }
     }
 
-    private void onSave() {
-        System.out.println(dateTimePicker.getDateTimeStrict());
-        dispose();
+    public Transaction showDialog() {
+        setVisible(true);
+
+        return transaction;
     }
 
     private void onCancel() {
         dispose();
     }
 
+    private void onSave() {
+        if (this.transaction == null) {
+            transaction = new Transaction();
+        }
+
+        Transaction validatedTransaction = validateInputs();
+        if (validatedTransaction == null) {
+            Object[] options = { "OK" };
+            JOptionPane.showOptionDialog(null, "Invalid values.", "Warning",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                    null, options, options[0]);
+            return;
+        }
+
+        transaction.setAll(validatedTransaction);
+        dispose();
+    }
+
+    private Transaction validateInputs() {
+        Transaction tmpTransaction = new Transaction();
+
+        if (repeatingTransactionCheckBox.isSelected() && (tmpTransaction = validateRepeatingInputs()) == null) {
+            return null;
+        }
+
+        tmpTransaction.setCategory((Category) categoryComboBox.getSelectedItem());
+        tmpTransaction.setDate(dateTimePicker.getDateTimeStrict());
+        tmpTransaction.setTransactionType(incomingRadioButton.isSelected() ? TransactionType.Incoming : TransactionType.Outgoing);
+
+        try {
+            tmpTransaction.setAmount(Double.parseDouble(amountField.getText()));
+        } catch (NumberFormatException ex) {
+            return null;
+        }
+
+        tmpTransaction.setDescription(descriptionField.getText());
+        tmpTransaction.setName(nameField.getText());
+
+        return TransactionValidator.isValid(tmpTransaction) ? tmpTransaction : null;
+    }
+
+    private Transaction validateRepeatingInputs() {
+        Transaction tmpTransaction = new Transaction();
+
+        var frequency = (TransactionFrequency) frequencyComboBox.getSelectedItem();
+        tmpTransaction.setFrequencyType(frequency);
+
+        if (frequency == TransactionFrequency.Custom) {
+            try {
+                tmpTransaction.setFrequency(Integer.parseInt(customFrequencyField.getText()));
+            } catch (NumberFormatException ex) {
+                return null;
+            }
+        } else {
+            tmpTransaction.setFrequency(frequency.frequencyValue);
+        }
+
+        tmpTransaction.setRepeatFrom(fromDatePicker.getDate());
+        tmpTransaction.setRepeatTo(toDatePicker.getDate());
+
+        return tmpTransaction;
+    }
+
     private void createUIComponents() {
-        categoryComboBox = new JComboBox<>(getCategoriesForShowcase());
+        categoryComboBox = new JComboBox<>(categories.getCategories());
         categoryComboBox.insertItemAt(null, 0);
         categoryComboBox.setSelectedIndex(0);
         frequencyComboBox = new JComboBox<>(TransactionFrequency.values());
@@ -162,21 +259,6 @@ public class TransactionDialog extends JDialog {
         fromDatePicker.setDate(LocalDate.now());
 
         toDatePicker = new DatePicker();
-        toDatePicker.setDate(LocalDate.now());
-
-    }
-
-    // only for gui showcase
-    private Category[] getCategoriesForShowcase() {
-        String[] categoryNames = {"Zubar", "Lidl", "Kaufland", "NBSR"};
-        Color[] categoryColors = {Color.GREEN, Color.BLUE, Color.RED, Color.BLACK};
-
-        Category[] categories = new Category[4];
-
-        for (int i = 0; i < 4; i++) {
-            categories[i] = new Category(categoryNames[i], categoryColors[i]);
-        }
-
-        return categories;
+        toDatePicker.setDate(LocalDate.now().plusDays(1));
     }
 }

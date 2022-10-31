@@ -26,7 +26,6 @@ public class EditCategoryAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-
         int[] selectedRows = categoryTable.getSelectedRows();
         if (selectedRows.length != 1) {
             throw new IllegalStateException("Invalid selected rows count (must be 1): " + selectedRows.length);

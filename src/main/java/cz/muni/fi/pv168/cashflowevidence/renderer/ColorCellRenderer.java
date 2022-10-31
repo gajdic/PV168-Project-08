@@ -10,6 +10,11 @@ public class ColorCellRenderer extends DefaultTableCellRenderer {
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
                                                    boolean hasFocus, int rowIndex, int vColIndex) {
+        if (value == null) {
+            setBackground(Color.WHITE);
+            return this;
+        }
+
         if (value.getClass().equals(Category.class)) {
             setBackground(((Category) value).getColor());
             return this;
