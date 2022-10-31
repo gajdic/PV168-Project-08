@@ -37,8 +37,8 @@ import java.util.Objects;
 public class TransactionsOverview extends AbstractOverview {
 
     //incoming/outgoing
-    private final JCheckBox incomingCheckbox = new JCheckBox("Incoming");
-    private final JCheckBox outgoingCheckbox = new JCheckBox("Outgoing");
+    private final JCheckBox incomingCheckbox = new JCheckBox("Incoming", true);
+    private final JCheckBox outgoingCheckbox = new JCheckBox("Outgoing", true);
 
     //dates
     private final DatePicker dateFrom = new DatePicker();
@@ -63,13 +63,14 @@ public class TransactionsOverview extends AbstractOverview {
     //filtration
     private final JButton filterButton = new JButton("Filter");
     private final JButton resetFilterButton = new JButton("Reset filter");
+    private final TransactionFilter filter;
 
     private final CategoryListModel categoryListModel;
 
     /**
      * Represents the panel of transactions
      */
-    public TransactionsOverview(JTable transactionsTable, ArrayList<Action> actions, CategoryListModel categoryListModel) {
+    public TransactionsOverview(JTable transactionsTable, ArrayList<Action> actions, JLabel totalBalance, JLabel filteredBalance, CategoryListModel categoryListModel) {
         super(transactionsTable, actions);
         setLayout();
 
@@ -85,6 +86,7 @@ public class TransactionsOverview extends AbstractOverview {
 
         setAmountCellRenderer();
         setDateTimeCellRenderer();
+        this.filter = new TransactionFilter(transactionsTable, totalBalance, filteredBalance, this);
     }
 
     private JPanel topPanel() {
@@ -207,6 +209,7 @@ public class TransactionsOverview extends AbstractOverview {
 
     private void specifiedCategorySetTrue() {
         categoriesJComboBox.setVisible(specifiedCategories.isSelected());
+        categoriesJComboBox.setSelectedIndex(0);
     }
 
     private JPanel repeatingTransactions() {
@@ -230,11 +233,13 @@ public class TransactionsOverview extends AbstractOverview {
 
     private JButton filterButton() {
         filterButton.setMnemonic(KeyEvent.VK_I);
+        filterButton.addActionListener(l -> filter.filterRows());
         return filterButton;
     }
 
     private JButton resetFilterButton() {
         resetFilterButton.setMnemonic(KeyEvent.VK_R);
+        resetFilterButton.addActionListener(e -> filter.resetFilter());
         return resetFilterButton;
     }
 
@@ -272,5 +277,53 @@ public class TransactionsOverview extends AbstractOverview {
         public void setValueClass(Class<?> valueClass) {
             super.setValueClass(Integer.class);
         }
+    }
+
+    public JCheckBox getIncomingCheckbox() {
+        return incomingCheckbox;
+    }
+
+    public JCheckBox getOutgoingCheckbox() {
+        return outgoingCheckbox;
+    }
+
+    public DatePicker getDateFrom() {
+        return dateFrom;
+    }
+
+    public DatePicker getDateTo() {
+        return dateTo;
+    }
+
+    public JFormattedTextField getValueFrom() {
+        return valueFrom;
+    }
+
+    public JFormattedTextField getValueTo() {
+        return valueTo;
+    }
+
+    public JRadioButton getAllCategories() {
+        return allCategories;
+    }
+
+    public JRadioButton getSpecifiedCategories() {
+        return specifiedCategories;
+    }
+
+    public JComboBox<Category> getCategoriesJComboBox() {
+        return categoriesJComboBox;
+    }
+
+    public JRadioButton getAllTransactions() {
+        return allTransactions;
+    }
+
+    public JRadioButton getOnlyNonRepeating() {
+        return onlyNonRepeating;
+    }
+
+    public JRadioButton getOnlyRepeating() {
+        return onlyRepeating;
     }
 }
