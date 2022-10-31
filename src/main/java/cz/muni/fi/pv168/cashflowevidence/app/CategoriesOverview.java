@@ -19,7 +19,10 @@ public class CategoriesOverview extends AbstractOverview {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         add(getTopPanel(), BorderLayout.NORTH);
-        add(new JScrollPane(overviewTable));
+
+        var scrollPane = new JScrollPane(overviewTable);
+        scrollPane.setComponentPopupMenu(new RightClickMenu(actions));
+        add(scrollPane);
     }
 
     protected JPanel getTopPanel() {

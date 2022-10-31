@@ -71,16 +71,9 @@ public class CashFlowEvidence {
 
     private final JTable categoryTable;
     private final JTable transactionTable;
+    private final CategoryListModel categoryListModel;
 
     public CashFlowEvidence() {
-        addTAction = new AddTransactionAction();
-        editTAction = new EditTransactionAction();
-        deleteTAction = new DeleteTransactionAction();
-
-        addCAction = new AddCategoryAction();
-        editCAction = new EditCategoryAction();
-        deleteCAction = new DeleteCategoryAction();
-
         setBalanceFont();
 
         // tmp
@@ -97,6 +90,18 @@ public class CashFlowEvidence {
         transactions.add(new Transaction(TransactionType.Outgoing, "name3", "desc3", 189, LocalDateTime.now().minusDays(3), category));
 
         transactionTable = createTransactionTable(transactions);
+
+        categoryListModel = new CategoryListModel(categories);
+
+        addTAction = new AddTransactionAction(transactionTable, categoryListModel);
+        editTAction = new EditTransactionAction(transactionTable, categoryListModel);
+        deleteTAction = new DeleteTransactionAction(transactionTable);
+
+        addCAction = new AddCategoryAction(categoryTable, categoryListModel);
+        editCAction = new EditCategoryAction(categoryTable);
+        deleteCAction = new DeleteCategoryAction(categoryTable);
+
+        initializeActionsState();
 
         JPanel content = getContent();
         frame.add(content, BorderLayout.CENTER);
@@ -121,31 +126,48 @@ public class CashFlowEvidence {
     }
 
     private JTable createCategoryTable(List<Category> categories) {
-        return createTable(new CategoryTableModel(categories));
+        var table = createTable(new CategoryTableModel(categories));
+        table.getSelectionModel().addListSelectionListener(this::categoryRowSelectionChanged);
+
+        return table;
     }
 
     private JTable createTransactionTable(List<Transaction> transactions) {
-        return createTable(new TransactionTableModel(transactions));
+        var table = createTable(new TransactionTableModel(transactions));
+        table.getSelectionModel().addListSelectionListener(this::transactionRowSelectionChanged);
+
+        return table;
     }
 
     private JTable createTable(AbstractTableModel model) {
         var table = new JTable(model);
         table.setAutoCreateRowSorter(true);
-        table.getSelectionModel().addListSelectionListener(this::rowSelectionChanged);
+        table.getSelectionModel().addListSelectionListener(this::categoryRowSelectionChanged);
 
         return table;
     }
 
-    private void rowSelectionChanged(ListSelectionEvent listSelectionEvent) {
+    private void categoryRowSelectionChanged(ListSelectionEvent listSelectionEvent) {
         var selectionModel = (ListSelectionModel) listSelectionEvent.getSource();
         var count = selectionModel.getSelectedItemsCount();
-        changeActionsState(count);
+
+        editCAction.setEnabled(count == 1);
+        deleteCAction.setEnabled(count >= 1);
     }
 
-    private void changeActionsState(int selectedItemsCount) {
-        // TODO
-        //editAction.setEnabled(selectedItemsCount == 1);
-        //deleteAction.setEnabled(selectedItemsCount >= 1);
+    private void transactionRowSelectionChanged(ListSelectionEvent listSelectionEvent) {
+        var selectionModel = (ListSelectionModel) listSelectionEvent.getSource();
+        var count = selectionModel.getSelectedItemsCount();
+
+        editTAction.setEnabled(count == 1);
+        deleteTAction.setEnabled(count >= 1);
+    }
+
+    private void initializeActionsState() {
+        editTAction.setEnabled(false);
+        deleteTAction.setEnabled(false);
+        editCAction.setEnabled(false);
+        deleteCAction.setEnabled(false);
     }
 
     private static JFrame getFrame() {
@@ -222,7 +244,7 @@ public class CashFlowEvidence {
         tabbedPane.setTabPlacement(SwingConstants.TOP);
 
         tabbedPane.addTab("Transactions", new TransactionsOverview(transactionTable,
-                new ArrayList<>(Arrays.asList(addTAction, editTAction, deleteTAction)), balanceLabel, filteredBalanceLabel));
+                new ArrayList<>(Arrays.asList(addTAction, editTAction, deleteTAction)), balanceLabel, filteredBalanceLabel, categoryListModel));
         tabbedPane.addTab("Categories", new CategoriesOverview(categoryTable,
                new ArrayList<>(Arrays.asList(addCAction, editCAction, deleteCAction))));
 

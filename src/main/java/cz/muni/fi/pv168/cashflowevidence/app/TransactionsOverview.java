@@ -3,6 +3,7 @@ package cz.muni.fi.pv168.cashflowevidence.app;
 
 import com.github.lgooddatepicker.components.DatePicker;
 import cz.muni.fi.pv168.cashflowevidence.model.Category;
+import cz.muni.fi.pv168.cashflowevidence.model.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.renderer.AmountCellRenderer;
 import cz.muni.fi.pv168.cashflowevidence.renderer.DateTimeCellRenderer;
 
@@ -20,7 +21,10 @@ import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.text.NumberFormatter;
 import javax.swing.JComponent;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.FlowLayout;
+import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -48,7 +52,7 @@ public class TransactionsOverview extends AbstractOverview {
     //categorises
     private final JRadioButton allCategories = new JRadioButton("All", true);
     private final JRadioButton specifiedCategories = new JRadioButton("Choose", false);
-    private final JComboBox<Category> categoriesJComboBox = new JComboBox<>();
+    private final JComboBox<Category> categoriesJComboBox;
 
     //repeating transactions
     private final JRadioButton allTransactions = new JRadioButton("All", true);
@@ -64,9 +68,11 @@ public class TransactionsOverview extends AbstractOverview {
     /**
      * Represents the panel of transactions
      */
-    public TransactionsOverview(JTable transactionsTable, ArrayList<Action> actions, JLabel totalBalance, JLabel filteredBalance) {
+    public TransactionsOverview(JTable transactionsTable, ArrayList<Action> actions, JLabel totalBalance, JLabel filteredBalance, CategoryListModel categoryListModel) {
         super(transactionsTable, actions);
         setLayout();
+
+        categoriesJComboBox = new JComboBox<>(categoryListModel.getCategories());
 
         // TODO: Refactor and move this to AbstractOverview using abstract topPanel and Overview methods
         // TODO: Needed to not initialize fields in this class, as they are null;
@@ -178,11 +184,6 @@ public class TransactionsOverview extends AbstractOverview {
         allCategories.addActionListener(e -> specifiedCategorySetTrue());
         specifiedCategories.addActionListener(e -> specifiedCategorySetTrue());
 
-        Category[] temporaryCategories = generateCategories(); //temporary
-        for (Category temporaryCategory : temporaryCategories) {
-            categoriesJComboBox.addItem(temporaryCategory);
-        }
-
         comboPanel.add(categoriesJComboBox);
         categoriesJComboBox.setPreferredSize(new Dimension(
                 (int) categoriesJComboBox.getPreferredSize().getWidth() + 10,
@@ -265,22 +266,6 @@ public class TransactionsOverview extends AbstractOverview {
         public void setValueClass(Class<?> valueClass) {
             super.setValueClass(Integer.class);
         }
-    }
-
-    /**
-     * Temporary data generator
-     *
-     * @return an array of Categories
-     */
-    private Category[] generateCategories() {
-        Category[] categories = new Category[3];
-        String[] titles = new String[]{"Category 1", "Category 2", "Category 3"};
-        Color[] colors = new Color[]{Color.RED, Color.BLUE, Color.GREEN};
-
-        for (int i = 0; i < titles.length; i++) {
-            categories[i] = new Category(titles[i], colors[i]);
-        }
-        return categories;
     }
 
     public ArrayList<JComponent> getComponentList() {

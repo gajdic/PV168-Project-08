@@ -2,9 +2,9 @@ package cz.muni.fi.pv168.cashflowevidence.renderer;
 
 import cz.muni.fi.pv168.cashflowevidence.model.Transaction;
 
-import javax.swing.*;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.*;
+import java.awt.Component;
 
 public class AmountCellRenderer extends DefaultTableCellRenderer {
 
