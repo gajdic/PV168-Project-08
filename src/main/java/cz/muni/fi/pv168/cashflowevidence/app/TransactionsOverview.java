@@ -24,10 +24,13 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.FlowLayout;
 import java.awt.Dimension;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
 // TODO: This class is too long. Consider splitting in multiple separate (Maybe more reusable?) Ones.
@@ -50,7 +53,7 @@ public class TransactionsOverview extends AbstractOverview {
     //categorises
     private final JRadioButton allCategories = new JRadioButton("All", true);
     private final JRadioButton specifiedCategories = new JRadioButton("Choose", false);
-    private final JComboBox<Category> categoriesJComboBox;
+    private final JComboBox<Category> categoriesJComboBox = new JComboBox<>();
 
     //repeating transactions
     private final JRadioButton allTransactions = new JRadioButton("All", true);
@@ -61,6 +64,7 @@ public class TransactionsOverview extends AbstractOverview {
     private final JButton filterButton = new JButton("Filter");
     private final JButton resetFilterButton = new JButton("Reset filter");
 
+    private final CategoryListModel categoryListModel;
 
     /**
      * Represents the panel of transactions
@@ -69,12 +73,16 @@ public class TransactionsOverview extends AbstractOverview {
         super(transactionsTable, actions);
         setLayout();
 
-        categoriesJComboBox = new JComboBox<>(categoryListModel.getCategories());
+        this.categoryListModel = categoryListModel;
 
         // TODO: Refactor and move this to AbstractOverview using abstract topPanel and Overview methods
         // TODO: Needed to not initialize fields in this class, as they are null;
         add(topPanel(), BorderLayout.NORTH);
-        add(new JScrollPane(overviewTable));
+
+        var scrollPane = new JScrollPane(overviewTable);
+        scrollPane.setComponentPopupMenu(new RightClickMenu(actions));
+        add(scrollPane);
+
         setAmountCellRenderer();
         setDateTimeCellRenderer();
     }
@@ -175,14 +183,20 @@ public class TransactionsOverview extends AbstractOverview {
         checkboxPanel.add(allCategories);
         checkboxPanel.add(specifiedCategories);
 
+        categoriesJComboBox.setPreferredSize(new Dimension(80, 20));
+        categoriesJComboBox.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                categoriesJComboBox.removeAllItems();
+                Arrays.stream(categoryListModel.getCategories()).forEach(categoriesJComboBox::addItem);
+            }
+        });
+
         categoriesJComboBox.setVisible(false);
         allCategories.addActionListener(e -> specifiedCategorySetTrue());
         specifiedCategories.addActionListener(e -> specifiedCategorySetTrue());
 
         comboPanel.add(categoriesJComboBox);
-        categoriesJComboBox.setPreferredSize(new Dimension(
-                (int) categoriesJComboBox.getPreferredSize().getWidth() + 10,
-                (int) categoriesJComboBox.getPreferredSize().getHeight()));
 
         categoriesPanel.add(new JLabel("Categories"), BorderLayout.NORTH);
         categoriesPanel.add(checkboxPanel, BorderLayout.WEST);

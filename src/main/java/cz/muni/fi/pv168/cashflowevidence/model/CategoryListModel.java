@@ -17,6 +17,10 @@ public class CategoryListModel extends AbstractListModel<Category> {
         this.categories.add(category);
     }
 
+    public void deleteCategory(int index) {
+        this.categories.remove(index);
+    }
+
     @Override
     public int getSize() {
         return categories.size();
