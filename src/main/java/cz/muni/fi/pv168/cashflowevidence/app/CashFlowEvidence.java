@@ -79,7 +79,9 @@ public class CashFlowEvidence {
         // tmp
         var categories = new ArrayList<Category>();
         var category = new Category("Jou", Color.RED);
+        var category2 = new Category("Bu", Color.BLUE);
         categories.add(category);
+        categories.add(category2);
 
         categoryTable = createCategoryTable(categories);
 
@@ -88,6 +90,7 @@ public class CashFlowEvidence {
         transactions.add(new Transaction(TransactionType.Incoming, "name", "desc", 10000000, LocalDateTime.now(), category));
         transactions.add(new Transaction(TransactionType.Incoming, "name2", "desc2", 9999, LocalDateTime.now().minusDays(1), category));
         transactions.add(new Transaction(TransactionType.Outgoing, "name3", "desc3", 189, LocalDateTime.now().minusDays(3), category));
+        transactions.add(new Transaction(TransactionType.Outgoing, "name4", "desc4", 200, LocalDateTime.now().minusDays(7), category2));
 
         transactionTable = createTransactionTable(transactions);
 
@@ -255,5 +258,4 @@ public class CashFlowEvidence {
 
         return panel;
     }
-
 }

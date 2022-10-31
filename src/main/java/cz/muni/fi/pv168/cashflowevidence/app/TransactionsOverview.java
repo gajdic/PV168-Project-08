@@ -20,7 +20,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.text.NumberFormatter;
-import javax.swing.JComponent;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.FlowLayout;
@@ -29,7 +28,6 @@ import java.awt.event.KeyEvent;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Objects;
 
 // TODO: This class is too long. Consider splitting in multiple separate (Maybe more reusable?) Ones.
@@ -80,8 +78,7 @@ public class TransactionsOverview extends AbstractOverview {
         add(new JScrollPane(overviewTable));
         setAmountCellRenderer();
         setDateTimeCellRenderer();
-        this.filter = new TransactionFilter(transactionsTable, getComponentList(), totalBalance, filteredBalance);
-        generateCategories();
+        this.filter = new TransactionFilter(transactionsTable, totalBalance, filteredBalance, this);
     }
 
     private JPanel topPanel() {
@@ -268,21 +265,51 @@ public class TransactionsOverview extends AbstractOverview {
         }
     }
 
-    public ArrayList<JComponent> getComponentList() {
-        ArrayList<JComponent> componentList = new ArrayList<>();
-        componentList.add(incomingCheckbox);
-        componentList.add(outgoingCheckbox);
-        componentList.add(dateFrom);
-        componentList.add(dateTo);
-        componentList.add(valueFrom);
-        componentList.add(valueTo);
-        componentList.add(allCategories);
-        componentList.add(specifiedCategories);
-        componentList.add(categoriesJComboBox);
-        componentList.add(allTransactions);
-        componentList.add(onlyNonRepeating);
-        componentList.add(onlyRepeating);
+    public JCheckBox getIncomingCheckbox() {
+        return incomingCheckbox;
+    }
 
-        return componentList;
+    public JCheckBox getOutgoingCheckbox() {
+        return outgoingCheckbox;
+    }
+
+    public DatePicker getDateFrom() {
+        return dateFrom;
+    }
+
+    public DatePicker getDateTo() {
+        return dateTo;
+    }
+
+    public JFormattedTextField getValueFrom() {
+        return valueFrom;
+    }
+
+    public JFormattedTextField getValueTo() {
+        return valueTo;
+    }
+
+    public JRadioButton getAllCategories() {
+        return allCategories;
+    }
+
+    public JRadioButton getSpecifiedCategories() {
+        return specifiedCategories;
+    }
+
+    public JComboBox<Category> getCategoriesJComboBox() {
+        return categoriesJComboBox;
+    }
+
+    public JRadioButton getAllTransactions() {
+        return allTransactions;
+    }
+
+    public JRadioButton getOnlyNonRepeating() {
+        return onlyNonRepeating;
+    }
+
+    public JRadioButton getOnlyRepeating() {
+        return onlyRepeating;
     }
 }

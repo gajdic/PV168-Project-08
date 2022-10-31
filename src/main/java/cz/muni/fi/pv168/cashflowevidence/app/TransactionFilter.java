@@ -43,21 +43,20 @@ public class TransactionFilter {
     private final JLabel totalBalance;
     private final JLabel filteredBalance;
 
-    public TransactionFilter(JTable overviewTable, ArrayList<JComponent> components, JLabel totalBalance, JLabel filteredBalance) {
+    public TransactionFilter(JTable overviewTable, JLabel totalBalance, JLabel filteredBalance, TransactionsOverview overview) {
         this.overviewTable = overviewTable;
-        incomingCheckbox = (JCheckBox) components.get(0);
-        outgoingCheckbox = (JCheckBox) components.get(1);
-        dateFrom = (DatePicker) components.get(2);
-        dateTo = (DatePicker) components.get(3);
-        valueFrom = (JFormattedTextField) components.get(4);
-        valueTo = (JFormattedTextField) components.get(5);
-        allCategories = (JRadioButton) components.get(6);
-        specifiedCategories = (JRadioButton) components.get(7);
-        //noinspection unchecked
-        categoriesJComboBox = (JComboBox<Category>) components.get(8);
-        allTransactions = (JRadioButton) components.get(9);
-        onlyNonRepeating = (JRadioButton) components.get(10);
-        onlyRepeating = (JRadioButton) components.get(11);
+        incomingCheckbox = overview.getIncomingCheckbox();
+        outgoingCheckbox = overview.getOutgoingCheckbox();
+        dateFrom = overview.getDateFrom();
+        dateTo = overview.getDateTo();
+        valueFrom = overview.getValueFrom();
+        valueTo = overview.getValueTo();
+        allCategories = overview.getAllCategories();
+        specifiedCategories = overview.getSpecifiedCategories();
+        categoriesJComboBox = overview.getCategoriesJComboBox();
+        allTransactions = overview.getAllTransactions();
+        onlyNonRepeating = overview.getOnlyNonRepeating();
+        onlyRepeating = overview.getOnlyRepeating();
 
         this.totalBalance = totalBalance;
         this.filteredBalance = filteredBalance;
@@ -168,8 +167,8 @@ public class TransactionFilter {
         return new RowFilter<>() {
             @Override
             public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
-                Category category = categoriesJComboBox.getItemAt(categoriesJComboBox.getSelectedIndex());
-                return entry.getValue(5).equals(category);
+                Category category = (Category) categoriesJComboBox.getSelectedItem();
+                return entry.getValue(4).equals(category);
             }
         };
     }
@@ -231,7 +230,12 @@ public class TransactionFilter {
         double amount = 0;
         for (int i = 0; i < overviewTable.getRowCount(); i++) {
             double cellAmount = (Double) overviewTable.getValueAt(i, 2);
-            amount += cellAmount;
+            if (overviewTable.getValueAt(i, 5) == TransactionType.Incoming) {
+                amount += cellAmount;
+            }
+            else {
+                amount -= cellAmount;
+            }
         }
         return Transaction.formatAmount(amount) + " $";
     }
