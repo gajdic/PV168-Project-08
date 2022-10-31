@@ -72,14 +72,6 @@ public class CashFlowEvidence {
     private final JTable transactionTable;
 
     public CashFlowEvidence() {
-        addTAction = new AddTransactionAction();
-        editTAction = new EditTransactionAction();
-        deleteTAction = new DeleteTransactionAction();
-
-        addCAction = new AddCategoryAction();
-        editCAction = new EditCategoryAction();
-        deleteCAction = new DeleteCategoryAction();
-
         setBalanceFont();
 
         // tmp
@@ -95,6 +87,16 @@ public class CashFlowEvidence {
         transactions.add(new Transaction(TransactionType.Incoming, "name2", "desc2", 9999, LocalDateTime.now().minusDays(1), category));
 
         transactionTable = createTransactionTable(transactions);
+
+        addTAction = new AddTransactionAction();
+        editTAction = new EditTransactionAction();
+        deleteTAction = new DeleteTransactionAction();
+
+        addCAction = new AddCategoryAction(categoryTable);
+        editCAction = new EditCategoryAction(categoryTable);
+        deleteCAction = new DeleteCategoryAction(categoryTable);
+
+        initializeActionsState();
 
         JPanel content = getContent();
         frame.add(content, BorderLayout.CENTER);
@@ -129,21 +131,24 @@ public class CashFlowEvidence {
     private JTable createTable(AbstractTableModel model) {
         var table = new JTable(model);
         table.setAutoCreateRowSorter(true);
-        table.getSelectionModel().addListSelectionListener(this::rowSelectionChanged);
+        table.getSelectionModel().addListSelectionListener(this::categoryRowSelectionChanged);
 
         return table;
     }
 
-    private void rowSelectionChanged(ListSelectionEvent listSelectionEvent) {
+    private void categoryRowSelectionChanged(ListSelectionEvent listSelectionEvent) {
         var selectionModel = (ListSelectionModel) listSelectionEvent.getSource();
         var count = selectionModel.getSelectedItemsCount();
-        changeActionsState(count);
+
+        editCAction.setEnabled(count == 1);
+        deleteCAction.setEnabled(count >= 1);
     }
 
-    private void changeActionsState(int selectedItemsCount) {
-        // TODO
-        //editAction.setEnabled(selectedItemsCount == 1);
-        //deleteAction.setEnabled(selectedItemsCount >= 1);
+    private void initializeActionsState() {
+        editTAction.setEnabled(false);
+        deleteTAction.setEnabled(false);
+        editCAction.setEnabled(false);
+        deleteCAction.setEnabled(false);
     }
 
     private static JFrame getFrame() {

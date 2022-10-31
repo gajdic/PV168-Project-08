@@ -82,7 +82,8 @@ public class TransactionDialog extends JDialog {
     }
 
     private void displayDialog() {
-        setBounds(600, 300, 600, 380);
+        setBounds(0, 0, 600, 380);
+        setLocationRelativeTo(CashFlowEvidence.frame);
         setContentPane(contentPane);
         setModal(true);
         setResizable(false);

@@ -1,15 +1,10 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
 import cz.muni.fi.pv168.cashflowevidence.model.Category;
+import cz.muni.fi.pv168.cashflowevidence.model.CategoryTableModel;
+import cz.muni.fi.pv168.cashflowevidence.validation.CategoryValidator;
 
-import javax.swing.JButton;
-import javax.swing.JColorChooser;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
+import javax.swing.*;
 import java.awt.Color;
 import java.awt.Frame;
 import java.awt.event.KeyEvent;
@@ -20,9 +15,6 @@ import java.awt.event.WindowEvent;
  * Class representing category dialog
  */
 public class CategoryDialog extends JDialog {
-    // for showcase
-    private static final Color[] COLORS =
-            {Color.BLACK, Color.BLUE, Color.RED, Color.GREEN, Color.YELLOW, Color.ORANGE};
     private JPanel contentPane;
     private JButton saveBtn;
     private JButton cancelBtn;
@@ -34,7 +26,9 @@ public class CategoryDialog extends JDialog {
     private JButton colorChooserBtn;
     private JPanel colorPanel;
     private JPanel colorChooserPanel;
-    private Category category;
+    private Color color;
+    private final Category category;
+
 
     /**
      * Constructor used to create new categories
@@ -42,25 +36,40 @@ public class CategoryDialog extends JDialog {
      */
     public CategoryDialog(String title) {
         super(CashFlowEvidence.frame, title);
+        this.category = new Category();
+        this.color = Color.RED;
+
         dialogSetup();
     }
 
     /**
      * Constructor used for editing existing categories
-     * @param owner Frame which the dialog is bound to
      * @param title Title used for the dialog
      * @param category Category which is being edited
      */
-    public CategoryDialog(Frame owner, String title, Category category) {
-        super(owner, title);
+    public CategoryDialog(String title, Category category) {
+        super(CashFlowEvidence.frame, title);
+        this.category = category;
+
         dialogSetup();
 
-        this.category = category;
         nameField.setText(category.getName());
+        color = category.getColor();
+    }
+
+    /**
+     * Shows the dialog and makes it possible to return category when dialog is closed.
+     * @return Category, which was either created or edited
+     */
+    public Category showDialog() {
+        setVisible(true);
+
+        return category;
     }
 
     private void dialogSetup() {
-        setBounds(600, 300, 600, 250);
+        setBounds(0, 0, 600, 250);
+        setLocationRelativeTo(CashFlowEvidence.frame);
         setContentPane(contentPane);
         setModal(true);
         setResizable(false);
@@ -84,6 +93,17 @@ public class CategoryDialog extends JDialog {
     }
 
     private void onSave() {
+        if (!CategoryValidator.isValidName(nameField.getText())) {
+            Object[] options = { "OK", "CANCEL" };
+            JOptionPane.showOptionDialog(null, "Name cannot be null", "Warning",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                    null, options, options[0]);
+            return;
+        }
+
+        category.setName(nameField.getText());
+        category.setColor(color);
+
         dispose();
     }
 
@@ -110,7 +130,7 @@ public class CategoryDialog extends JDialog {
             initialColor = category.getColor();
         }
 
-        Color color = JColorChooser.showDialog(this, "Select a color", initialColor);
+        color = JColorChooser.showDialog(this, "Select a color", initialColor);
         colorPanel.setBackground(color);
     }
 }
