@@ -109,7 +109,7 @@ public class Transaction {
         return dateTime;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
+    public void setDate(LocalDateTime dateTime) {
         this.dateTime = dateTime;
     }
 

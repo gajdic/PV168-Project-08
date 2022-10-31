@@ -1,7 +1,5 @@
 package cz.muni.fi.pv168.cashflowevidence.data.adapter;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
@@ -68,7 +66,7 @@ public class TransactionAdapter extends TypeAdapter<Transaction> {
 
             if ("date".equals(fieldName)) {
                 token = reader.peek();
-                transaction.setDateTime(LocalDateTime.parse(reader.nextString()));
+                transaction.setDate(LocalDateTime.parse(reader.nextString()));
             }
 
             if ("category_name".equals(fieldName)) {
