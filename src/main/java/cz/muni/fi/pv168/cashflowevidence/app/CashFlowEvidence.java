@@ -10,9 +10,11 @@ import cz.muni.fi.pv168.cashflowevidence.action.ExitApplicationAction;
 import cz.muni.fi.pv168.cashflowevidence.action.ExportAction;
 import cz.muni.fi.pv168.cashflowevidence.action.HelpAction;
 import cz.muni.fi.pv168.cashflowevidence.action.ImportAction;
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.JsonTransactionExporter;
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.JsonTransactionImporter;
+import cz.muni.fi.pv168.cashflowevidence.data.adapter.TransactionCSVSerializer;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.*;
 import cz.muni.fi.pv168.cashflowevidence.model.*;
+import cz.muni.fi.pv168.cashflowevidence.data.validation.CategoryValidator;
+import cz.muni.fi.pv168.cashflowevidence.data.validation.TransactionValidator;
 
 import javax.swing.Action;
 import javax.swing.Box;
@@ -51,9 +53,14 @@ public class CashFlowEvidence {
     public static final JFrame frame = getFrame();
 
     // file menu
+
+
     private final Action importAction;
     private final Action exportAction;
     private final Action exitAction = new ExitApplicationAction();
+    private final Action importJsonAction;
+    private final Action exportJsonAction;
+
 
     private final Action addTAction;
     private final Action editTAction;
@@ -74,6 +81,7 @@ public class CashFlowEvidence {
     private final JTable transactionTable;
     private final CategoryListModel categoryListModel;
 
+
     public CashFlowEvidence() {
         setBalanceFont();
 
@@ -91,9 +99,6 @@ public class CashFlowEvidence {
 
         transactionTable = createTransactionTable(transactions);
 
-        JsonTransactionImporter jsonImporter = new JsonTransactionImporter();
-        JsonTransactionExporter jsonExporter = new JsonTransactionExporter();
-
         categoryListModel = new CategoryListModel(categories);
 
         addTAction = new AddTransactionAction(transactionTable, categoryListModel);
@@ -104,8 +109,16 @@ public class CashFlowEvidence {
         editCAction = new EditCategoryAction(categoryTable);
         deleteCAction = new DeleteCategoryAction(categoryTable);
 
-        importAction = new ImportAction(transactionTable, jsonImporter);
-        exportAction = new ExportAction(transactionTable, jsonExporter);
+        TransactionImporter jsonImporter = new JsonTransactionImporter();
+        TransactionExporter jsonExporter = new JsonTransactionExporter();
+        TransactionImporter csvImporter = new TransactionPerLineImporter(new TransactionCSVSerializer());
+        TransactionExporter csvExporter = new TransactionPerLineExporter(new TransactionCSVSerializer());
+
+
+        importAction = new ImportAction(transactionTable, csvImporter);
+        exportAction = new ExportAction(transactionTable, csvExporter);
+        importJsonAction = new ImportAction(transactionTable, jsonImporter);
+        exportJsonAction = new ExportAction(transactionTable, jsonExporter);
 
         initializeActionsState();
 
@@ -190,7 +203,7 @@ public class CashFlowEvidence {
     private JMenuBar getMenuBar() {
 
         JMenu fileMenu = getMenu("File", KeyEvent.VK_F,
-                new ArrayList<>(Arrays.asList(importAction, exportAction, exitAction)));
+                new ArrayList<>(Arrays.asList(importAction, importJsonAction, exportAction, exportJsonAction, exitAction)));
         JMenu transactionMenu = getMenu("Transaction", KeyEvent.VK_T,
                 new ArrayList<>(Arrays.asList(addTAction, editTAction, deleteTAction)));
         JMenu categoryMenu = getMenu("Category", KeyEvent.VK_C,

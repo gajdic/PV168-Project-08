@@ -3,7 +3,7 @@ package cz.muni.fi.pv168.cashflowevidence.data.manipulation;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import cz.muni.fi.pv168.cashflowevidence.adapter.TransactionAdapter;
+import cz.muni.fi.pv168.cashflowevidence.data.adapter.TransactionAdapter;
 import cz.muni.fi.pv168.cashflowevidence.model.Transaction;
 
 import java.io.BufferedWriter;
@@ -14,7 +14,7 @@ import java.util.Collection;
 
 public final class JsonTransactionExporter implements TransactionExporter {
 
-    public void exportJson(Collection<Transaction> transactions, String filePath){
+    public void exportTransactions(Collection<Transaction> transactions, String filePath){
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Transaction.class, new TransactionAdapter())
                 .disableHtmlEscaping()
@@ -27,8 +27,13 @@ public final class JsonTransactionExporter implements TransactionExporter {
             writer.write(gson.toJson(transactions));
         }
         catch (IOException e) {
-            //TODO: what to do on error
+            //TODO: handle error behaviour
             throw new RuntimeException();
         }
+    }
+
+    @Override
+    public ExportFormat getFormat() {
+        return ExportFormat.json;
     }
 }

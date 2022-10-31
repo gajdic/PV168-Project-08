@@ -1,4 +1,4 @@
-package cz.muni.fi.pv168.cashflowevidence.adapter;
+package cz.muni.fi.pv168.cashflowevidence.data.adapter;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 
 public class TransactionAdapter extends TypeAdapter<Transaction> {
+
+
     @Override
     public void write(JsonWriter writer, Transaction transaction) throws IOException {
         writer.beginObject();
@@ -29,7 +31,7 @@ public class TransactionAdapter extends TypeAdapter<Transaction> {
         writer.name("category_name");
         writer.value(transaction.getCategory().getName());
         writer.name("category_color");
-        writer.value("#"+Integer.toHexString(transaction.getCategory().getColor().getRGB()).substring(2));
+        writer.value(transaction.getCategory().getColorString());
         writer.name("type");
         writer.value(transaction.getTransactionType().toString());
         writer.endObject();
@@ -76,6 +78,7 @@ public class TransactionAdapter extends TypeAdapter<Transaction> {
 
             if ("category_color".equals(fieldName)) {
                 token = reader.peek();
+                // TODO: Update when data layer exists
                 transaction.setCategory(new Category(categoryName, Color.decode(reader.nextString())));
             }
 

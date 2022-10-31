@@ -14,7 +14,7 @@ public class ExportAction extends AbstractAction {
     private final TransactionExporter exporter;
 
     public ExportAction(JTable table, TransactionExporter exporter) {
-        super("Export", UIManager.getIcon("FileChooser.fileIcon"));
+        super("Export " + exporter.getFormat(), UIManager.getIcon("FileChooser.fileIcon"));
         this.table = Objects.requireNonNull(table);
         this.exporter = Objects.requireNonNull(exporter);
         putValue(SHORT_DESCRIPTION, "Exports selected record");
@@ -31,8 +31,8 @@ public class ExportAction extends AbstractAction {
         if (dialogResult == JFileChooser.APPROVE_OPTION) {
             File exportFile = fileChooser.getSelectedFile();
             var transactionTableModel = (TransactionTableModel) table.getModel();
-            //TODO: switch between which export option e.g json or csv
-            exporter.exportJson(transactionTableModel.getEntities(), exportFile.getAbsolutePath());
+
+            exporter.exportTransactions(transactionTableModel.getEntities(), exportFile.getAbsolutePath());
         }
     }
 }

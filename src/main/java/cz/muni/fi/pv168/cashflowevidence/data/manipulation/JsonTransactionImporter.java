@@ -4,14 +4,15 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
-import cz.muni.fi.pv168.cashflowevidence.adapter.TransactionAdapter;
+import cz.muni.fi.pv168.cashflowevidence.data.adapter.TransactionAdapter;
+import cz.muni.fi.pv168.cashflowevidence.exceptions.InvalidImportException;
 import cz.muni.fi.pv168.cashflowevidence.model.Transaction;
+import cz.muni.fi.pv168.cashflowevidence.data.validation.CategoryValidator;
+import cz.muni.fi.pv168.cashflowevidence.data.validation.TransactionValidator;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -19,7 +20,8 @@ public class JsonTransactionImporter implements TransactionImporter {
     private static final Type TRANSACTION_TYPE = new TypeToken<List<Transaction>>() {
     }.getType();
 
-    public Collection<Transaction> importJson(String filePath) {
+
+    public Collection<Transaction> importRecords(String filePath) throws InvalidImportException {
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Transaction.class, new TransactionAdapter())
                 .create();
@@ -31,9 +33,20 @@ public class JsonTransactionImporter implements TransactionImporter {
         }
         catch (IOException e) {
             //TODO: what to do on error
-            throw new RuntimeException();
+            throw new InvalidImportException(e);
         }
 
+        for (Transaction transaction: transactions) {
+            if (!TransactionValidator.isValid(transaction))
+                throw new InvalidImportException("Transaction " + transaction + " is not valid");
+        }
+
+
         return transactions;
+    }
+
+    @Override
+    public ImportFormat getFormat() {
+        return ImportFormat.json;
     }
 }

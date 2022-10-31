@@ -109,7 +109,7 @@ public class Transaction {
         return dateTime;
     }
 
-    public void setDate(LocalDateTime dateTime) {
+    public void setDateTime(LocalDateTime dateTime) {
         this.dateTime = dateTime;
     }
 
@@ -168,5 +168,21 @@ public class Transaction {
         repeatTo = transaction.getRepeatTo();
         frequencyType = transaction.getFrequencyType();
         frequency = transaction.getFrequency();
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "transactionType=" + transactionType +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", amount=" + amount +
+                ", dateTime=" + dateTime +
+                ", category=" + category +
+                ", repeatFrom=" + repeatFrom +
+                ", repeatTo=" + repeatTo +
+                ", frequencyType=" + frequencyType +
+                ", frequency=" + frequency +
+                '}';
     }
 }

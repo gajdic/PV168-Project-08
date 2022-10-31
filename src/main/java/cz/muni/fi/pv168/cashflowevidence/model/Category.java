@@ -31,6 +31,10 @@ public class Category {
         return color;
     }
 
+    public String getColorString() {
+        return ("#"+Integer.toHexString(this.getColor().getRGB()).substring(2));
+    }
+
     public void setColor(Color color) {
         this.color = Objects.requireNonNull(color, "color must not be null");
     }
