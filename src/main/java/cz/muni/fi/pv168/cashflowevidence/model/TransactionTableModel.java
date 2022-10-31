@@ -13,7 +13,7 @@ public class TransactionTableModel extends AbstractTableModel {
             Column.editable("Name", String.class, Transaction::getName, Transaction::setName),
             Column.editable("Description", String.class, Transaction::getDescription, Transaction::setDescription),
             Column.editable("Amount ($)", Double.class, Transaction::getAmount, Transaction::setAmount),
-            Column.editable("Date", LocalDateTime.class, Transaction::getDateTime, Transaction::setDateTime),
+            Column.editable("Date", LocalDateTime.class, Transaction::getDateTime, Transaction::setDate),
             Column.editable("Category", Category.class, Transaction::getCategory, Transaction::setCategory),
             Column.readonly("Type", TransactionType.class, Transaction::getTransactionType),
             Column.readonly("Repeating", String.class, t -> String.valueOf(t.isRepeating()))

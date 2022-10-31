@@ -24,18 +24,21 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.FlowLayout;
 import java.awt.Dimension;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
 // TODO: This class is too long. Consider splitting in multiple separate (Maybe more reusable?) Ones.
 public class TransactionsOverview extends AbstractOverview {
 
     //incoming/outgoing
-    private final JCheckBox incomingCheckbox = new JCheckBox("Incoming");
-    private final JCheckBox outgoingCheckbox = new JCheckBox("Outgoing");
+    private final JCheckBox incomingCheckbox = new JCheckBox("Incoming", true);
+    private final JCheckBox outgoingCheckbox = new JCheckBox("Outgoing", true);
 
     //dates
     private final DatePicker dateFrom = new DatePicker();
@@ -60,23 +63,30 @@ public class TransactionsOverview extends AbstractOverview {
     //filtration
     private final JButton filterButton = new JButton("Filter");
     private final JButton resetFilterButton = new JButton("Reset filter");
+    private final TransactionFilter filter;
 
+    private final CategoryListModel categoryListModel;
 
     /**
      * Represents the panel of transactions
      */
-    public TransactionsOverview(JTable transactionsTable, ArrayList<Action> actions, CategoryListModel categoryListModel) {
+    public TransactionsOverview(JTable transactionsTable, ArrayList<Action> actions, JLabel totalBalance, JLabel filteredBalance, CategoryListModel categoryListModel) {
         super(transactionsTable, actions);
         setLayout();
 
-        categoriesJComboBox = new JComboBox<>(categoryListModel.getCategories());
+        this.categoryListModel = categoryListModel;
 
         // TODO: Refactor and move this to AbstractOverview using abstract topPanel and Overview methods
         // TODO: Needed to not initialize fields in this class, as they are null;
         add(topPanel(), BorderLayout.NORTH);
-        add(new JScrollPane(overviewTable));
+
+        var scrollPane = new JScrollPane(overviewTable);
+        scrollPane.setComponentPopupMenu(new RightClickMenu(actions));
+        add(scrollPane);
+
         setAmountCellRenderer();
         setDateTimeCellRenderer();
+        this.filter = new TransactionFilter(transactionsTable, totalBalance, filteredBalance, this);
     }
 
     private JPanel topPanel() {
@@ -175,14 +185,20 @@ public class TransactionsOverview extends AbstractOverview {
         checkboxPanel.add(allCategories);
         checkboxPanel.add(specifiedCategories);
 
+        categoriesJComboBox.setPreferredSize(new Dimension(80, 20));
+        categoriesJComboBox.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                categoriesJComboBox.removeAllItems();
+                Arrays.stream(categoryListModel.getCategories()).forEach(categoriesJComboBox::addItem);
+            }
+        });
+
         categoriesJComboBox.setVisible(false);
         allCategories.addActionListener(e -> specifiedCategorySetTrue());
         specifiedCategories.addActionListener(e -> specifiedCategorySetTrue());
 
         comboPanel.add(categoriesJComboBox);
-        categoriesJComboBox.setPreferredSize(new Dimension(
-                (int) categoriesJComboBox.getPreferredSize().getWidth() + 10,
-                (int) categoriesJComboBox.getPreferredSize().getHeight()));
 
         categoriesPanel.add(new JLabel("Categories"), BorderLayout.NORTH);
         categoriesPanel.add(checkboxPanel, BorderLayout.WEST);
@@ -216,11 +232,13 @@ public class TransactionsOverview extends AbstractOverview {
 
     private JButton filterButton() {
         filterButton.setMnemonic(KeyEvent.VK_I);
+        filterButton.addActionListener(l -> filter.filterRows());
         return filterButton;
     }
 
     private JButton resetFilterButton() {
         resetFilterButton.setMnemonic(KeyEvent.VK_R);
+        resetFilterButton.addActionListener(e -> filter.resetFilter());
         return resetFilterButton;
     }
 
@@ -258,5 +276,53 @@ public class TransactionsOverview extends AbstractOverview {
         public void setValueClass(Class<?> valueClass) {
             super.setValueClass(Integer.class);
         }
+    }
+
+    public JCheckBox getIncomingCheckbox() {
+        return incomingCheckbox;
+    }
+
+    public JCheckBox getOutgoingCheckbox() {
+        return outgoingCheckbox;
+    }
+
+    public DatePicker getDateFrom() {
+        return dateFrom;
+    }
+
+    public DatePicker getDateTo() {
+        return dateTo;
+    }
+
+    public JFormattedTextField getValueFrom() {
+        return valueFrom;
+    }
+
+    public JFormattedTextField getValueTo() {
+        return valueTo;
+    }
+
+    public JRadioButton getAllCategories() {
+        return allCategories;
+    }
+
+    public JRadioButton getSpecifiedCategories() {
+        return specifiedCategories;
+    }
+
+    public JComboBox<Category> getCategoriesJComboBox() {
+        return categoriesJComboBox;
+    }
+
+    public JRadioButton getAllTransactions() {
+        return allTransactions;
+    }
+
+    public JRadioButton getOnlyNonRepeating() {
+        return onlyNonRepeating;
+    }
+
+    public JRadioButton getOnlyRepeating() {
+        return onlyRepeating;
     }
 }

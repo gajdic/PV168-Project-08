@@ -81,14 +81,15 @@ public class CashFlowEvidence {
     private final JTable transactionTable;
     private final CategoryListModel categoryListModel;
 
-
     public CashFlowEvidence() {
         setBalanceFont();
 
         // tmp
         var categories = new ArrayList<Category>();
         var category = new Category("Jou", Color.RED);
+        var category2 = new Category("Bu", Color.BLUE);
         categories.add(category);
+        categories.add(category2);
 
         categoryTable = createCategoryTable(categories);
 
@@ -96,8 +97,19 @@ public class CashFlowEvidence {
         var transactions = new ArrayList<Transaction>();
         transactions.add(new Transaction(TransactionType.Incoming, "name", "desc", 10000000, LocalDateTime.now(), category));
         transactions.add(new Transaction(TransactionType.Incoming, "name2", "desc2", 9999, LocalDateTime.now().minusDays(1), category));
+        transactions.add(new Transaction(TransactionType.Outgoing, "name3", "desc3", 189, LocalDateTime.now().minusDays(3), category));
+        transactions.add(new Transaction(TransactionType.Outgoing, "name4", "desc4", 200, LocalDateTime.now().minusDays(7), category2));
 
         transactionTable = createTransactionTable(transactions);
+
+        TransactionTableModel transactionTableModel = (TransactionTableModel) transactionTable.getModel();
+
+        balanceLabel.setText(calculateBalance(transactionTableModel));
+
+        transactionTable.getModel().addTableModelListener(e -> {
+            balanceLabel.setText(calculateBalance(transactionTableModel));
+            filteredBalanceLabel.setText(calculateBalance(transactionTableModel));
+        });
 
         categoryListModel = new CategoryListModel(categories);
 
@@ -107,7 +119,7 @@ public class CashFlowEvidence {
 
         addCAction = new AddCategoryAction(categoryTable, categoryListModel);
         editCAction = new EditCategoryAction(categoryTable);
-        deleteCAction = new DeleteCategoryAction(categoryTable);
+        deleteCAction = new DeleteCategoryAction(categoryTable, categoryListModel);
 
         TransactionImporter jsonImporter = new JsonTransactionImporter();
         TransactionExporter jsonExporter = new JsonTransactionExporter();
@@ -161,6 +173,7 @@ public class CashFlowEvidence {
     private JTable createTable(AbstractTableModel model) {
         var table = new JTable(model);
         table.setAutoCreateRowSorter(true);
+        table.getSelectionModel().addListSelectionListener(this::categoryRowSelectionChanged);
 
         return table;
     }
@@ -237,10 +250,6 @@ public class CashFlowEvidence {
     private JPanel getBalancePanel() {
         JPanel panel = new JPanel(new GridLayout(2, 2));
 
-        // temporary vals and currency
-        balanceLabel.setText(Transaction.formatAmount(12345678) + "$");
-        filteredBalanceLabel.setText(Transaction.formatAmount(987) + "$");
-
         panel.add(new JLabel("Total balance:"));
         panel.add(balanceLabel);
         panel.add(new JLabel("Filtered balance:"));
@@ -266,9 +275,10 @@ public class CashFlowEvidence {
         tabbedPane.setTabPlacement(SwingConstants.TOP);
 
         tabbedPane.addTab("Transactions", new TransactionsOverview(transactionTable,
-                new ArrayList<>(Arrays.asList(addTAction, editTAction, deleteTAction)), categoryListModel));
+                new ArrayList<>(Arrays.asList(addTAction, editTAction, deleteTAction)), balanceLabel, filteredBalanceLabel, categoryListModel));
         tabbedPane.addTab("Categories", new CategoriesOverview(categoryTable,
                new ArrayList<>(Arrays.asList(addCAction, editCAction, deleteCAction))));
+
 
         panel.add(tabbedPane);
         panel.setMaximumSize(new Dimension(frame.getWidth(), 900));
@@ -276,5 +286,17 @@ public class CashFlowEvidence {
 
         return panel;
     }
-
+    private String calculateBalance(TransactionTableModel tableModel) {
+        double amount = 0;
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            double cellAmount = tableModel.getEntity(i).getAmount();
+            if (tableModel.getEntity(i).getTransactionType() == TransactionType.Incoming) {
+                amount += cellAmount;
+            }
+            else {
+                amount -= cellAmount;
+            }
+        }
+        return Transaction.formatAmount(amount) + " $";
+    }
 }

@@ -89,28 +89,36 @@ public class TransactionDialog extends JDialog {
     }
 
     private void setupForEdit() {
+        if (transaction.getTransactionType() == TransactionType.Incoming) {
+            incomingRadioButton.setSelected(true);
+        } else {
+            outgoingRadioButton.setSelected(true);
+        }
+
         nameField.setText(transaction.getName());
         descriptionField.setText(transaction.getDescription());
-        amountField.setText(String.format("%.2f", transaction.getAmount()));
+        amountField.setText(String.format("%.2f", transaction.getAmount()).replace(",", "."));
         dateTimePicker.setDateTimeStrict(transaction.getDateTime());
 
         int index = Arrays.stream(categories.getCategories()).toList().indexOf(transaction.getCategory());
         categoryComboBox.setSelectedIndex(index + 1); // +1 to skip empty category
 
-        if (transaction.isRepeating()) {
-            repeatingTransactionCheckBox.setSelected(true);
-            fromDatePicker.setDate(transaction.getRepeatFrom());
-            toDatePicker.setDate(transaction.getRepeatTo());
-            fromDatePicker.setDate(transaction.getRepeatFrom());
-            frequencyComboBox.setSelectedIndex(
-                    Arrays.stream(TransactionFrequency.values()).toList().indexOf(transaction.getFrequencyType()));
+        if (!transaction.isRepeating()) {
+            return;
+        }
 
-            onRepeatingTransaction();
+        repeatingTransactionCheckBox.setSelected(true);
+        fromDatePicker.setDate(transaction.getRepeatFrom());
+        toDatePicker.setDate(transaction.getRepeatTo());
+        fromDatePicker.setDate(transaction.getRepeatFrom());
+        frequencyComboBox.setSelectedIndex(
+                Arrays.stream(TransactionFrequency.values()).toList().indexOf(transaction.getFrequencyType()));
 
-            if (transaction.getFrequencyType() == TransactionFrequency.Custom) {
-                customFrequencyField.setText(String.valueOf(transaction.getFrequency()));
-                onCustomFrequency();
-            }
+        onRepeatingTransaction();
+
+        if (transaction.getFrequencyType() == TransactionFrequency.Custom) {
+            customFrequencyField.setText(String.valueOf(transaction.getFrequency()));
+            onCustomFrequency();
         }
     }
 
@@ -209,7 +217,7 @@ public class TransactionDialog extends JDialog {
         }
 
         tmpTransaction.setCategory((Category) categoryComboBox.getSelectedItem());
-        tmpTransaction.setDateTime(dateTimePicker.getDateTimeStrict());
+        tmpTransaction.setDate(dateTimePicker.getDateTimeStrict());
         tmpTransaction.setTransactionType(incomingRadioButton.isSelected() ? TransactionType.Incoming : TransactionType.Outgoing);
 
         try {

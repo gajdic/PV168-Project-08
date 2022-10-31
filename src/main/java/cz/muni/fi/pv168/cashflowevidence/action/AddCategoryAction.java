@@ -1,11 +1,15 @@
 package cz.muni.fi.pv168.cashflowevidence.action;
 
 import cz.muni.fi.pv168.cashflowevidence.app.CategoryDialog;
+import cz.muni.fi.pv168.cashflowevidence.model.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.model.CategoryTableModel;
 
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.JTable;
+import javax.swing.KeyStroke;
+import javax.swing.UIManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
@@ -26,10 +30,10 @@ public class AddCategoryAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        var categoryTableModel = (CategoryTableModel) categoryTable.getModel();
+        CategoryTableModel categoryTableModel = (CategoryTableModel) categoryTable.getModel();
 
-        var categoryDialog = new CategoryDialog("Add Category");
-        var category = categoryDialog.showDialog();
+        CategoryDialog categoryDialog = new CategoryDialog("Add Category");
+        Category category = categoryDialog.showDialog();
         categoryTableModel.addRow(category);
         categoryListModel.addCategory(category);
     }

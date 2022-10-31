@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.cashflowevidence.action;
 
+import cz.muni.fi.pv168.cashflowevidence.app.CashFlowEvidence;
 import cz.muni.fi.pv168.cashflowevidence.app.TransactionDialog;
 import cz.muni.fi.pv168.cashflowevidence.model.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.model.TransactionTableModel;
