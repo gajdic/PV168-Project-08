@@ -53,7 +53,7 @@ public class TransactionsOverview extends AbstractOverview {
     //categorises
     private final JRadioButton allCategories = new JRadioButton("All", true);
     private final JRadioButton specifiedCategories = new JRadioButton("Choose", false);
-    private final JComboBox<Category> categoriesJComboBox = new JComboBox<>();
+    private final JComboBox<Category> categoriesJComboBox = new JComboBox<>();;
 
     //repeating transactions
     private final JRadioButton allTransactions = new JRadioButton("All", true);

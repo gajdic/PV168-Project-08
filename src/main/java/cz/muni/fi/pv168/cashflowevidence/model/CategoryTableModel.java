@@ -1,6 +1,6 @@
 package cz.muni.fi.pv168.cashflowevidence.model;
 
-import cz.muni.fi.pv168.cashflowevidence.validation.CategoryValidator;
+import cz.muni.fi.pv168.cashflowevidence.data.validation.CategoryValidator;
 
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;

@@ -1,12 +1,10 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
 import cz.muni.fi.pv168.cashflowevidence.model.Category;
-import cz.muni.fi.pv168.cashflowevidence.model.CategoryTableModel;
-import cz.muni.fi.pv168.cashflowevidence.validation.CategoryValidator;
+import cz.muni.fi.pv168.cashflowevidence.data.validation.CategoryValidator;
 
 import javax.swing.*;
 import java.awt.Color;
-import java.awt.Frame;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;

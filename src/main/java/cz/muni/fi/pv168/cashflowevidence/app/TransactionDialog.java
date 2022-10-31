@@ -7,7 +7,7 @@ import cz.muni.fi.pv168.cashflowevidence.model.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.model.Transaction;
 import cz.muni.fi.pv168.cashflowevidence.model.TransactionFrequency;
 import cz.muni.fi.pv168.cashflowevidence.model.TransactionType;
-import cz.muni.fi.pv168.cashflowevidence.validation.TransactionValidator;
+import cz.muni.fi.pv168.cashflowevidence.data.validation.TransactionValidator;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;

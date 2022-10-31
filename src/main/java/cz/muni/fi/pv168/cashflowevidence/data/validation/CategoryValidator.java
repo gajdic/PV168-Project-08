@@ -1,4 +1,4 @@
-package cz.muni.fi.pv168.cashflowevidence.validation;
+package cz.muni.fi.pv168.cashflowevidence.data.validation;
 
 import cz.muni.fi.pv168.cashflowevidence.model.Category;
 
