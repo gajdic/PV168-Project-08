@@ -102,7 +102,7 @@ public class CashFlowEvidence {
 
         addCAction = new AddCategoryAction(categoryTable, categoryListModel);
         editCAction = new EditCategoryAction(categoryTable);
-        deleteCAction = new DeleteCategoryAction(categoryTable);
+        deleteCAction = new DeleteCategoryAction(categoryTable, categoryListModel);
 
         initializeActionsState();
 

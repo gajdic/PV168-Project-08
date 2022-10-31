@@ -7,7 +7,7 @@ import java.util.List;
 
 public class CategoryListModel extends AbstractListModel<Category> {
 
-    private final List<Category> categories;
+    public final List<Category> categories;
 
     public CategoryListModel(List<Category> categories) {
         this.categories = categories;
@@ -15,6 +15,10 @@ public class CategoryListModel extends AbstractListModel<Category> {
 
     public void addCategory(Category category) {
         this.categories.add(category);
+    }
+
+    public void removeCategory(int index) {
+        this.categories.remove(index);
     }
 
     @Override

@@ -19,15 +19,20 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 import javax.swing.text.NumberFormatter;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.FlowLayout;
 import java.awt.Dimension;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
 // TODO: This class is too long. Consider splitting in multiple separate (Maybe more reusable?) Ones.
@@ -71,11 +76,22 @@ public class TransactionsOverview extends AbstractOverview {
         setLayout();
 
         categoriesJComboBox = new JComboBox<>(categoryListModel.getCategories());
+        categoriesJComboBox.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                categoriesJComboBox.removeAllItems();
+                Arrays.stream(categoryListModel.getCategories()).forEach(categoriesJComboBox::addItem);
+            }
+        });
 
         // TODO: Refactor and move this to AbstractOverview using abstract topPanel and Overview methods
         // TODO: Needed to not initialize fields in this class, as they are null;
         add(topPanel(), BorderLayout.NORTH);
-        add(new JScrollPane(overviewTable));
+
+        var scrollPane = new JScrollPane(overviewTable);
+        scrollPane.setComponentPopupMenu(new RightClickMenu(actions));
+        add(scrollPane);
+
         setAmountCellRenderer();
         setDateTimeCellRenderer();
         this.filter = new TransactionFilter(transactionsTable, totalBalance, filteredBalance, this);

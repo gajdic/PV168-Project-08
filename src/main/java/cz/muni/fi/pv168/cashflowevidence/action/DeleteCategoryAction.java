@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.cashflowevidence.action;
 
+import cz.muni.fi.pv168.cashflowevidence.model.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.model.CategoryTableModel;
 
 import javax.swing.AbstractAction;
@@ -15,7 +16,9 @@ public class DeleteCategoryAction extends AbstractAction {
 
     private final JTable categoryTable;
 
-    public DeleteCategoryAction(JTable categoryTable) {
+    private final CategoryListModel categoryListModel;
+
+    public DeleteCategoryAction(JTable categoryTable, CategoryListModel categoryListModel) {
         super("Delete", UIManager.getIcon("FileChooser.fileIcon"));
 
         putValue(SHORT_DESCRIPTION, "Deletes selected record");
@@ -23,6 +26,7 @@ public class DeleteCategoryAction extends AbstractAction {
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl D"));
 
         this.categoryTable = categoryTable;
+        this.categoryListModel = categoryListModel;
     }
 
     @Override
@@ -32,6 +36,10 @@ public class DeleteCategoryAction extends AbstractAction {
                 .map(categoryTable::convertRowIndexToModel)
                 .boxed()
                 .sorted(Comparator.reverseOrder())
-                .forEach(categoryTableModel::deleteRow);
+                .forEach(e -> {
+                    categoryTableModel.deleteRow(e);
+                    categoryListModel.removeCategory(e);
+                });
+
     }
 }
