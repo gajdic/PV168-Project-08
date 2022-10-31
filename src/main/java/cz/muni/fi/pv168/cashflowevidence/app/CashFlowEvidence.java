@@ -29,6 +29,7 @@ import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -93,6 +94,7 @@ public class CashFlowEvidence {
         var transactions = new ArrayList<Transaction>();
         transactions.add(new Transaction(TransactionType.Incoming, "name", "desc", 10000000, LocalDateTime.now(), category));
         transactions.add(new Transaction(TransactionType.Incoming, "name2", "desc2", 9999, LocalDateTime.now().minusDays(1), category));
+        transactions.add(new Transaction(TransactionType.Outgoing, "name3", "desc3", 189, LocalDateTime.now().minusDays(3), category));
 
         transactionTable = createTransactionTable(transactions);
 
@@ -195,10 +197,6 @@ public class CashFlowEvidence {
     private JPanel getBalancePanel() {
         JPanel panel = new JPanel(new GridLayout(2, 2));
 
-        // temporary vals and currency
-        balanceLabel.setText(Transaction.formatAmount(12345678) + "$");
-        filteredBalanceLabel.setText(Transaction.formatAmount(987) + "$");
-
         panel.add(new JLabel("Total balance:"));
         panel.add(balanceLabel);
         panel.add(new JLabel("Filtered balance:"));
@@ -224,9 +222,10 @@ public class CashFlowEvidence {
         tabbedPane.setTabPlacement(SwingConstants.TOP);
 
         tabbedPane.addTab("Transactions", new TransactionsOverview(transactionTable,
-                new ArrayList<>(Arrays.asList(addTAction, editTAction, deleteTAction))));
+                new ArrayList<>(Arrays.asList(addTAction, editTAction, deleteTAction)), balanceLabel, filteredBalanceLabel));
         tabbedPane.addTab("Categories", new CategoriesOverview(categoryTable,
                new ArrayList<>(Arrays.asList(addCAction, editCAction, deleteCAction))));
+
 
         panel.add(tabbedPane);
         panel.setMaximumSize(new Dimension(frame.getWidth(), 900));

@@ -19,23 +19,21 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.text.NumberFormatter;
-import java.awt.Color;
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.FlowLayout;
-import java.awt.Dimension;
+import javax.swing.JComponent;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Objects;
 
 // TODO: This class is too long. Consider splitting in multiple separate (Maybe more reusable?) Ones.
 public class TransactionsOverview extends AbstractOverview {
 
     //incoming/outgoing
-    private final JCheckBox incomingCheckbox = new JCheckBox("Incoming");
-    private final JCheckBox outgoingCheckbox = new JCheckBox("Outgoing");
+    private final JCheckBox incomingCheckbox = new JCheckBox("Incoming", true);
+    private final JCheckBox outgoingCheckbox = new JCheckBox("Outgoing", true);
 
     //dates
     private final DatePicker dateFrom = new DatePicker();
@@ -60,12 +58,13 @@ public class TransactionsOverview extends AbstractOverview {
     //filtration
     private final JButton filterButton = new JButton("Filter");
     private final JButton resetFilterButton = new JButton("Reset filter");
+    private final TransactionFilter filter;
 
 
     /**
      * Represents the panel of transactions
      */
-    public TransactionsOverview(JTable transactionsTable, ArrayList<Action> actions) {
+    public TransactionsOverview(JTable transactionsTable, ArrayList<Action> actions, JLabel totalBalance, JLabel filteredBalance) {
         super(transactionsTable, actions);
         setLayout();
 
@@ -75,6 +74,7 @@ public class TransactionsOverview extends AbstractOverview {
         add(new JScrollPane(overviewTable));
         setAmountCellRenderer();
         setDateTimeCellRenderer();
+        this.filter = new TransactionFilter(transactionsTable, getComponentList(), totalBalance, filteredBalance);
         generateCategories();
     }
 
@@ -197,6 +197,7 @@ public class TransactionsOverview extends AbstractOverview {
 
     private void specifiedCategorySetTrue() {
         categoriesJComboBox.setVisible(specifiedCategories.isSelected());
+        categoriesJComboBox.setSelectedIndex(0);
     }
 
     private JPanel repeatingTransactions() {
@@ -220,11 +221,13 @@ public class TransactionsOverview extends AbstractOverview {
 
     private JButton filterButton() {
         filterButton.setMnemonic(KeyEvent.VK_I);
+        filterButton.addActionListener(l -> filter.filterRows());
         return filterButton;
     }
 
     private JButton resetFilterButton() {
         resetFilterButton.setMnemonic(KeyEvent.VK_R);
+        resetFilterButton.addActionListener(e -> filter.resetFilter());
         return resetFilterButton;
     }
 
@@ -278,5 +281,23 @@ public class TransactionsOverview extends AbstractOverview {
             categories[i] = new Category(titles[i], colors[i]);
         }
         return categories;
+    }
+
+    public ArrayList<JComponent> getComponentList() {
+        ArrayList<JComponent> componentList = new ArrayList<>();
+        componentList.add(incomingCheckbox);
+        componentList.add(outgoingCheckbox);
+        componentList.add(dateFrom);
+        componentList.add(dateTo);
+        componentList.add(valueFrom);
+        componentList.add(valueTo);
+        componentList.add(allCategories);
+        componentList.add(specifiedCategories);
+        componentList.add(categoriesJComboBox);
+        componentList.add(allTransactions);
+        componentList.add(onlyNonRepeating);
+        componentList.add(onlyRepeating);
+
+        return componentList;
     }
 }
