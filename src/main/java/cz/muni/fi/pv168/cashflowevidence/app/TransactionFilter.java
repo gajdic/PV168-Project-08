@@ -6,6 +6,10 @@ import cz.muni.fi.pv168.cashflowevidence.model.Transaction;
 import cz.muni.fi.pv168.cashflowevidence.model.TransactionType;
 
 import javax.swing.*;
+import javax.swing.event.RowSorterEvent;
+import javax.swing.event.RowSorterListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import java.time.LocalDate;
@@ -60,13 +64,14 @@ public class TransactionFilter {
 
         this.totalBalance = totalBalance;
         this.filteredBalance = filteredBalance;
-        totalBalance.setText(calculateBalance());
         filteredBalance.setText(calculateBalance());
     }
 
     public void filterRows() {
         TableModel model = overviewTable.getModel();
         TableRowSorter<TableModel> sorter = new TableRowSorter<>(model);
+        sorter.addRowSorterListener(e -> filteredBalance.setText(calculateBalance()));
+
         overviewTable.setRowSorter(sorter);
         RowFilter<TableModel, Integer> filter = RowFilter.andFilter(evaluate());
         sorter.setRowFilter(filter);
@@ -218,7 +223,6 @@ public class TransactionFilter {
 
     private void resetCategories() {
         allCategories.setSelected(true);
-        categoriesJComboBox.setSelectedIndex(0);
         categoriesJComboBox.setVisible(false);
     }
 

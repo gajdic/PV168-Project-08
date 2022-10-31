@@ -209,7 +209,6 @@ public class TransactionsOverview extends AbstractOverview {
 
     private void specifiedCategorySetTrue() {
         categoriesJComboBox.setVisible(specifiedCategories.isSelected());
-        categoriesJComboBox.setSelectedIndex(0);
     }
 
     private JPanel repeatingTransactions() {
