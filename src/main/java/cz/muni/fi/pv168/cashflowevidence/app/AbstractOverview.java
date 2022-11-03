@@ -4,13 +4,13 @@ package cz.muni.fi.pv168.cashflowevidence.app;
 import cz.muni.fi.pv168.cashflowevidence.model.CategoryTableModel;
 import cz.muni.fi.pv168.cashflowevidence.renderer.ColorCellRenderer;
 
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.Action;
 import javax.swing.JTable;
+import javax.swing.JButton;
+import javax.swing.BorderFactory;
 import javax.swing.table.TableColumn;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,25 +28,35 @@ abstract public class AbstractOverview extends JPanel {
         this.setComponentPopupMenu(new RightClickMenu(actions));
         this.overviewTable.setInheritsPopupMenu(true);
 
-        setColorCellRenderer();
+        //temporary disabled
+        //setColorCellRenderer();
     }
     /**
      * Sets the basic layout and borders
      */
-    public void setLayout() {
+    protected void setLayout() {
         this.setLayout(new BorderLayout(30, 30));
         this.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 10));
     }
 
-    protected void addActionsToPanel(JPanel panel) {
+    protected JPanel getTopPanel() {
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setMaximumSize(new Dimension(1920, 50));
+        addActionsToPanel(topPanel);
+        return topPanel;
+    }
+
+    private void addActionsToPanel(JPanel panel) {
+        JPanel crudPanel = new JPanel();
+        crudPanel.setLayout(new GridLayout(3,1));
         for (Action action: actions) {
             JButton button = new JButton();
             button.setAction(action);
-            panel.add(button);
+            crudPanel.add(button);
         }
 
-        JPanel wrapper = new JPanel(new BorderLayout());
-        wrapper.add(panel, BorderLayout.EAST);
+        crudPanel.setPreferredSize(new Dimension(80, 100));
+        panel.add(crudPanel, BorderLayout.WEST);
     }
 
     private void setColorCellRenderer() {

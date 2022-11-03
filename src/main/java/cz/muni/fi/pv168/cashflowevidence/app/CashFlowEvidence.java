@@ -33,6 +33,8 @@ import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -40,6 +42,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,6 +81,8 @@ public class CashFlowEvidence {
     private final JLabel filteredBalanceLabel = new JLabel();
 
     private final JTable categoryTable;
+
+    private final JTable repeatingTransactionTable;
     private final JTable transactionTable;
     private final CategoryListModel categoryListModel;
 
@@ -92,6 +97,13 @@ public class CashFlowEvidence {
         categories.add(category2);
 
         categoryTable = createCategoryTable(categories);
+
+        var repeatingTransactions = new ArrayList<Transaction>();
+        repeatingTransactions.add(new Transaction(TransactionType.Incoming, "name", "desc",
+                10000000, LocalDateTime.now(), category,
+                LocalDate.now(), LocalDate.now().plusDays(7), TransactionFrequency.Daily));
+
+        repeatingTransactionTable = createRepeatingTransactionTable();
 
         // tmp
         var transactions = new ArrayList<Transaction>();
@@ -160,6 +172,12 @@ public class CashFlowEvidence {
         var table = createTable(new CategoryTableModel(categories));
         table.getSelectionModel().addListSelectionListener(this::categoryRowSelectionChanged);
 
+        return table;
+    }
+
+    //TODO
+    private JTable createRepeatingTransactionTable() {
+        var table = createTable(new DefaultTableModel());
         return table;
     }
 
@@ -276,6 +294,8 @@ public class CashFlowEvidence {
 
         tabbedPane.addTab("Transactions", new TransactionsOverview(transactionTable,
                 new ArrayList<>(Arrays.asList(addTAction, editTAction, deleteTAction)), balanceLabel, filteredBalanceLabel, categoryListModel));
+        tabbedPane.addTab("Repeating transactions", new RepeatingTransactionsOverview(repeatingTransactionTable,
+                new ArrayList<>(Arrays.asList(addTAction, editTAction, deleteTAction)))); //temporary actions
         tabbedPane.addTab("Categories", new CategoriesOverview(categoryTable,
                new ArrayList<>(Arrays.asList(addCAction, editCAction, deleteCAction))));
 
