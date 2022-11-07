@@ -74,7 +74,11 @@ public class TransactionsOverview extends AbstractOverview {
         // TODO: Refactor and move this to AbstractOverview using abstract topPanel and Overview methods
         // TODO: Needed to not initialize fields in this class, as they are null;
         add(topPanel(), BorderLayout.NORTH);
-        add(new JScrollPane(overviewTable));
+
+        var scrollPane = new JScrollPane(overviewTable);
+        scrollPane.setComponentPopupMenu(new RightClickMenu(actions));
+        add(scrollPane);
+
         setAmountCellRenderer();
         setDateTimeCellRenderer();
     }
