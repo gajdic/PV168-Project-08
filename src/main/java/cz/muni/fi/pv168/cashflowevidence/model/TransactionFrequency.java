@@ -23,6 +23,7 @@ public enum TransactionFrequency {
     Custom (0);
 
     public final int frequencyValue;
+
     TransactionFrequency(int frequencyValue) {
         this.frequencyValue = frequencyValue;
     }

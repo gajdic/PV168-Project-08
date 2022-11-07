@@ -10,6 +10,10 @@ public class Category {
     private String name;
     private Color color;
 
+    public Category() {
+        setColor(Color.RED);
+    }
+
     public Category(String name, Color color) {
         setName(name);
         setColor(color);
@@ -25,6 +29,10 @@ public class Category {
 
     public Color getColor() {
         return color;
+    }
+
+    public String getColorString() {
+        return ("#"+Integer.toHexString(this.getColor().getRGB()).substring(2));
     }
 
     public void setColor(Color color) {
