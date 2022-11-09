@@ -61,7 +61,7 @@ public class TransactionDialog extends JDialog {
     private DatePicker toDatePicker;
     private Transaction transaction;
 
-    private CategoryListModel categories;
+    private final CategoryListModel categories;
 
     /**
      * Constructor used to create new transaction
