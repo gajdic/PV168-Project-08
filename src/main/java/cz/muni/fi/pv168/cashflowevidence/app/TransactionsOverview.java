@@ -138,7 +138,7 @@ public class TransactionsOverview extends AbstractOverview {
         panel.setPreferredSize(new Dimension(65, 30));
 
         panel.add(new JLabel("Value from"), BorderLayout.NORTH);
-        panel.add(new JLabel("$"), BorderLayout.EAST);
+        panel.add(new JLabel("€"), BorderLayout.EAST);
         panel.add(valueFrom, BorderLayout.CENTER);
 
         return panel;
@@ -149,7 +149,7 @@ public class TransactionsOverview extends AbstractOverview {
         panel.setPreferredSize(new Dimension(65, 30));
 
         panel.add(new JLabel("Value to"), BorderLayout.NORTH);
-        panel.add(new JLabel("$"), BorderLayout.EAST);
+        panel.add(new JLabel("€"), BorderLayout.EAST);
         panel.add(valueTo, BorderLayout.CENTER);
 
         return panel;

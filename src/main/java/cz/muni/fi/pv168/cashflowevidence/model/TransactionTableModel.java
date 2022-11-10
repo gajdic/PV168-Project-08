@@ -12,7 +12,7 @@ public class TransactionTableModel extends AbstractTableModel {
     private final List<Column<Transaction, ?>> columns = List.of(
             Column.editable("Name", String.class, Transaction::getName, Transaction::setName),
             Column.editable("Description", String.class, Transaction::getDescription, Transaction::setDescription),
-            Column.editable("Amount ($)", Double.class, Transaction::getAmount, Transaction::setAmount),
+            Column.editable("Amount (€)", Double.class, Transaction::getAmount, Transaction::setAmount),
             Column.editable("Date", LocalDateTime.class, Transaction::getDateTime, Transaction::setDate),
             Column.editable("Category", Category.class, Transaction::getCategory, Transaction::setCategory),
             Column.readonly("Type", TransactionType.class, Transaction::getTransactionType),

@@ -241,6 +241,6 @@ public class TransactionFilter {
                 amount -= cellAmount;
             }
         }
-        return Transaction.formatAmount(amount) + " $";
+        return Transaction.formatAmount(amount) + " €";
     }
 }
