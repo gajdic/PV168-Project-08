@@ -53,7 +53,7 @@ public class TransactionsOverview extends AbstractOverview {
     //categorises
     private final JRadioButton allCategories = new JRadioButton("All", true);
     private final JRadioButton specifiedCategories = new JRadioButton("Choose", false);
-    private final JComboBox<Category> categoriesJComboBox = new JComboBox<>();;
+    private final JComboBox<Category> categoriesJComboBox = new JComboBox<>();
 
     //repeating transactions
     private final JRadioButton allTransactions = new JRadioButton("All", true);
@@ -76,29 +76,22 @@ public class TransactionsOverview extends AbstractOverview {
 
         this.categoryListModel = categoryListModel;
 
-        // TODO: Refactor and move this to AbstractOverview using abstract topPanel and Overview methods
-        // TODO: Needed to not initialize fields in this class, as they are null;
-        add(topPanel(), BorderLayout.NORTH);
-
         var scrollPane = new JScrollPane(overviewTable);
         scrollPane.setComponentPopupMenu(new RightClickMenu(actions));
         add(scrollPane);
+
+        JPanel topPanel = getTopPanel();
+        topPanel.add(optionsPanel());
+        add(topPanel, BorderLayout.NORTH);
 
         setAmountCellRenderer();
         setDateTimeCellRenderer();
         this.filter = new TransactionFilter(transactionsTable, totalBalance, filteredBalance, this);
     }
 
-    private JPanel topPanel() {
-        JPanel topPanel = new JPanel(new BorderLayout(5, 5));
-        JPanel optionsPanel = optionsPanel();
-        topPanel.add(optionsPanel, BorderLayout.WEST);
-        return topPanel;
-    }
-
     private JPanel optionsPanel() {
         JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 5));
-        optionsPanel.add(rowActionsPanel());
+        //optionsPanel.add(rowActionsPanel());
         optionsPanel.add(new JSeparator(JSeparator.VERTICAL));
         optionsPanel.add(incomingOutgoingPanel());
         optionsPanel.add(fromCalendar());
@@ -158,16 +151,6 @@ public class TransactionsOverview extends AbstractOverview {
         panel.add(new JLabel("Value to"), BorderLayout.NORTH);
         panel.add(new JLabel("$"), BorderLayout.EAST);
         panel.add(valueTo, BorderLayout.CENTER);
-
-        return panel;
-    }
-
-    private JPanel rowActionsPanel() {
-        JPanel panel = new JPanel(new GridLayout(0, 1));
-        addActionsToPanel(panel);
-
-        JPanel wrapper = new JPanel(new BorderLayout());
-        wrapper.add(panel, BorderLayout.EAST);
 
         return panel;
     }
