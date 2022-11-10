@@ -123,7 +123,7 @@ public class CashFlowEvidence {
 
         addCAction = new AddCategoryAction(categoryTable, categoryListModel);
         editCAction = new EditCategoryAction(categoryTable);
-        deleteCAction = new DeleteCategoryAction(categoryTable, categoryListModel);
+        deleteCAction = new DeleteCategoryAction(categoryTable, transactionTable, categoryListModel);
 
         TransactionImporter jsonImporter = new JsonTransactionImporter();
         TransactionExporter jsonExporter = new JsonTransactionExporter();
