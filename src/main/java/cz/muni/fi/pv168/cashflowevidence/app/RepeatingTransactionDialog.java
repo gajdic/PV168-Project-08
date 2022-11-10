@@ -5,7 +5,16 @@ import cz.muni.fi.pv168.cashflowevidence.model.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.model.TransactionFrequency;
 
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JDialog;
+import javax.swing.JButton;
+import javax.swing.JTextField;
+import javax.swing.JRadioButton;
+import javax.swing.JLabel;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
+import javax.swing.ButtonGroup;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
