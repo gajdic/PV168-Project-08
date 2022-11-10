@@ -297,6 +297,6 @@ public class CashFlowEvidence {
                 amount -= cellAmount;
             }
         }
-        return Transaction.formatAmount(amount) + " $";
+        return Transaction.formatAmount(amount) + " €";
     }
 }
