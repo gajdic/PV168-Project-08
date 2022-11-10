@@ -48,17 +48,17 @@ public class TransactionDialog extends JDialog {
     private JLabel categoryLabel;
     private JComboBox<Category> categoryComboBox;
     private JTextField amountField;
-    private JPanel repeatingTransactionPanel;
-    private JLabel repeatToLabel;
-    private JLabel repeatFromLabel;
-    private JLabel frequencyLabel;
-    private JComboBox<TransactionFrequency> frequencyComboBox;
-    private JTextField customFrequencyField;
-    private JLabel customFrequencyLabel;
-    private JCheckBox repeatingTransactionCheckBox;
+    //private JPanel repeatingTransactionPanel;
+    //private JLabel repeatToLabel;
+    //private JLabel repeatFromLabel;
+    //private JLabel frequencyLabel;
+    //private JComboBox<TransactionFrequency> frequencyComboBox;
+    //private JTextField customFrequencyField;
+    //private JLabel customFrequencyLabel;
+    //private JCheckBox repeatingTransactionCheckBox;
     private DateTimePicker dateTimePicker;
-    private DatePicker fromDatePicker;
-    private DatePicker toDatePicker;
+    //private DatePicker fromDatePicker;
+    //private DatePicker toDatePicker;
     private Transaction transaction;
 
     private CategoryListModel categories;
@@ -102,28 +102,10 @@ public class TransactionDialog extends JDialog {
 
         int index = Arrays.stream(categories.getCategories()).toList().indexOf(transaction.getCategory());
         categoryComboBox.setSelectedIndex(index + 1); // +1 to skip empty category
-
-        if (!transaction.isRepeating()) {
-            return;
-        }
-
-        repeatingTransactionCheckBox.setSelected(true);
-        fromDatePicker.setDate(transaction.getRepeatFrom());
-        toDatePicker.setDate(transaction.getRepeatTo());
-        fromDatePicker.setDate(transaction.getRepeatFrom());
-        frequencyComboBox.setSelectedIndex(
-                Arrays.stream(TransactionFrequency.values()).toList().indexOf(transaction.getFrequencyType()));
-
-        onRepeatingTransaction();
-
-        if (transaction.getFrequencyType() == TransactionFrequency.Custom) {
-            customFrequencyField.setText(String.valueOf(transaction.getFrequency()));
-            onCustomFrequency();
-        }
     }
 
     private void displayDialog() {
-        setBounds(0, 0, 600, 380);
+        setBounds(0, 0, 600, 360);
         setLocationRelativeTo(CashFlowEvidence.frame);
         setContentPane(contentPane);
         setModal(true);
@@ -131,7 +113,6 @@ public class TransactionDialog extends JDialog {
         getRootPane().setDefaultButton(saveBtn);
 
         addActionListenersOnSetup();
-        setupHiddenElements();
 
         // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -150,35 +131,6 @@ public class TransactionDialog extends JDialog {
     private void addActionListenersOnSetup() {
         saveBtn.addActionListener(e -> onSave());
         cancelBtn.addActionListener(e -> onCancel());
-        repeatingTransactionCheckBox.addActionListener(e -> onRepeatingTransaction());
-        frequencyComboBox.addActionListener(e -> onCustomFrequency());
-    }
-
-    private void setupHiddenElements() {
-        repeatingTransactionPanel.setVisible(false);
-        customFrequencyField.setVisible(false);
-        customFrequencyLabel.setVisible(false);
-    }
-
-    private void onRepeatingTransaction() {
-        if (repeatingTransactionCheckBox.isSelected()) {
-            setBounds(getX(), getY(), 600, 530);
-            repeatingTransactionPanel.setVisible(true);
-        } else {
-            setBounds(getX(), getY(), 600, 380);
-            repeatingTransactionPanel.setVisible(false);
-        }
-    }
-
-    private void onCustomFrequency() {
-        if (frequencyComboBox.getSelectedItem() == TransactionFrequency.Custom) {
-            customFrequencyField.setVisible(true);
-            customFrequencyLabel.setVisible(true);
-        }
-        else {
-            customFrequencyField.setVisible(false);
-            customFrequencyLabel.setVisible(false);
-        }
     }
 
     public Transaction showDialog() {
@@ -212,10 +164,6 @@ public class TransactionDialog extends JDialog {
     private Transaction validateInputs() {
         Transaction tmpTransaction = new Transaction();
 
-        if (repeatingTransactionCheckBox.isSelected() && (tmpTransaction = validateRepeatingInputs()) == null) {
-            return null;
-        }
-
         tmpTransaction.setCategory((Category) categoryComboBox.getSelectedItem());
         tmpTransaction.setDate(dateTimePicker.getDateTimeStrict());
         tmpTransaction.setTransactionType(incomingRadioButton.isSelected() ? TransactionType.Incoming : TransactionType.Outgoing);
@@ -232,41 +180,13 @@ public class TransactionDialog extends JDialog {
         return TransactionValidator.isValid(tmpTransaction) ? tmpTransaction : null;
     }
 
-    private Transaction validateRepeatingInputs() {
-        Transaction tmpTransaction = new Transaction();
-
-        var frequency = (TransactionFrequency) frequencyComboBox.getSelectedItem();
-        tmpTransaction.setFrequencyType(frequency);
-
-        if (frequency == TransactionFrequency.Custom) {
-            try {
-                tmpTransaction.setFrequency(Integer.parseInt(customFrequencyField.getText()));
-            } catch (NumberFormatException ex) {
-                return null;
-            }
-        } else {
-            tmpTransaction.setFrequency(frequency.frequencyValue);
-        }
-
-        tmpTransaction.setRepeatFrom(fromDatePicker.getDate());
-        tmpTransaction.setRepeatTo(toDatePicker.getDate());
-
-        return tmpTransaction;
-    }
 
     private void createUIComponents() {
         categoryComboBox = new JComboBox<>(categories.getCategories());
         categoryComboBox.insertItemAt(null, 0);
         categoryComboBox.setSelectedIndex(0);
-        frequencyComboBox = new JComboBox<>(TransactionFrequency.values());
 
         dateTimePicker = new DateTimePicker();
         dateTimePicker.setDateTimeStrict(LocalDateTime.now());
-
-        fromDatePicker = new DatePicker();
-        fromDatePicker.setDate(LocalDate.now());
-
-        toDatePicker = new DatePicker();
-        toDatePicker.setDate(LocalDate.now().plusDays(1));
     }
 }
