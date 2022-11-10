@@ -32,6 +32,9 @@ public class RepeatingTransactionDialog extends JDialog {
     private DatePicker dateFromPicker;
     private DatePicker dateToPicker;
     private JComboBox<Category> categoryComboBox;
+    private JTextField customFrequencyField;
+    private JLabel customFrequencyLabel;
+    private JPanel customFrequencyPanel;
     private CategoryListModel categories;
 
     public RepeatingTransactionDialog(String title, CategoryListModel categories) {
@@ -83,10 +86,15 @@ public class RepeatingTransactionDialog extends JDialog {
     }
 
     private void setupUIComponents() {
+        setupHiddenElements();
         setupCategories();
         setupIncomingOutgoing();
-        setupFrequencies();
+        setupFrequencyComboBox();
         setupDatePickers();
+    }
+
+    private void setupHiddenElements() {
+        customFrequencyPanel.setVisible(false);
     }
 
     private void setupCategories() {
@@ -104,14 +112,26 @@ public class RepeatingTransactionDialog extends JDialog {
         outgoingRadioButton.setSelected(true);
     }
 
-    private void setupFrequencies () {
+    private void setupFrequencyComboBox () {
         for (TransactionFrequency frequency : TransactionFrequency.values()) {
             frequencyComboBox.addItem(frequency);
         }
+        frequencyComboBox.addActionListener(e -> onCustomFrequency());
     }
 
     private void setupDatePickers() {
         dateFromPicker.setDate(LocalDate.now());
         dateToPicker.setDate(LocalDate.now().plusDays(1));
+    }
+
+    private void onCustomFrequency() {
+        if (frequencyComboBox.getSelectedItem() == TransactionFrequency.Custom) {
+            setBounds(getX(), getY(), 600, 430);
+            customFrequencyPanel.setVisible(true);
+        }
+        else {
+            setBounds(getX(), getY(), 600, 400);
+            customFrequencyPanel.setVisible(false);
+        }
     }
 }
