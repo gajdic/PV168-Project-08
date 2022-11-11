@@ -218,7 +218,7 @@ public class CashFlowEvidence {
         frame.setLocationRelativeTo(null);
         frame.setLayout(new BorderLayout());
         frame.setTitle("Cash Flow Evidence");
-        frame.setMinimumSize(new Dimension(1000, 400));
+        frame.setMinimumSize(new Dimension(1600, 400));
 
         return frame;
     }
