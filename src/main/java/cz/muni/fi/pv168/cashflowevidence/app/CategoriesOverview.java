@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
 import javax.swing.Action;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import java.awt.BorderLayout;
@@ -15,7 +16,9 @@ public class CategoriesOverview extends AbstractOverview {
         super(categoryTable, actions);
         setLayout();
 
-        add(getTopPanel(), BorderLayout.NORTH);
+        JPanel topPanel = getTopPanel();
+        topPanel.add(getCrudPanel(), BorderLayout.NORTH);
+        add(topPanel, BorderLayout.NORTH);
 
         var scrollPane = new JScrollPane(overviewTable);
         scrollPane.setComponentPopupMenu(new RightClickMenu(actions));

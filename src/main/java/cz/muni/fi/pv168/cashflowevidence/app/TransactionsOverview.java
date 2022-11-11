@@ -7,23 +7,11 @@ import cz.muni.fi.pv168.cashflowevidence.model.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.renderer.AmountCellRenderer;
 import cz.muni.fi.pv168.cashflowevidence.renderer.DateTimeCellRenderer;
 
-import javax.swing.Action;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFormattedTextField;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.text.NumberFormatter;
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.FlowLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
@@ -37,8 +25,8 @@ import java.util.Objects;
 public class TransactionsOverview extends AbstractOverview {
 
     //incoming/outgoing
-    private final JCheckBox incomingCheckbox = new JCheckBox("Incoming", true);
-    private final JCheckBox outgoingCheckbox = new JCheckBox("Outgoing", true);
+    private final JCheckBox incomingCheckbox = new JCheckBox("Incoming");
+    private final JCheckBox outgoingCheckbox = new JCheckBox("Outgoing");
 
     //dates
     private final DatePicker dateFrom = new DatePicker();
@@ -56,9 +44,8 @@ public class TransactionsOverview extends AbstractOverview {
     private final JComboBox<Category> categoriesJComboBox = new JComboBox<>();
 
     //repeating transactions
-    private final JRadioButton allTransactions = new JRadioButton("All", true);
-    private final JRadioButton onlyNonRepeating = new JRadioButton("Only non-repeating", false);
-    private final JRadioButton onlyRepeating = new JRadioButton("Only repeating", false);
+    private final JCheckBox nonRepeatingCheckbox = new JCheckBox("Non repeating", true);
+    private final JCheckBox repeatingCheckbox = new JCheckBox("Repeating", true);
 
     //filtration
     private final JButton filterButton = new JButton("Filter");
@@ -75,23 +62,23 @@ public class TransactionsOverview extends AbstractOverview {
         setLayout();
 
         this.categoryListModel = categoryListModel;
+        this.filter = new TransactionFilter(transactionsTable, totalBalance, filteredBalance, this);
 
         var scrollPane = new JScrollPane(overviewTable);
         scrollPane.setComponentPopupMenu(new RightClickMenu(actions));
         add(scrollPane);
 
         JPanel topPanel = getTopPanel();
-        topPanel.add(optionsPanel());
+        topPanel.add(getOptionsPanel(), BorderLayout.NORTH);
+        topPanel.add(getCrudPanel(), BorderLayout.SOUTH);
         add(topPanel, BorderLayout.NORTH);
 
         setAmountCellRenderer();
         setDateTimeCellRenderer();
-        this.filter = new TransactionFilter(transactionsTable, totalBalance, filteredBalance, this);
     }
 
-    private JPanel optionsPanel() {
-        JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 5));
-        //optionsPanel.add(rowActionsPanel());
+    private JPanel getOptionsPanel() {
+        JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.LEADING, 15, 0));
         optionsPanel.add(new JSeparator(JSeparator.VERTICAL));
         optionsPanel.add(incomingOutgoingPanel());
         optionsPanel.add(fromCalendar());
@@ -99,76 +86,76 @@ public class TransactionsOverview extends AbstractOverview {
         optionsPanel.add(fromValue());
         optionsPanel.add(toValue());
         optionsPanel.add(categories());
-        optionsPanel.add(repeatingTransactions());
-        optionsPanel.add(filterButton());
-        optionsPanel.add(resetFilterButton());
+        optionsPanel.add(filterActionsPanel());
+
         return optionsPanel;
     }
 
     private JPanel incomingOutgoingPanel() {
         JPanel incomingOutgoingPanel = new JPanel(new BorderLayout());
+        JPanel checkboxPanel = new JPanel();
 
-        incomingOutgoingPanel.add(incomingCheckbox, BorderLayout.NORTH);
-        incomingOutgoingPanel.add(outgoingCheckbox, BorderLayout.CENTER);
+        checkboxPanel.add(incomingCheckbox);
+        checkboxPanel.add(outgoingCheckbox);
+        incomingOutgoingPanel.add(new JLabel("Type"), BorderLayout.NORTH);
+        incomingOutgoingPanel.add(checkboxPanel, BorderLayout.SOUTH);
 
         return incomingOutgoingPanel;
     }
 
-
     private JPanel fromCalendar() {
-        JPanel panel = new JPanel(new BorderLayout());
-
-        panel.add(new JLabel("From"), BorderLayout.NORTH);
+        JPanel panel = new JPanel(new BorderLayout(0, 7));
+        panel.add(new JLabel("Date From"), BorderLayout.NORTH);
         panel.add(dateFrom, BorderLayout.CENTER);
 
         return panel;
     }
 
     private JPanel toCalendar() {
-        JPanel panel = new JPanel(new BorderLayout());
+        JPanel panel = new JPanel(new BorderLayout(0, 7));
 
-        panel.add(new JLabel("To"), BorderLayout.NORTH);
+        panel.add(new JLabel("Date To"), BorderLayout.NORTH);
         panel.add(dateTo, BorderLayout.CENTER);
 
         return panel;
     }
 
     private JPanel fromValue() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setPreferredSize(new Dimension(65, 30));
+        JPanel panel = new JPanel(new BorderLayout(0, 7));
 
-        panel.add(new JLabel("Value from"), BorderLayout.NORTH);
-        panel.add(new JLabel("€"), BorderLayout.EAST);
+        panel.add(new JLabel("Amount from"), BorderLayout.NORTH);
+        panel.add(new JLabel(" €"), BorderLayout.EAST);
+
+        valueFrom.setPreferredSize(new Dimension(130, 25));
         panel.add(valueFrom, BorderLayout.CENTER);
 
         return panel;
     }
 
     private JPanel toValue() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setPreferredSize(new Dimension(65, 30));
+        JPanel panel = new JPanel(new BorderLayout(0, 7));
 
-        panel.add(new JLabel("Value to"), BorderLayout.NORTH);
-        panel.add(new JLabel("€"), BorderLayout.EAST);
+        panel.add(new JLabel("Amount to"), BorderLayout.NORTH);
+        panel.add(new JLabel(" €"), BorderLayout.EAST);
+
+        valueTo.setPreferredSize(new Dimension(130, 25));
         panel.add(valueTo, BorderLayout.CENTER);
 
         return panel;
     }
 
-    // TODO: Split in multiple functions
     private JPanel categories() {
         JPanel categoriesPanel = new JPanel(new BorderLayout());
-        JPanel checkboxPanel = new JPanel(new GridLayout(2, 1));
-        JPanel comboPanel = new JPanel();
+        JPanel panel = new JPanel();
 
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(allCategories);
         buttonGroup.add(specifiedCategories);
 
-        checkboxPanel.add(allCategories);
-        checkboxPanel.add(specifiedCategories);
+        panel.add(allCategories);
+        panel.add(specifiedCategories);
 
-        categoriesJComboBox.setPreferredSize(new Dimension(80, 20));
+        categoriesJComboBox.setPreferredSize(new Dimension(120, 20));
         categoriesJComboBox.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
@@ -177,52 +164,36 @@ public class TransactionsOverview extends AbstractOverview {
             }
         });
 
-        categoriesJComboBox.setVisible(false);
+        categoriesJComboBox.setEnabled(false);
         allCategories.addActionListener(e -> specifiedCategorySetTrue());
         specifiedCategories.addActionListener(e -> specifiedCategorySetTrue());
 
-        comboPanel.add(categoriesJComboBox);
+        panel.add(categoriesJComboBox);
 
-        categoriesPanel.add(new JLabel("Categories"), BorderLayout.NORTH);
-        categoriesPanel.add(checkboxPanel, BorderLayout.WEST);
-        categoriesPanel.add(comboPanel, BorderLayout.CENTER);
+        categoriesPanel.add(new JLabel("Category"), BorderLayout.NORTH);
+        categoriesPanel.add(panel, BorderLayout.SOUTH);
 
         return categoriesPanel;
     }
 
     private void specifiedCategorySetTrue() {
-        categoriesJComboBox.setVisible(specifiedCategories.isSelected());
+        categoriesJComboBox.setEnabled(specifiedCategories.isSelected());
     }
 
-    private JPanel repeatingTransactions() {
-        JPanel repeatingTransactionsPanel = new JPanel(new BorderLayout());
-        JPanel checkboxPanel = new JPanel(new GridLayout(3, 1));
+    private JPanel filterActionsPanel() {
+        JPanel panel = new JPanel();
 
-        ButtonGroup buttonGroup = new ButtonGroup();
-        buttonGroup.add(allTransactions);
-        buttonGroup.add(onlyRepeating);
-        buttonGroup.add(onlyNonRepeating);
-
-        checkboxPanel.add(allTransactions);
-        checkboxPanel.add(onlyRepeating);
-        checkboxPanel.add(onlyNonRepeating);
-
-        repeatingTransactionsPanel.add(new JLabel("Repeating transactions"), BorderLayout.NORTH);
-        repeatingTransactionsPanel.add(checkboxPanel, BorderLayout.WEST);
-
-        return repeatingTransactionsPanel;
-    }
-
-    private JButton filterButton() {
         filterButton.setMnemonic(KeyEvent.VK_I);
         filterButton.addActionListener(l -> filter.filterRows());
-        return filterButton;
-    }
+        panel.add(filterButton);
 
-    private JButton resetFilterButton() {
         resetFilterButton.setMnemonic(KeyEvent.VK_R);
         resetFilterButton.addActionListener(e -> filter.resetFilter());
-        return resetFilterButton;
+        panel.add(resetFilterButton);
+
+        panel.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
+
+        return panel;
     }
 
     private void setAmountCellRenderer() {
@@ -234,6 +205,7 @@ public class TransactionsOverview extends AbstractOverview {
     }
 
     /**
+     * TODO Move to its own package
      * Custom number formatter used in 'ValueFrom' and 'ValueTo' text fields.
      */
     static class CustomNumberFormatter extends NumberFormatter {
@@ -297,15 +269,11 @@ public class TransactionsOverview extends AbstractOverview {
         return categoriesJComboBox;
     }
 
-    public JRadioButton getAllTransactions() {
-        return allTransactions;
+    public JCheckBox getNonRepeatingCheckbox() {
+        return nonRepeatingCheckbox;
     }
 
-    public JRadioButton getOnlyNonRepeating() {
-        return onlyNonRepeating;
-    }
-
-    public JRadioButton getOnlyRepeating() {
-        return onlyRepeating;
+    public JCheckBox getRepeatingCheckbox() {
+        return repeatingCheckbox;
     }
 }

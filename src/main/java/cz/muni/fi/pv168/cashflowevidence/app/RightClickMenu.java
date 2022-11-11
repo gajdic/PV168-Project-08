@@ -4,7 +4,6 @@ import javax.swing.Action;
 import javax.swing.JPopupMenu;
 import java.util.List;
 
-
 public class RightClickMenu  extends JPopupMenu {
 
     public RightClickMenu(List<Action> actions) {
