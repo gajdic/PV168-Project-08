@@ -1,7 +1,7 @@
 package cz.muni.fi.pv168.cashflowevidence.data.manipulation;
 
 import cz.muni.fi.pv168.cashflowevidence.data.adapter.TransactionSerializer;
-import cz.muni.fi.pv168.cashflowevidence.model.Transaction;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

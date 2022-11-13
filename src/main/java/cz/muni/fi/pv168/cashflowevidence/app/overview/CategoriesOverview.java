@@ -1,4 +1,6 @@
-package cz.muni.fi.pv168.cashflowevidence.app;
+package cz.muni.fi.pv168.cashflowevidence.app.overview;
+
+import cz.muni.fi.pv168.cashflowevidence.app.RightClickMenu;
 
 import javax.swing.Action;
 import javax.swing.JPanel;

@@ -11,7 +11,7 @@ import java.util.function.Function;
  * @param <E> the type of the entity being accessed via the colum
  * @param <T> the data type of the column itself (the values it accesses from the entity)
  */
-abstract class Column<E, T> {
+public abstract class Column<E, T> {
 
     private final String name;
     private final Function<E, T> valueGetter;
@@ -32,55 +32,55 @@ abstract class Column<E, T> {
         return new ReadOnly<>(name, columnClass, valueGetter);
     }
 
-    abstract boolean isEditable();
+    public abstract boolean isEditable();
 
-    abstract void setValue(Object value, E entity);
+    public abstract void setValue(Object value, E entity);
 
-    T getValue(E entity) {
+    public T getValue(E entity) {
         return valueGetter.apply(entity);
     }
 
-    String getName() {
+    public String getName() {
         return name;
     }
 
-    Class<T> getColumnType() {
+    public Class<T> getColumnType() {
         return columnType;
     }
 
-    private static class ReadOnly<E, T> extends Column<E, T> {
+    public static class ReadOnly<E, T> extends Column<E, T> {
 
         private ReadOnly(String name, Class<T> columnClass, Function<E, T> valueGetter) {
             super(name, columnClass, valueGetter);
         }
 
         @Override
-        boolean isEditable() {
+        public boolean isEditable() {
             return false;
         }
 
         @Override
-        void setValue(Object value, E entity) {
+        public void setValue(Object value, E entity) {
             throw new UnsupportedOperationException("Column '" + getName() + "' is not editable");
         }
     }
 
-    private static class Editable<E, T> extends Column<E, T> {
+    public static class Editable<E, T> extends Column<E, T> {
 
         private final BiConsumer<E, T> valueSetter;
 
-        private Editable(String name, Class<T> columnClass, Function<E, T> valueGetter, BiConsumer<E, T> valueSetter) {
+        public Editable(String name, Class<T> columnClass, Function<E, T> valueGetter, BiConsumer<E, T> valueSetter) {
             super(name, columnClass, valueGetter);
             this.valueSetter = Objects.requireNonNull(valueSetter, "value setter cannot be null");
         }
 
         @Override
-        boolean isEditable() {
+        public boolean isEditable() {
             return true;
         }
 
         @Override
-        void setValue(Object value, E entity) {
+        public void setValue(Object value, E entity) {
             valueSetter.accept(entity, getColumnType().cast(value));
         }
     }

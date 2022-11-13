@@ -1,25 +1,38 @@
-package cz.muni.fi.pv168.cashflowevidence.app;
+package cz.muni.fi.pv168.cashflowevidence.app.overview;
 
 
 import com.github.lgooddatepicker.components.DatePicker;
-import cz.muni.fi.pv168.cashflowevidence.model.Category;
-import cz.muni.fi.pv168.cashflowevidence.model.CategoryListModel;
+import cz.muni.fi.pv168.cashflowevidence.app.InputNumberFormatter;
+import cz.muni.fi.pv168.cashflowevidence.app.RightClickMenu;
+import cz.muni.fi.pv168.cashflowevidence.app.TransactionFilter;
+import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
+import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.renderer.AmountCellRenderer;
 import cz.muni.fi.pv168.cashflowevidence.renderer.DateTimeCellRenderer;
 
-import javax.swing.*;
-import javax.swing.text.NumberFormatter;
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTable;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
-import java.text.NumberFormat;
-import java.text.ParseException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Objects;
+
 
 // TODO: This class is too long. Consider splitting in multiple separate (Maybe more reusable?) Ones.
 public class TransactionsOverview extends AbstractOverview {
@@ -34,9 +47,9 @@ public class TransactionsOverview extends AbstractOverview {
 
     //values
     private final JFormattedTextField valueFrom = new JFormattedTextField
-            (new CustomNumberFormatter(NumberFormat.getIntegerInstance()));
+            (new InputNumberFormatter(InputNumberFormatter.getDecimalFormat()));
     private final JFormattedTextField valueTo = new JFormattedTextField
-            (new CustomNumberFormatter(NumberFormat.getIntegerInstance()));
+            (new InputNumberFormatter(InputNumberFormatter.getDecimalFormat()));
 
     //categorises
     private final JRadioButton allCategories = new JRadioButton("All", true);
@@ -202,35 +215,6 @@ public class TransactionsOverview extends AbstractOverview {
 
     private void setDateTimeCellRenderer() {
         overviewTable.getColumnModel().getColumn(3).setCellRenderer(new DateTimeCellRenderer());
-    }
-
-    /**
-     * TODO Move to its own package
-     * Custom number formatter used in 'ValueFrom' and 'ValueTo' text fields.
-     */
-    static class CustomNumberFormatter extends NumberFormatter {
-
-        CustomNumberFormatter(NumberFormat numberFormat) {
-            super(numberFormat);
-        }
-
-        @Override
-        public Object stringToValue(String text) throws ParseException {
-            if (Objects.equals(text, "")) {
-                return null;
-            }
-            return super.stringToValue(text);
-        }
-
-        @Override
-        public void setAllowsInvalid(boolean allowsInvalid) {
-            super.setAllowsInvalid(false);
-        }
-
-        @Override
-        public void setValueClass(Class<?> valueClass) {
-            super.setValueClass(Integer.class);
-        }
     }
 
     public JCheckBox getIncomingCheckbox() {

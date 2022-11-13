@@ -1,6 +1,7 @@
-package cz.muni.fi.pv168.cashflowevidence.app;
+package cz.muni.fi.pv168.cashflowevidence.app.overview;
 
-import cz.muni.fi.pv168.cashflowevidence.model.CategoryTableModel;
+import cz.muni.fi.pv168.cashflowevidence.app.RightClickMenu;
+import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryTableModel;
 import cz.muni.fi.pv168.cashflowevidence.renderer.ColorCellRenderer;
 
 import javax.swing.JPanel;
@@ -10,7 +11,6 @@ import javax.swing.JButton;
 import javax.swing.BorderFactory;
 import javax.swing.table.TableColumn;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +30,7 @@ abstract public class AbstractOverview extends JPanel {
         this.setComponentPopupMenu(new RightClickMenu(actions));
         this.overviewTable.setInheritsPopupMenu(true);
 
-        // TODO: enable after finishing the RepeatingTransactionOverview table
-        //setColorCellRenderer();
+        setColorCellRenderer();
     }
     /**
      * Sets the basic layout and borders

@@ -4,7 +4,7 @@ import cz.muni.fi.pv168.cashflowevidence.data.adapter.TransactionSerializer;
 import cz.muni.fi.pv168.cashflowevidence.data.validation.TransactionValidator;
 import cz.muni.fi.pv168.cashflowevidence.exceptions.InvalidCSVFormatException;
 import cz.muni.fi.pv168.cashflowevidence.exceptions.InvalidImportException;
-import cz.muni.fi.pv168.cashflowevidence.model.Transaction;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -21,6 +21,8 @@ public class TransactionPerLineImporter implements TransactionImporter{
 
     @Override
     public Collection<Transaction> importRecords(String filePath) throws InvalidImportException {
+        TransactionValidator validator = new TransactionValidator();
+
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath, StandardCharsets.UTF_8))) {
             List<Transaction> transactions = reader.lines()
                     .map(csvLine -> {
@@ -31,7 +33,7 @@ public class TransactionPerLineImporter implements TransactionImporter{
                         }
                     })
                     .toList();
-            if (!transactions.stream().allMatch(TransactionValidator::isValid)) {
+            if (!transactions.stream().allMatch(validator::isValidTransaction)) {
                 throw new InvalidImportException("The provided transactions are not valid");
             }
             return transactions;

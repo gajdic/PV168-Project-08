@@ -4,7 +4,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import cz.muni.fi.pv168.cashflowevidence.data.adapter.TransactionAdapter;
-import cz.muni.fi.pv168.cashflowevidence.model.Transaction;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
