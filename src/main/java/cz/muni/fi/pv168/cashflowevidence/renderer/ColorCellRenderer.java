@@ -1,6 +1,6 @@
 package cz.muni.fi.pv168.cashflowevidence.renderer;
 
-import cz.muni.fi.pv168.cashflowevidence.model.Category;
+import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;

@@ -1,9 +1,8 @@
-package cz.muni.fi.pv168.cashflowevidence.action;
+package cz.muni.fi.pv168.cashflowevidence.action.transaction;
 
-import cz.muni.fi.pv168.cashflowevidence.app.CashFlowEvidence;
-import cz.muni.fi.pv168.cashflowevidence.app.TransactionDialog;
-import cz.muni.fi.pv168.cashflowevidence.model.CategoryListModel;
-import cz.muni.fi.pv168.cashflowevidence.model.TransactionTableModel;
+import cz.muni.fi.pv168.cashflowevidence.app.dialog.TransactionDialog;
+import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryListModel;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionTableModel;
 
 
 import javax.swing.AbstractAction;

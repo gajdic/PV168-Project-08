@@ -1,9 +1,10 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
 import com.github.lgooddatepicker.components.DatePicker;
-import cz.muni.fi.pv168.cashflowevidence.model.Category;
-import cz.muni.fi.pv168.cashflowevidence.model.Transaction;
-import cz.muni.fi.pv168.cashflowevidence.model.TransactionType;
+import cz.muni.fi.pv168.cashflowevidence.app.overview.TransactionsOverview;
+import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionType;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;

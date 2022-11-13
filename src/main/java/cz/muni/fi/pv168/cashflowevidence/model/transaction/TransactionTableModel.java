@@ -1,8 +1,13 @@
-package cz.muni.fi.pv168.cashflowevidence.model;
+package cz.muni.fi.pv168.cashflowevidence.model.transaction;
+
+import cz.muni.fi.pv168.cashflowevidence.model.Column;
+import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 
 import javax.swing.table.AbstractTableModel;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class TransactionTableModel extends AbstractTableModel {

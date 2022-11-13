@@ -1,6 +1,4 @@
-package cz.muni.fi.pv168.cashflowevidence.model;
-
-import cz.muni.fi.pv168.cashflowevidence.model.Category;
+package cz.muni.fi.pv168.cashflowevidence.model.category;
 
 import javax.swing.AbstractListModel;
 import java.util.Collections;
