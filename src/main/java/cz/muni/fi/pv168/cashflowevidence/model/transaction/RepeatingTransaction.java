@@ -7,13 +7,27 @@ import java.time.LocalDateTime;
 
 public class RepeatingTransaction extends Transaction {
 
-    private LocalDate dateFrom;
-    private LocalDate dateTo;
+    private LocalDateTime dateFrom;
+    private LocalDateTime dateTo;
 
     private TransactionFrequency frequency;
     private int days;
 
+    private boolean doNotReschedule = false;
+
+    protected LocalDateTime nextCreateAt;
+
     public RepeatingTransaction() {}
+
+    public RepeatingTransaction(TransactionType transactionType, String name, String description,
+                                double amount, Category category, LocalDate dateFrom, LocalDate dateTo) {
+        super(transactionType, name, description, amount, LocalDateTime.now(), category);
+
+        this.dateFrom = dateFrom.atStartOfDay();
+        this.nextCreateAt = dateFrom.atStartOfDay();
+        this.dateTo = dateTo.atStartOfDay();
+
+    }
 
     /**
      * Creates a RepeatingTransaction with predefined frequency.
@@ -21,16 +35,16 @@ public class RepeatingTransaction extends Transaction {
     public RepeatingTransaction(TransactionType transactionType, String name, String description,
                                 double amount, Category category, LocalDate dateFrom, LocalDate dateTo,
                                 TransactionFrequency frequency) {
-        super(transactionType, name, description, amount, LocalDateTime.now(), category);
+
+        this(transactionType, name, description, amount, category, dateFrom, dateTo);
 
         if (frequency == TransactionFrequency.Custom) {
             throw new IllegalArgumentException("Frequency cannot be custom");
         }
 
-        this.dateFrom = dateFrom;
-        this.dateTo = dateTo;
         this.frequency = frequency;
         this.days = frequency.frequencyValue;
+
     }
 
     /**
@@ -39,31 +53,48 @@ public class RepeatingTransaction extends Transaction {
     public RepeatingTransaction(TransactionType transactionType, String name, String description,
                                 double amount, Category category,
                                 LocalDate dateFrom, LocalDate dateTo, int days) {
-        super(transactionType, name, description, amount, LocalDateTime.now(), category);
+        this(transactionType, name, description, amount, category, dateFrom, dateTo);
 
         if (days <= 0) {
             throw new IllegalArgumentException("Frequency cannot be smaller or equal to 0.");
         }
 
-        this.dateFrom = dateFrom;
-        this.dateTo = dateTo;
         this.frequency = TransactionFrequency.Custom;
         this.days = days;
     }
 
+
     public LocalDate getDateFrom() {
-        return dateFrom;
+        return dateFrom.toLocalDate();
     }
 
     public void setDateFrom(LocalDate dateFrom) {
+        this.dateFrom = dateFrom.atStartOfDay();
+    }
+
+    public void setDateTimeFrom(LocalDateTime dateFrom) {
         this.dateFrom = dateFrom;
     }
 
+    public void setNextCreateAt(LocalDateTime nextCreateAt) {
+        this.nextCreateAt = nextCreateAt;
+    }
+
+
     public LocalDate getDateTo() {
+        return dateTo.toLocalDate();
+    }
+
+    public LocalDateTime getDateTimeTo() {
         return dateTo;
     }
 
+
     public void setDateTo(LocalDate dateTo) {
+        this.dateTo = dateTo.atStartOfDay();
+    }
+
+    public void setDateTimeTo(LocalDateTime dateTo) {
         this.dateTo = dateTo;
     }
 
@@ -86,9 +117,41 @@ public class RepeatingTransaction extends Transaction {
     public void setAll(RepeatingTransaction transaction) {
         super.setAll(transaction);
 
-        dateFrom = transaction.getDateFrom();
-        dateTo = transaction.getDateTo();
-        frequency = transaction.getFrequency();
-        days = transaction.getDays();
+        setDateFrom(transaction.getDateFrom());
+        setNextCreateAt(transaction.getNextCreateAt());
+        setDateTo(transaction.getDateTo());
+        setFrequency(transaction.getFrequency());
+        setDays(transaction.getDays());
+
+        setDoNotReschedule(false);
+    }
+
+    public LocalDateTime getNextCreateAt() {
+        return nextCreateAt;
+    }
+
+    public Transaction createNextTransaction() {
+        Transaction transaction = new Transaction(
+                this.getTransactionType(),
+                this.getName(),
+                this.getDescription(),
+                this.getAmount(),
+                this.getNextCreateAt(),
+                this.getCategory()
+        );
+        this.shiftNextCreateAt();
+        return transaction;
+    }
+
+    protected void shiftNextCreateAt() {
+        this.nextCreateAt = this.nextCreateAt.plusDays(this.getDays());
+    }
+
+    public boolean isDoNotReschedule() {
+        return doNotReschedule;
+    }
+
+    public void setDoNotReschedule(boolean doNotReschedule) {
+        this.doNotReschedule = doNotReschedule;
     }
 }

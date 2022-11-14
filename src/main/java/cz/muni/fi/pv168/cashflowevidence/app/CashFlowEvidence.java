@@ -26,12 +26,8 @@ import cz.muni.fi.pv168.cashflowevidence.data.manipulation.TransactionPerLineImp
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryTableModel;
-import cz.muni.fi.pv168.cashflowevidence.model.transaction.RepeatingTransaction;
-import cz.muni.fi.pv168.cashflowevidence.model.transaction.RepeatingTransactionTableModel;
-import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
-import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionFrequency;
-import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionTableModel;
-import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionType;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.*;
+import cz.muni.fi.pv168.cashflowevidence.service.RepeatingTaskScheduler;
 
 import javax.swing.Action;
 import javax.swing.Box;
@@ -107,6 +103,8 @@ public class CashFlowEvidence {
 
     private final JTable repeatingTransactionTable;
 
+    private final RepeatingTaskScheduler repeatingTaskScheduler;
+
     public CashFlowEvidence() {
         setBalanceFont();
 
@@ -124,6 +122,15 @@ public class CashFlowEvidence {
         repeatingTransactions.add(new RepeatingTransaction(TransactionType.Incoming, "name", "desc",
                 10000000, category,
                 LocalDate.now(), LocalDate.now().plusDays(7), TransactionFrequency.Daily));
+        repeatingTransactions.add(new RepeatingTransaction(TransactionType.Incoming, "repeatingTr1", "desc",
+                666, category,
+                LocalDate.now().minusDays(7), LocalDate.now().plusDays(7), TransactionFrequency.Daily));
+        repeatingTransactions.add(new RepeatingTransactionEverySecond(TransactionType.Incoming, "repeatingTrEveryTenSeconds",
+                "desc",666, category,
+                LocalDateTime.now(), LocalDateTime.now().plusSeconds(180), 10));
+       repeatingTransactions.add(new RepeatingTransactionEverySecond(TransactionType.Incoming, "every 5",
+                "desc",666, category,
+                LocalDateTime.now(), LocalDateTime.now().plusSeconds(60), 5));
 
         repeatingTransactionTable = createRepeatingTransactionTable(repeatingTransactions);
 
@@ -165,6 +172,10 @@ public class CashFlowEvidence {
         JPanel content = getContent();
         frame.add(content, BorderLayout.CENTER);
         frame.setVisible(true);
+
+
+        repeatingTaskScheduler = new RepeatingTaskScheduler(transactionTableModel, repeatingTransactionTable);
+
     }
 
     private void initializeActions() {
