@@ -13,12 +13,14 @@ public class RepeatingTransaction extends Transaction {
     private TransactionFrequency frequency;
     private int days;
 
+    private Long id;
+
     public RepeatingTransaction() {}
 
     /**
      * Creates a RepeatingTransaction with predefined frequency.
      */
-    public RepeatingTransaction(TransactionType transactionType, String name, String description,
+    public RepeatingTransaction(Long id, TransactionType transactionType, String name, String description,
                                 double amount, Category category, LocalDate dateFrom, LocalDate dateTo,
                                 TransactionFrequency frequency) {
         super(transactionType, name, description, amount, LocalDateTime.now(), category);
@@ -26,11 +28,17 @@ public class RepeatingTransaction extends Transaction {
         if (frequency == TransactionFrequency.Custom) {
             throw new IllegalArgumentException("Frequency cannot be custom");
         }
-
+        this.id = id;
         this.dateFrom = dateFrom;
         this.dateTo = dateTo;
         this.frequency = frequency;
         this.days = frequency.frequencyValue;
+    }
+
+    public RepeatingTransaction(TransactionType transactionType, String name, String description,
+                                double amount, Category category, LocalDate dateFrom, LocalDate dateTo,
+                                TransactionFrequency frequency) {
+        this(null, transactionType, name, description, amount, category, dateFrom, dateTo, frequency);
     }
 
     /**
