@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.cashflowevidence.action.transaction;
 
+import cz.muni.fi.pv168.cashflowevidence.action.DeleteAction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionTableModel;
 
 import javax.swing.JTable;

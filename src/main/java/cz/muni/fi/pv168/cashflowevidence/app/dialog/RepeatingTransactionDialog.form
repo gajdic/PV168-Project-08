@@ -57,7 +57,7 @@
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Name"/>
+              <text value="Name*"/>
             </properties>
           </component>
           <component id="89bf7" class="javax.swing.JLabel" binding="descriptionLabel">
@@ -73,7 +73,7 @@
               <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Amount"/>
+              <text value="Amount*"/>
             </properties>
           </component>
           <component id="cf198" class="javax.swing.JLabel" binding="repeatFromLabel">
@@ -81,7 +81,7 @@
               <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Repeat from"/>
+              <text value="Repeat from*"/>
             </properties>
           </component>
           <component id="a47d7" class="javax.swing.JLabel">
@@ -89,7 +89,7 @@
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Type"/>
+              <text value="Type*"/>
             </properties>
           </component>
           <component id="5bfa1" class="javax.swing.JLabel" binding="repeatToLabel">
@@ -97,7 +97,7 @@
               <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Repeat to"/>
+              <text value="Repeat to*"/>
             </properties>
           </component>
           <component id="c7f74" class="javax.swing.JLabel" binding="frequencyLabel">
@@ -105,7 +105,7 @@
               <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Frequency"/>
+              <text value="Frequency*"/>
             </properties>
           </component>
           <component id="61d2e" class="javax.swing.JTextField" binding="nameField">
@@ -200,7 +200,7 @@
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="Frequency in months"/>
+                  <text value="Frequency in months*"/>
                 </properties>
               </component>
               <component id="85e6e" class="javax.swing.JFormattedTextField" binding="customFrequencyField" custom-create="true">
