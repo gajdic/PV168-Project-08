@@ -1,7 +1,7 @@
 package cz.muni.fi.pv168.cashflowevidence.action;
 
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.TransactionExporter;
-import cz.muni.fi.pv168.cashflowevidence.model.TransactionTableModel;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionTableModel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

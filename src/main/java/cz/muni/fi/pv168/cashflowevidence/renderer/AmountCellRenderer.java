@@ -1,6 +1,6 @@
 package cz.muni.fi.pv168.cashflowevidence.renderer;
 
-import cz.muni.fi.pv168.cashflowevidence.model.Transaction;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;

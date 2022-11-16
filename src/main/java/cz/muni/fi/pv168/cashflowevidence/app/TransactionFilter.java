@@ -1,15 +1,18 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
 import com.github.lgooddatepicker.components.DatePicker;
-import cz.muni.fi.pv168.cashflowevidence.model.Category;
-import cz.muni.fi.pv168.cashflowevidence.model.Transaction;
-import cz.muni.fi.pv168.cashflowevidence.model.TransactionType;
+import cz.muni.fi.pv168.cashflowevidence.app.overview.TransactionsOverview;
+import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionType;
 
-import javax.swing.*;
-import javax.swing.event.RowSorterEvent;
-import javax.swing.event.RowSorterListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JRadioButton;
+import javax.swing.JTable;
+import javax.swing.RowFilter;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import java.time.LocalDate;
@@ -19,31 +22,26 @@ import java.util.List;
 
 public class TransactionFilter {
 
-    JTable overviewTable;
+    private final JTable overviewTable;
 
-    //incoming/outgoing
+    // incoming/outgoing
     private final JCheckBox incomingCheckbox;
     private final JCheckBox outgoingCheckbox;
 
-    //dates
+    // dates
     private final DatePicker dateFrom;
     private final DatePicker dateTo;
 
-    //values
+    // values (€)
     private final JFormattedTextField valueFrom;
     private final JFormattedTextField valueTo;
 
-    //categorises
+    // categories
     private final JRadioButton allCategories;
     private final JRadioButton specifiedCategories;
     private final JComboBox<Category> categoriesJComboBox;
 
-    //repeating transactions
-    private final JRadioButton allTransactions;
-    private final JRadioButton onlyNonRepeating;
-    private final JRadioButton onlyRepeating;
-
-    //balance
+    // balance
     private final JLabel totalBalance;
     private final JLabel filteredBalance;
 
@@ -58,9 +56,6 @@ public class TransactionFilter {
         allCategories = overview.getAllCategories();
         specifiedCategories = overview.getSpecifiedCategories();
         categoriesJComboBox = overview.getCategoriesJComboBox();
-        allTransactions = overview.getAllTransactions();
-        onlyNonRepeating = overview.getOnlyNonRepeating();
-        onlyRepeating = overview.getOnlyRepeating();
 
         this.totalBalance = totalBalance;
         this.filteredBalance = filteredBalance;
@@ -82,11 +77,7 @@ public class TransactionFilter {
     private List<RowFilter<TableModel, Integer>> evaluate() {
         List<RowFilter<TableModel, Integer>> filters = new ArrayList<>();
 
-        if (!incomingCheckbox.isSelected()) {
-            filters.add(incomingFilter());
-        } if (!outgoingCheckbox.isSelected()) {
-            filters.add(outgoingFilter());
-        } if (dateFrom.getDate() != null) {
+        if (dateFrom.getDate() != null) {
             filters.add(dateFromFilter());
         } if (dateTo.getDate() != null) {
             filters.add(dateToFilter());
@@ -96,30 +87,24 @@ public class TransactionFilter {
             filters.add(valueToFilter());
         } if (specifiedCategories.isSelected()) {
             filters.add(categoryFilter());
-        } if (onlyRepeating.isSelected()) {
-            filters.add(repeatingTransactionsFilter());
-        } if (onlyNonRepeating.isSelected()) {
-            filters.add(nonRepeatingTransactionsFilter());
         }
+
+        filters.add(typeFilter());
+
         return filters;
     }
 
-    private RowFilter<TableModel, Integer> incomingFilter() {
+    private RowFilter<TableModel, Integer> typeFilter() {
 
         return new RowFilter<>() {
             @Override
             public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
-                return !(entry.getValue(5) == TransactionType.Incoming);
-            }
-        };
-    }
+                TransactionType type = (TransactionType) entry.getValue(5);
+                boolean includeBoth = !incomingCheckbox.isSelected() && !outgoingCheckbox.isSelected();
 
-    private RowFilter<TableModel, Integer> outgoingFilter() {
-
-        return new RowFilter<>() {
-            @Override
-            public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
-                return !(entry.getValue(5) == TransactionType.Outgoing);
+                return includeBoth ||
+                        (incomingCheckbox.isSelected() && type == TransactionType.Incoming) ||
+                        (outgoingCheckbox.isSelected() && type == TransactionType.Outgoing);
             }
         };
     }
@@ -178,37 +163,18 @@ public class TransactionFilter {
         };
     }
 
-    private RowFilter<TableModel, Integer> repeatingTransactionsFilter() {
-        return new RowFilter<>() {
-            @Override
-            public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
-                return entry.getValue(6).equals(String.valueOf(true));
-            }
-        };
-    }
-
-    private RowFilter<TableModel, Integer> nonRepeatingTransactionsFilter() {
-        return new RowFilter<>() {
-            @Override
-            public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
-                return entry.getValue(6).equals(String.valueOf(false));
-            }
-        };
-    }
-
     public void resetFilter() {
         resetIncomingAndOutgoing();
         resetDates();
         resetValues();
         resetCategories();
-        resetRepeatingTransactions();
         overviewTable.setRowSorter(null);
         filteredBalance.setText(totalBalance.getText());
     }
 
     private void resetIncomingAndOutgoing() {
-        incomingCheckbox.setSelected(true);
-        outgoingCheckbox.setSelected(true);
+        incomingCheckbox.setSelected(false);
+        outgoingCheckbox.setSelected(false);
     }
 
     private void resetDates() {
@@ -223,11 +189,7 @@ public class TransactionFilter {
 
     private void resetCategories() {
         allCategories.setSelected(true);
-        categoriesJComboBox.setVisible(false);
-    }
-
-    private void resetRepeatingTransactions() {
-        allTransactions.setSelected(true);
+        categoriesJComboBox.setEnabled(false);
     }
 
     private String calculateBalance() {
@@ -241,6 +203,6 @@ public class TransactionFilter {
                 amount -= cellAmount;
             }
         }
-        return Transaction.formatAmount(amount) + " $";
+        return Transaction.formatAmount(amount) + " €";
     }
 }

@@ -1,6 +1,6 @@
 package cz.muni.fi.pv168.cashflowevidence.data.validation;
 
-import cz.muni.fi.pv168.cashflowevidence.model.Category;
+import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 
 public  class CategoryValidator {
 

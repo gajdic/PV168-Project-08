@@ -1,6 +1,7 @@
-package cz.muni.fi.pv168.cashflowevidence.app;
+package cz.muni.fi.pv168.cashflowevidence.app.dialog;
 
-import cz.muni.fi.pv168.cashflowevidence.model.Category;
+import cz.muni.fi.pv168.cashflowevidence.app.CashFlowEvidence;
+import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.data.validation.CategoryValidator;
 
 import javax.swing.*;

@@ -1,9 +1,9 @@
 package cz.muni.fi.pv168.cashflowevidence.data.adapter;
 
 import cz.muni.fi.pv168.cashflowevidence.exceptions.InvalidCSVFormatException;
-import cz.muni.fi.pv168.cashflowevidence.model.Category;
-import cz.muni.fi.pv168.cashflowevidence.model.Transaction;
-import cz.muni.fi.pv168.cashflowevidence.model.TransactionType;
+import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionType;
 
 import java.awt.*;
 import java.time.LocalDateTime;

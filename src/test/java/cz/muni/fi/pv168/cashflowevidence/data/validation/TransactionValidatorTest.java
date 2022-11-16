@@ -1,10 +1,10 @@
 package cz.muni.fi.pv168.cashflowevidence.data.validation;
 
 
-import cz.muni.fi.pv168.cashflowevidence.model.Category;
-import cz.muni.fi.pv168.cashflowevidence.model.Transaction;
-import cz.muni.fi.pv168.cashflowevidence.model.TransactionFrequency;
-import cz.muni.fi.pv168.cashflowevidence.model.TransactionType;
+import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionFrequency;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionType;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;

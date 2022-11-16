@@ -1,22 +1,21 @@
-package cz.muni.fi.pv168.cashflowevidence.action;
+package cz.muni.fi.pv168.cashflowevidence.action.transaction;
 
-import cz.muni.fi.pv168.cashflowevidence.model.TransactionTableModel;
+import cz.muni.fi.pv168.cashflowevidence.action.DeleteAction;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionTableModel;
 
-import javax.swing.AbstractAction;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
-import javax.swing.UIManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
 import java.util.Comparator;
 
-public class DeleteTransactionAction extends AbstractAction {
+public class DeleteTransactionAction extends DeleteAction {
 
     private final JTable transactionTable;
 
     public DeleteTransactionAction(JTable transactionTable) {
-        super("Delete", UIManager.getIcon("FileChooser.fileIcon"));
+        super();
 
         this.transactionTable = transactionTable;
 
@@ -27,6 +26,10 @@ public class DeleteTransactionAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
+        if (confirmDelete() != 0) {
+            return;
+        }
+
         var transactionTableModel = (TransactionTableModel) transactionTable.getModel();
         Arrays.stream(transactionTable.getSelectedRows())
                 .map(transactionTable::convertRowIndexToModel)

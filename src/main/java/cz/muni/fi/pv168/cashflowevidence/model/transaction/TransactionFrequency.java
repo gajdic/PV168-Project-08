@@ -1,4 +1,4 @@
-package cz.muni.fi.pv168.cashflowevidence.model;
+package cz.muni.fi.pv168.cashflowevidence.model.transaction;
 
 /**
  * Enum for predefined transaction frequencies
@@ -20,7 +20,10 @@ public enum TransactionFrequency {
         }
     },
     Yearly (365),
-    Custom (0);
+    Custom (0),
+    EachSecond (-1) // For testing purposes
+    ;
+
 
     public final int frequencyValue;
 

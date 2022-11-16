@@ -1,8 +1,13 @@
-package cz.muni.fi.pv168.cashflowevidence.model;
+package cz.muni.fi.pv168.cashflowevidence.model.transaction;
+
+import cz.muni.fi.pv168.cashflowevidence.model.Column;
+import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 
 import javax.swing.table.AbstractTableModel;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class TransactionTableModel extends AbstractTableModel {
@@ -12,11 +17,10 @@ public class TransactionTableModel extends AbstractTableModel {
     private final List<Column<Transaction, ?>> columns = List.of(
             Column.editable("Name", String.class, Transaction::getName, Transaction::setName),
             Column.editable("Description", String.class, Transaction::getDescription, Transaction::setDescription),
-            Column.editable("Amount ($)", Double.class, Transaction::getAmount, Transaction::setAmount),
+            Column.editable("Amount (€)", Double.class, Transaction::getAmount, Transaction::setAmount),
             Column.editable("Date", LocalDateTime.class, Transaction::getDateTime, Transaction::setDate),
             Column.editable("Category", Category.class, Transaction::getCategory, Transaction::setCategory),
-            Column.readonly("Type", TransactionType.class, Transaction::getTransactionType),
-            Column.readonly("Repeating", String.class, t -> String.valueOf(t.isRepeating()))
+            Column.readonly("Type", TransactionType.class, Transaction::getTransactionType)
     );
 
     public TransactionTableModel(Collection<Transaction> transactions) {

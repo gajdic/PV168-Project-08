@@ -1,4 +1,4 @@
-package cz.muni.fi.pv168.cashflowevidence.model;
+package cz.muni.fi.pv168.cashflowevidence.model.category;
 
 import java.awt.Color;
 import java.util.Objects;
