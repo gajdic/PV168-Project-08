@@ -7,6 +7,8 @@ import cz.muni.fi.pv168.cashflowevidence.model.transaction.RepeatingTransaction;
 import java.util.Optional;
 
 public class RepeatingTransactionMapper implements EntityMapper<RepeatingTransactionEntity, RepeatingTransaction> {
+    // TODO: add validators
+
     @FunctionalInterface
     public interface Lookup<T> {
         Optional<T> get(Long id);

@@ -10,6 +10,8 @@ import java.util.Optional;
  * Mapper from the {@link TransactionEntity} to {@link Transaction}.
  */
 public class TransactionMapper implements EntityMapper<TransactionEntity, Transaction>{
+    // TODO: add validators
+
     @FunctionalInterface
     public interface Lookup<T> {
         Optional<T> get(Long id);

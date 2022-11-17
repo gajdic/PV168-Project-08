@@ -9,7 +9,7 @@ import java.awt.Color;
  * Mapper from the {@link CategoryEntity} to {@link Category}.
  */
 public class CategoryMapper implements EntityMapper<CategoryEntity, Category>{
-
+    // TODO: add validators
     @Override
     public CategoryEntity mapToEntity(Category source) {
         return new CategoryEntity(source.getId() ,source.getName(), source.getColorString());
