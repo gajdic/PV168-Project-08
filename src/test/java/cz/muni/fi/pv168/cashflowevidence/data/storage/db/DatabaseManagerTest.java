@@ -12,6 +12,7 @@ public class DatabaseManagerTest {
 
     @BeforeEach
     void setUp() {
+
         this.manager = DatabaseManager.createTestInstance();
     }
 
