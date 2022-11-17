@@ -1,0 +1,10 @@
+--
+-- Department table definition
+--
+CREATE TABLE IF NOT EXISTS Test
+(
+    id        BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    number    VARCHAR(10) NOT NULL UNIQUE,
+    name      VARCHAR(50) NOT NULL,
+    createdAt TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

@@ -66,7 +66,7 @@
             <properties>
               <enabled value="true"/>
               <font size="14"/>
-              <text value="Name"/>
+              <text value="Name*"/>
             </properties>
           </component>
           <component id="fd2ea" class="javax.swing.JLabel" binding="colorLabel">
@@ -76,7 +76,7 @@
             <properties>
               <enabled value="true"/>
               <font size="14"/>
-              <text value="Color"/>
+              <text value="Color*"/>
             </properties>
           </component>
           <component id="9a5a" class="javax.swing.JTextField" binding="nameField">
