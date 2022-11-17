@@ -73,4 +73,6 @@ public class TransactionValidator {
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
     }
+
+    // TODO: VALIDATOR FOR MAPPER
 }
