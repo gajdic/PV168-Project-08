@@ -28,6 +28,7 @@ import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryTableModel;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.*;
 import cz.muni.fi.pv168.cashflowevidence.service.RepeatingTaskScheduler;
+import cz.muni.fi.pv168.cashflowevidence.wiring.DependencyProvider;
 
 import javax.swing.Action;
 import javax.swing.Box;
@@ -105,7 +106,7 @@ public class CashFlowEvidence {
 
     private final RepeatingTaskScheduler repeatingTaskScheduler;
 
-    public CashFlowEvidence() {
+    public CashFlowEvidence(DependencyProvider dependencyProvider) {
         setBalanceFont();
 
         // tmp

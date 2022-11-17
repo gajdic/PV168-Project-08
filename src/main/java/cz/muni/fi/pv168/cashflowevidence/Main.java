@@ -1,6 +1,8 @@
 package cz.muni.fi.pv168.cashflowevidence;
 
 import cz.muni.fi.pv168.cashflowevidence.app.CashFlowEvidence;
+import cz.muni.fi.pv168.cashflowevidence.wiring.DependencyProvider;
+import cz.muni.fi.pv168.cashflowevidence.wiring.ProductionDependencyProvider;
 
 /**
  * Simple application runner.
@@ -16,6 +18,7 @@ public final class Main {
      * @param args command line arguments
      */
     public static void main(String[] args) {
-        new CashFlowEvidence();
+        final DependencyProvider dependencyProvider = new ProductionDependencyProvider();
+        new CashFlowEvidence(dependencyProvider);
     }
 }
