@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.cashflowevidence.action.category;
 
+import cz.muni.fi.pv168.cashflowevidence.action.DeleteAction;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryTableModel;
