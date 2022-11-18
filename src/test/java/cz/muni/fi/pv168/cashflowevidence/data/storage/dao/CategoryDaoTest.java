@@ -30,7 +30,7 @@ public class CategoryDaoTest {
     void listAllCategories() {
         var allCategories = categoryDao.findAll();
         assertThat(allCategories)
-                .as("There should be 3 testing departments")
+                .as("There should be 3 testing categories")
                 .hasSize(3);
     }
 
@@ -48,23 +48,23 @@ public class CategoryDaoTest {
 
     @Test
     void createNewCategory() {
-        var newCategoryParams = new CategoryEntity("911", "Testing Department");
+        var newCategoryParams = new CategoryEntity("category", "red");
 
-        var createdDepartment = categoryDao.
+        var createdCategory = categoryDao.
                 create(newCategoryParams);
 
-        assertThat(createdDepartment)
+        assertThat(createdCategory)
                 .as("There should be a new category created")
                 .isNotNull();
-        assertThat(createdDepartment.id()).isGreaterThan(1);
-        assertThat(createdDepartment.name()).isEqualTo(newCategoryParams.name());
-        assertThat(createdDepartment.color()).isEqualTo(newCategoryParams.color());
+        assertThat(createdCategory.id()).isGreaterThan(1);
+        assertThat(createdCategory.name()).isEqualTo(newCategoryParams.name());
+        assertThat(createdCategory.color()).isEqualTo(newCategoryParams.color());
 
-        var allDepartments = categoryDao.findAll();
+        var allCategories = categoryDao.findAll();
 
-        assertThat(allDepartments)
+        assertThat(allCategories)
                 .as("The newly created category has to be stored in the database")
-                .contains(createdDepartment);
+                .contains(createdCategory);
     }
 
     @Test
@@ -100,14 +100,13 @@ public class CategoryDaoTest {
 
     @Test
     void deleteNotStoredCategory() {
-        CategoryEntity departmentEntity = createCategoryEntity();
+        CategoryEntity categoryEntity = createCategoryEntity();
 
         assertThatExceptionOfType(DataStorageException.class)
-                .isThrownBy(() -> categoryDao.deleteById(departmentEntity.id()));
+                .isThrownBy(() -> categoryDao.deleteById(categoryEntity.id()));
     }
 
     private static CategoryEntity createCategoryEntity() {
-
         return new CategoryEntity(
                 -1000L,
                 "this category is not stored",
