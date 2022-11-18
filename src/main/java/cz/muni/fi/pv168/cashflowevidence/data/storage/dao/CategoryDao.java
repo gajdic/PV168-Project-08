@@ -82,17 +82,17 @@ public class CategoryDao implements DatabaseAccessObject<CategoryEntity> {
 
             try (var results = statement.executeQuery()) {
                 while (results.next()) {
-                    var department = new CategoryEntity(
+                    var category = new CategoryEntity(
                             results.getString("name"),
                             results.getString("color")
                     );
-                    categories.add(department);
+                    categories.add(category);
                 }
             }
 
             return categories;
         } catch (SQLException ex) {
-            throw new DataStorageException("Failed to load all departments", ex);
+            throw new DataStorageException("Failed to load all categories", ex);
         }
     }
 
