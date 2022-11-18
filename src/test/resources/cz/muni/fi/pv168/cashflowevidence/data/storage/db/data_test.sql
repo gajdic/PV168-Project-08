@@ -1,8 +1,8 @@
 INSERT INTO Category
 (name, color)
-VALUES ('RedCategory', 'red'),
-       ('BlueCategory', 'blue'),
-       ('GreenCategory', 'green')
+VALUES ('RedCategory', '#bada55'),
+       ('BlueCategory', '#cacaca'),
+       ('GreenCategory', '#ffffff')
 
 INSERT INTO Transaction
 (name, description, amount, type, categoryId)

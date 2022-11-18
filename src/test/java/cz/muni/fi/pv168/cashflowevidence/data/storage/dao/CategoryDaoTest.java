@@ -35,7 +35,7 @@ public class CategoryDaoTest {
     }
 
     @Test
-    void findCategoryByIdTest() {
+    void findCategoryById() {
         var firstCategory = categoryDao.findAll().
                 stream().
                 findFirst()
@@ -100,7 +100,7 @@ public class CategoryDaoTest {
 
     @Test
     void deleteNotStoredCategory() {
-        CategoryEntity categoryEntity = createCategoryEntity();
+        var categoryEntity = createCategoryEntity();
 
         assertThatExceptionOfType(DataStorageException.class)
                 .isThrownBy(() -> categoryDao.deleteById(categoryEntity.id()));
