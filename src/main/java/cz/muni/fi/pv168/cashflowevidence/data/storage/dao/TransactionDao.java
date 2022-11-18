@@ -101,7 +101,7 @@ public class TransactionDao implements DatabaseAccessObject<TransactionEntity>{
 
             return transactions;
         } catch (SQLException ex) {
-            throw new DataStorageException("Failed to load all departments", ex);
+            throw new DataStorageException("Failed to load all transactions", ex);
         }
     }
 
