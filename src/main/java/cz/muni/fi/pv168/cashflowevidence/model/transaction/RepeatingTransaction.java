@@ -13,6 +13,7 @@ public class RepeatingTransaction extends Transaction {
     private TransactionFrequency frequency;
     private int days;
 
+    private Long id;
     private boolean doNotReschedule = false;
 
     protected LocalDateTime nextCreateAt;
@@ -32,7 +33,7 @@ public class RepeatingTransaction extends Transaction {
     /**
      * Creates a RepeatingTransaction with predefined frequency.
      */
-    public RepeatingTransaction(TransactionType transactionType, String name, String description,
+    public RepeatingTransaction(Long id, TransactionType transactionType, String name, String description,
                                 double amount, Category category, LocalDate dateFrom, LocalDate dateTo,
                                 TransactionFrequency frequency) {
 
@@ -41,10 +42,19 @@ public class RepeatingTransaction extends Transaction {
         if (frequency == TransactionFrequency.Custom) {
             throw new IllegalArgumentException("Frequency cannot be custom");
         }
+        this.id = id;
+        this.dateFrom = dateFrom.atStartOfDay();
+        this.dateTo = dateTo.atStartOfDay();
 
         this.frequency = frequency;
         this.days = frequency.frequencyValue;
 
+    }
+
+    public RepeatingTransaction(TransactionType transactionType, String name, String description,
+                                double amount, Category category, LocalDate dateFrom, LocalDate dateTo,
+                                TransactionFrequency frequency) {
+        this(null, transactionType, name, description, amount, category, dateFrom, dateTo, frequency);
     }
 
     /**
@@ -153,5 +163,13 @@ public class RepeatingTransaction extends Transaction {
 
     public void setDoNotReschedule(boolean doNotReschedule) {
         this.doNotReschedule = doNotReschedule;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = Objects.requireNonNull(id, "when setting id, it must not be null");
     }
 }

@@ -3,6 +3,7 @@ package cz.muni.fi.pv168.cashflowevidence.model.transaction;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Class representing transactions
@@ -15,8 +16,16 @@ public class Transaction {
     private LocalDateTime dateTime;
     private Category category;
 
+    private Long id;
+
     public Transaction(TransactionType transactionType, String name, String description,
                        double amount, LocalDateTime dateTime, Category category) {
+        this(null, transactionType, name, description, amount, dateTime, category);
+    }
+
+    public Transaction(Long id, TransactionType transactionType, String name, String description,
+                       double amount, LocalDateTime dateTime, Category category) {
+        this.id = id;
         this.transactionType = transactionType;
         this.name = name;
         this.description = description;
@@ -103,5 +112,13 @@ public class Transaction {
                 ", amount=" + amount +
                 ", dateTime=" + dateTime +
                 ", category=" + category + '}';
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = Objects.requireNonNull(id, "when setting id, it must not be null");
     }
 }
