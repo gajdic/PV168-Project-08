@@ -18,9 +18,9 @@ public interface Repository<M> {
 
     List<M> findAll();
 
-    void refresh();
-
     void create(M newEntity);
 
     void deleteByIndex(int index);
+
+    void refresh();
 }
