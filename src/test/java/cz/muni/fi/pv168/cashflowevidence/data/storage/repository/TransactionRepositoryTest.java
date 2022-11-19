@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.awt.Color;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -26,12 +27,14 @@ class TransactionRepositoryTest {
 
     private Repository<Transaction> transactionRepository;
 
+    Category testCategory = new Category(1L, "Test category", Color.RED);
+
     @BeforeEach
     void setUp() {
         databaseManager = DatabaseManager.createTestInstance();
         transactionRepository = new TransactionRepository(
                 new TransactionDao(databaseManager::getConnectionHandler),
-                new TransactionMapper(id -> Optional.empty()));
+                new TransactionMapper(id -> Optional.of(testCategory)));
     }
 
     @AfterEach
@@ -42,12 +45,13 @@ class TransactionRepositoryTest {
     @Test
     void createNewTransaction() {
         Transaction transactionToCreate = new Transaction(
+                1L,
                 TransactionType.Incoming,
                 "Test name",
                 "Test description",
                 200.0,
                 LocalDateTime.now(),
-                new Category("Test category", Color.RED));
+                testCategory);
         transactionRepository.create(transactionToCreate);
 
         Transaction storedTransaction = transactionRepository
@@ -58,7 +62,6 @@ class TransactionRepositoryTest {
         assertThat(storedTransaction.getName()).isEqualTo(transactionToCreate.getName());
         assertThat(storedTransaction.getDescription()).isEqualTo(transactionToCreate.getDescription());
         assertThat(storedTransaction.getAmount()).isEqualTo(transactionToCreate.getAmount());
-        assertThat(storedTransaction.getDateTime()).isEqualTo(transactionToCreate.getDateTime());
         assertThat(storedTransaction.getCategory()).isEqualTo(transactionToCreate.getCategory());
         assertThat(storedTransaction.getId()).isNotNull();
     }

@@ -29,12 +29,14 @@ class RepeatingTransactionRepositoryTest {
 
     Repository<RepeatingTransaction> repeatingTransactionRepository;
 
+    Category testCategory = new Category(1L, "Test category", Color.RED);
+
     @BeforeEach
     void setUp() {
         databaseManager = DatabaseManager.createTestInstance();
         repeatingTransactionRepository = new RepeatingTransactionRepository(
                 new RepeatingTransactionDao(databaseManager::getConnectionHandler),
-                new RepeatingTransactionMapper(id -> Optional.empty()));
+                new RepeatingTransactionMapper(id -> Optional.of(testCategory)));
     }
 
     @AfterEach
@@ -45,11 +47,12 @@ class RepeatingTransactionRepositoryTest {
     @Test
     void createNewRepeatingTransaction() {
         RepeatingTransaction repTransactionToCreate = new RepeatingTransaction(
+                1L,
                 TransactionType.Outgoing,
                 "Test name",
                 "Test description",
                 238.0,
-                new Category("Test category", Color.CYAN),
+                testCategory,
                 LocalDate.now(),
                 LocalDate.now().plusDays(4),
                 TransactionFrequency.Daily);

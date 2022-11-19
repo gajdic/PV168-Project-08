@@ -38,7 +38,7 @@ final class CategoryRepositoryTest {
     void createNewCategory() {
         Category categoryToCreate = new Category(
                 "Groceries",
-                Color.RED);
+                Color.CYAN);
         categoryRepository.create(categoryToCreate);
 
         Category storedCategory = categoryRepository
@@ -53,7 +53,7 @@ final class CategoryRepositoryTest {
     @Test
     void findAll() {
         List<Category> categories = categoryRepository.findAll();
-        assertThat(categories).hasSize(1);
+        assertThat(categories).hasSize(4);
     }
 
     @Test
@@ -68,9 +68,10 @@ final class CategoryRepositoryTest {
         assertThat(category.isPresent()).isFalse();
     }
 
+    // not working yet, should be fixed after category deletion change
     @Test
     void deleteByIndex() {
         categoryRepository.deleteByIndex(0);
-        assertThat(categoryRepository.getSize()).isEqualTo(0);
+        assertThat(categoryRepository.getSize()).isEqualTo(3);
     }
 }
