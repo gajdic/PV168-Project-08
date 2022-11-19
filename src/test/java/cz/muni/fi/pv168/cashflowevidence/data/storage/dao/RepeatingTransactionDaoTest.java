@@ -102,9 +102,9 @@ public class RepeatingTransactionDaoTest {
 
         repeatingTransactionDao.deleteById(repeatingTransaction.map(RepeatingTransactionEntity::id).orElseThrow());
 
-        var repeatingTransactionAfterDelete = repeatingTransactionDao.findAll().stream().findFirst();
+        var repeatingTransactionAfterDelete = repeatingTransactionDao.findAll();
 
-        assertThat(repeatingTransactionAfterDelete).isEmpty();
+        assertThat(repeatingTransactionAfterDelete.size()).isEqualTo(3);
     }
 
     @Test
@@ -120,7 +120,7 @@ public class RepeatingTransactionDaoTest {
         // delete again -> should throw exception
         assertThatExceptionOfType(DataStorageException.class)
                 .isThrownBy(() -> repeatingTransactionDao.deleteById(repeatingTransaction.id()))
-                .withMessageContaining("not found");
+                .withMessageContaining("Repeating transaction with id %d does not exist.".formatted(repeatingTransaction.id()));
     }
 
     @Test
@@ -133,6 +133,7 @@ public class RepeatingTransactionDaoTest {
 
     private static RepeatingTransactionEntity createRepeatingTransactionEntity() {
         return new RepeatingTransactionEntity(
+                -1000L,
                 1,
                 "Not inserted",
                 "Description",

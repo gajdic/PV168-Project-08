@@ -92,9 +92,9 @@ public class TransactionDaoTest {
 
         transactionDao.deleteById(transaction.map(TransactionEntity::id).orElseThrow());
 
-        var transactionAfterDelete = transactionDao.findAll().stream().findFirst();
+        var transactionAfterDelete = transactionDao.findAll();
 
-        assertThat(transactionAfterDelete).isEmpty();
+        assertThat(transactionAfterDelete.size()).isEqualTo(3);
     }
 
     @Test
@@ -110,7 +110,7 @@ public class TransactionDaoTest {
         // delete again -> should throw exception
         assertThatExceptionOfType(DataStorageException.class)
                 .isThrownBy(() -> transactionDao.deleteById(transaction.id()))
-                .withMessageContaining("not found");
+                .withMessageContaining("Transaction with id %d does not exist.".formatted(transaction.id()));
     }
 
     @Test
@@ -123,6 +123,7 @@ public class TransactionDaoTest {
 
     private static TransactionEntity createTransactionEntity() {
         return new TransactionEntity(
+                -1000L,
                 1,
                 "transaction",
                 "description",

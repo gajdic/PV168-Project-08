@@ -30,8 +30,8 @@ public class CategoryDaoTest {
     void listAllCategories() {
         var allCategories = categoryDao.findAll();
         assertThat(allCategories)
-                .as("There should be 3 testing categories")
-                .hasSize(3);
+                .as("There should be 4 testing categories")
+                .hasSize(4);
     }
 
     @Test
@@ -48,7 +48,7 @@ public class CategoryDaoTest {
 
     @Test
     void createNewCategory() {
-        var newCategoryParams = new CategoryEntity("category", "red");
+        var newCategoryParams = new CategoryEntity("category", "#bada55");
 
         var createdCategory = categoryDao.
                 create(newCategoryParams);
@@ -71,22 +71,22 @@ public class CategoryDaoTest {
     void deleteCategory() {
         var allCategories = categoryDao.findAll();
         var category = allCategories.stream()
-                .findFirst();
+                .skip(allCategories.size() - 1).findFirst();
 
-        assertThat(category).isNotNull();
+        assertThat(category).isPresent();
 
-        categoryDao.deleteById(category.map(CategoryEntity::id).orElseThrow());
+        categoryDao.deleteById(category.get().id());
 
-        var categoryAfterDelete = categoryDao.findAll().stream().findFirst();
+        var categoriesAfterDelete = categoryDao.findAll();
 
-        assertThat(categoryAfterDelete).isEmpty();
+        assertThat(categoriesAfterDelete.size()).isEqualTo(3);
     }
 
     @Test
     void deleteCategoryTwice() {
         var allCategories = categoryDao.findAll();
         var category = allCategories.stream()
-                .findFirst()
+                .skip(allCategories.size() - 1).findFirst()
                 .orElseThrow();
 
         // delete once
@@ -95,7 +95,7 @@ public class CategoryDaoTest {
         // delete again -> should throw exception
         assertThatExceptionOfType(DataStorageException.class)
                 .isThrownBy(() -> categoryDao.deleteById(category.id()))
-                .withMessageContaining("not found");
+                .withMessageContaining("Category with id %d does not exist.".formatted(category.id()));
     }
 
     @Test

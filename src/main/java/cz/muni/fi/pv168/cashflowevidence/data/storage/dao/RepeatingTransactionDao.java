@@ -121,7 +121,7 @@ public class RepeatingTransactionDao implements DatabaseAccessObject<RepeatingTr
                 throw new DataStorageException("Repeating transaction with id %d does not exist.".formatted(id));
             }
 
-            if (changedRows > 0) {
+            if (changedRows > 1) {
                 throw new DataStorageException("Multiple repeating transactions were deleted. (%d)".formatted(changedRows));
             }
         } catch (SQLException ex) {
@@ -130,7 +130,12 @@ public class RepeatingTransactionDao implements DatabaseAccessObject<RepeatingTr
     }
 
     private static RepeatingTransactionEntity resultSetToRepeatingTransactionEntity(ResultSet resultset) throws SQLException {
+        String frequencyStr = resultset.getString("frequency");
+        var frequency = TransactionFrequency.valueOf(
+                frequencyStr.substring(0, 1).toUpperCase() + frequencyStr.substring(1));
+
         return new RepeatingTransactionEntity(
+                resultset.getLong("id"),
                 resultset.getLong("categoryId"),
                 resultset.getString("name"),
                 resultset.getString("description"),
@@ -141,7 +146,7 @@ public class RepeatingTransactionDao implements DatabaseAccessObject<RepeatingTr
                 resultset.getInt("days"),
                 resultset.getDate("dateFrom").toLocalDate(),
                 resultset.getDate("dateTo").toLocalDate(),
-                TransactionFrequency.valueOf(resultset.getString("frequency"))
+                frequency
         );
     }
 }
