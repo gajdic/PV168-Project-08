@@ -63,20 +63,12 @@ public class CategoryTableModel extends AbstractTableModel {
     }
 
     public void addRow(Category category) {
-        if (!CategoryValidator.isValid(category)) {
-            return;
-        }
-
         int newRowIndex = categories.size();
         categories.add(category);
         fireTableRowsInserted(newRowIndex, newRowIndex);
     }
 
     public void updateRow(Category category) {
-        if (!CategoryValidator.isValid(category)) {
-            return;
-        }
-
         int rowIndex = categories.indexOf(category);
         fireTableRowsUpdated(rowIndex, rowIndex);
     }

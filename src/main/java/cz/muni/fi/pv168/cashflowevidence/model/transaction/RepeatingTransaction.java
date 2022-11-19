@@ -65,7 +65,10 @@ public class RepeatingTransaction extends Transaction {
 
 
     public LocalDate getDateFrom() {
-        return dateFrom.toLocalDate();
+        if (dateFrom != null) {
+            return dateFrom.toLocalDate();
+        }
+        return null;
     }
 
     public void setDateFrom(LocalDate dateFrom) {
@@ -82,7 +85,10 @@ public class RepeatingTransaction extends Transaction {
 
 
     public LocalDate getDateTo() {
-        return dateTo.toLocalDate();
+        if (dateTo != null) {
+            return dateTo.toLocalDate();
+        }
+        return null;
     }
 
     public LocalDateTime getDateTimeTo() {

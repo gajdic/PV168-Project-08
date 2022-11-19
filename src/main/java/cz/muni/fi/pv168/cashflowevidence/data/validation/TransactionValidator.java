@@ -1,13 +1,19 @@
 package cz.muni.fi.pv168.cashflowevidence.data.validation;
 
+import cz.muni.fi.pv168.cashflowevidence.data.validation.common.DateTimeValidator;
+import cz.muni.fi.pv168.cashflowevidence.data.validation.common.DoubleMinValueValidator;
+import cz.muni.fi.pv168.cashflowevidence.data.validation.common.StringLengthValidator;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.RepeatingTransaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionFrequency;
+import static cz.muni.fi.pv168.cashflowevidence.data.validation.Validator.extracting;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
-public class TransactionValidator {
+public class TransactionValidator implements Validator<Transaction> {
+    // TODO: REMOVE ALL BUT validate()
     private String errorMessage = null;
 
     public boolean isValidName(String name) {
@@ -74,5 +80,15 @@ public class TransactionValidator {
         this.errorMessage = errorMessage;
     }
 
-    // TODO: VALIDATOR FOR MAPPER
+    @Override
+    public ValidationResult validate(Transaction transaction) {
+        var validators = List.of(
+                extracting(Transaction::getName, new StringLengthValidator(1, 100, "Transaction name")),
+                extracting(Transaction::getDescription, new StringLengthValidator(0, 250, "Transaction description")),
+                extracting(Transaction::getAmount, new DoubleMinValueValidator(0, "Transaction amount")),
+                extracting(Transaction::getDateTime, new DateTimeValidator("Transaction date"))
+        );
+
+        return Validator.compose(validators).validate(transaction);
+    }
 }
