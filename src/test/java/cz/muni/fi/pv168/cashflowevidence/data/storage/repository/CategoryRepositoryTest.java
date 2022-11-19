@@ -24,7 +24,9 @@ final class CategoryRepositoryTest {
     @BeforeEach
     void setUp() {
         databaseManager = DatabaseManager.createTestInstance();
-        categoryRepository = new CategoryRepository(new CategoryDao(databaseManager::getConnectionHandler), new CategoryMapper());
+        categoryRepository = new CategoryRepository(
+                new CategoryDao(databaseManager::getConnectionHandler),
+                new CategoryMapper());
     }
 
     @AfterEach
@@ -34,7 +36,9 @@ final class CategoryRepositoryTest {
 
     @Test
     void createNewCategory() {
-        Category categoryToCreate = new Category("Groceries", Color.RED);
+        Category categoryToCreate = new Category(
+                "Groceries",
+                Color.RED);
         categoryRepository.create(categoryToCreate);
 
         Category storedCategory = categoryRepository
