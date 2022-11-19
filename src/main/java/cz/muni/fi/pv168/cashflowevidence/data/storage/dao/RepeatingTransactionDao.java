@@ -2,7 +2,9 @@ package cz.muni.fi.pv168.cashflowevidence.data.storage.dao;
 
 import cz.muni.fi.pv168.cashflowevidence.data.storage.db.ConnectionHandler;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.entity.RepeatingTransactionEntity;
+import cz.muni.fi.pv168.cashflowevidence.data.storage.entity.TransactionEntity;
 import cz.muni.fi.pv168.cashflowevidence.exceptions.DataStorageException;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.RepeatingTransaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionFrequency;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionType;
 
@@ -121,11 +123,45 @@ public class RepeatingTransactionDao implements DatabaseAccessObject<RepeatingTr
                 throw new DataStorageException("Repeating transaction with id %d does not exist.".formatted(id));
             }
 
-            if (changedRows > 1) {
+            if (changedRows > 1000L) {
                 throw new DataStorageException("Multiple repeating transactions were deleted. (%d)".formatted(changedRows));
             }
         } catch (SQLException ex) {
             throw new DataStorageException("Unable to delete repeating transaction with id %d %s".formatted(id, ex));
+        }
+    }
+
+    public void update(RepeatingTransactionEntity entity) {
+        String sql = "UPDATE RepeatingTransaction SET " +
+                "categoryId = ?, name = ?, description = ?, amount = ?, type = ?, days = ?, dateFrom = ?, dateTo = ?, frequency = ? " +
+                "WHERE id = ?";
+
+        try (
+                var connection = connections.get();
+                var statement = connection.use().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+        ) {
+            statement.setObject(1, entity.categoryId());
+            statement.setString(2, entity.name());
+            statement.setString(3, entity.description());
+            statement.setDouble(4, entity.amount());
+            statement.setString(5, entity.type().name());
+            statement.setInt(6, entity.days());
+            statement.setDate(7, Date.valueOf(entity.dateFrom()));
+            statement.setDate(8, Date.valueOf(entity.dateTo()));
+            statement.setString(9, entity.frequency().name());
+            statement.setLong(10, entity.id());
+
+            int changedRows = statement.executeUpdate();
+
+            if (changedRows == 0) {
+                throw new DataStorageException("Repeating transaction with id %d does not exist.".formatted(entity.id()));
+            }
+
+            if (changedRows > 1) {
+                throw new DataStorageException("Multiple repeating transactions were updated. (%d)".formatted(changedRows));
+            }
+        } catch (SQLException ex) {
+            throw new DataStorageException("Unable to update repeating transaction: %s %s".formatted(entity, ex));
         }
     }
 

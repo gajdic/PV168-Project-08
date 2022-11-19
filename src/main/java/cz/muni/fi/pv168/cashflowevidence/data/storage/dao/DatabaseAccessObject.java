@@ -42,4 +42,12 @@ public interface DatabaseAccessObject<T> {
      * @return Entity instance with the provided id.
      */
     T findById(long id);
+
+    /**
+     * Updates entity.
+     *
+     * @param entity Entity with new values.
+     * @throws DataStorageException when something goes wrong with the datasource
+     */
+    void update(T entity);
 }
