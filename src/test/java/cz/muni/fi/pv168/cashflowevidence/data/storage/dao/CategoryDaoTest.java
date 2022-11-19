@@ -2,10 +2,12 @@ package cz.muni.fi.pv168.cashflowevidence.data.storage.dao;
 
 import cz.muni.fi.pv168.cashflowevidence.data.storage.db.DatabaseManager;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.entity.CategoryEntity;
+import cz.muni.fi.pv168.cashflowevidence.data.storage.entity.RepeatingTransactionEntity;
 import cz.muni.fi.pv168.cashflowevidence.exceptions.DataStorageException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -15,10 +17,16 @@ public class CategoryDaoTest {
 
     private CategoryDao categoryDao;
 
+    private TransactionDao transactionDao;
+
+    private RepeatingTransactionDao repeatingTransactionDao;
+
     @BeforeEach
     void setUp() {
         this.manager = DatabaseManager.createTestInstance();
         this.categoryDao = new CategoryDao(manager::getConnectionHandler);
+        this.transactionDao = new TransactionDao(manager::getConnectionHandler);
+        this.repeatingTransactionDao = new RepeatingTransactionDao(manager::getConnectionHandler);
     }
 
     @AfterEach
@@ -83,6 +91,28 @@ public class CategoryDaoTest {
     }
 
     @Test
+    void deleteCategoryUsedByTransaction() {
+        var allCategories = categoryDao.findAll();
+        var category = allCategories.stream()
+                .findFirst();
+
+        assertThat(category).isPresent();
+
+        categoryDao.deleteById(category.get().id());
+
+        var categoriesAfterDelete = categoryDao.findAll();
+        assertThat(categoriesAfterDelete.size()).isEqualTo(3);
+
+        var transactionsAfterDelete = transactionDao.findAll();
+        assertThat(transactionsAfterDelete.size()).isEqualTo(4);
+        assertThat(transactionsAfterDelete.stream().filter(t -> t.categoryId() == 0).count()).isEqualTo(2);
+
+        var repeatingTransactionsAfterDelete = repeatingTransactionDao.findAll();
+        assertThat(repeatingTransactionsAfterDelete.size()).isEqualTo(4);
+        assertThat(repeatingTransactionsAfterDelete.stream().filter(t -> t.categoryId() == 0).count()).isEqualTo(2);
+    }
+
+    @Test
     void deleteCategoryTwice() {
         var allCategories = categoryDao.findAll();
         var category = allCategories.stream()
@@ -94,8 +124,7 @@ public class CategoryDaoTest {
 
         // delete again -> should throw exception
         assertThatExceptionOfType(DataStorageException.class)
-                .isThrownBy(() -> categoryDao.deleteById(category.id()))
-                .withMessageContaining("Category with id %d does not exist.".formatted(category.id()));
+                .isThrownBy(() -> categoryDao.deleteById(category.id()));
     }
 
     @Test

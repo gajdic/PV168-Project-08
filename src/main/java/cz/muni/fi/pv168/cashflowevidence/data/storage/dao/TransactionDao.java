@@ -126,6 +126,35 @@ public class TransactionDao implements DatabaseAccessObject<TransactionEntity>{
         }
     }
 
+    public void update(TransactionEntity entity) {
+        String sql = "UPDATE Transaction SET " +
+                "categoryId = ?, name = ?, description = ?, amount = ?, type = ? WHERE id = ?";
+
+        try (
+                var connection = connections.get();
+                var statement = connection.use().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+        ) {
+            statement.setObject(1, entity.categoryId());
+            statement.setString(2, entity.name());
+            statement.setString(3, entity.description());
+            statement.setDouble(4, entity.amount());
+            statement.setString(5, entity.type().name());
+            statement.setLong(6, entity.id());
+
+            int changedRows = statement.executeUpdate();
+
+            if (changedRows == 0) {
+                throw new DataStorageException("Transaction with id %d does not exist.".formatted(entity.id()));
+            }
+
+            if (changedRows > 1) {
+                throw new DataStorageException("Multiple transactions were deleted. (%d)".formatted(changedRows));
+            }
+        } catch (SQLException ex) {
+            throw new DataStorageException("Unable to update transaction: %s %s".formatted(entity, ex));
+        }
+    }
+
     private static TransactionEntity resultSetToTransactionEntity(ResultSet resultset) throws SQLException {
         return new TransactionEntity(
                 resultset.getLong("id"),

@@ -134,7 +134,7 @@ public class RepeatingTransactionDaoTest {
     private static RepeatingTransactionEntity createRepeatingTransactionEntity() {
         return new RepeatingTransactionEntity(
                 -1000L,
-                1,
+                1L,
                 "Not inserted",
                 "Description",
                 9.99,

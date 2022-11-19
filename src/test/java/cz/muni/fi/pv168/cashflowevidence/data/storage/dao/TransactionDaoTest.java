@@ -39,7 +39,7 @@ public class TransactionDaoTest {
     @Test
     void createNewTransaction()  {
         var params = new TransactionEntity(
-                1,
+                1L,
                 "Transaction",
                 "Description",
                 9.99,
@@ -124,7 +124,7 @@ public class TransactionDaoTest {
     private static TransactionEntity createTransactionEntity() {
         return new TransactionEntity(
                 -1000L,
-                1,
+                1L,
                 "transaction",
                 "description",
                 9.99,
