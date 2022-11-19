@@ -23,7 +23,7 @@ public class CategoryDao implements DatabaseAccessObject<CategoryEntity> {
 
         try (
                 var connection = connections.get();
-                var statement = connection.use().prepareStatement(sql);
+                var statement = connection.use().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ) {
             statement.setString(1, entity.name());
             statement.setString(2, entity.color());
@@ -33,7 +33,7 @@ public class CategoryDao implements DatabaseAccessObject<CategoryEntity> {
                 long categoryId;
 
                 if (keys.next()) {
-                    categoryId = keys.getLong(1);
+                    categoryId = keys.getLong("id");
                 } else {
                     throw new DataStorageException("Failed to retrieve generated key for: " + entity);
                 }
@@ -61,6 +61,7 @@ public class CategoryDao implements DatabaseAccessObject<CategoryEntity> {
 
             if (result.next()) {
                 return new CategoryEntity(
+                        result.getLong("id"),
                         result.getString("name"),
                         result.getString("color"));
             }
@@ -83,6 +84,7 @@ public class CategoryDao implements DatabaseAccessObject<CategoryEntity> {
             try (var results = statement.executeQuery()) {
                 while (results.next()) {
                     var category = new CategoryEntity(
+                            results.getLong("id"),
                             results.getString("name"),
                             results.getString("color")
                     );
@@ -110,7 +112,7 @@ public class CategoryDao implements DatabaseAccessObject<CategoryEntity> {
                 throw new DataStorageException("Category with id %d does not exist.".formatted(id));
             }
 
-            if (changedRows > 0) {
+            if (changedRows > 1) {
                 throw new DataStorageException("Multiple categories were deleted. (%d)".formatted(changedRows));
             }
         } catch (SQLException ex) {

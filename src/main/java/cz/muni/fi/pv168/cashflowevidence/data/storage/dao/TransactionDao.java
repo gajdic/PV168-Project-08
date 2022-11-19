@@ -25,7 +25,7 @@ public class TransactionDao implements DatabaseAccessObject<TransactionEntity>{
     public TransactionEntity create(TransactionEntity entity) {
         String sql = "INSERT INTO Transaction" +
                 "(name, description, amount, type, categoryId)" +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+                "VALUES (?, ?, ?, ?, ?)";
 
         try (
                 var connection = connections.get();
@@ -118,7 +118,7 @@ public class TransactionDao implements DatabaseAccessObject<TransactionEntity>{
                 throw new DataStorageException("Transaction with id %d does not exist.".formatted(id));
             }
 
-            if (changedRows > 0) {
+            if (changedRows > 1) {
                 throw new DataStorageException("Multiple transactions were deleted. (%d)".formatted(changedRows));
             }
         } catch (SQLException ex) {
