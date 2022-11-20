@@ -3,6 +3,7 @@ package cz.muni.fi.pv168.cashflowevidence.app.dialog;
 import com.github.lgooddatepicker.components.DatePicker;
 import cz.muni.fi.pv168.cashflowevidence.app.InputNumberFormatter;
 import cz.muni.fi.pv168.cashflowevidence.data.validation.TransactionValidator;
+import cz.muni.fi.pv168.cashflowevidence.data.validation.Validator;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.RepeatingTransaction;
@@ -42,18 +43,22 @@ public class RepeatingTransactionDialog extends AbstractTransactionDialog {
     private JPanel customFrequencyPanel;
 
     private RepeatingTransaction repeatingTransaction;
+    private Validator<RepeatingTransaction> validator;
 
-    public RepeatingTransactionDialog(String title, CategoryListModel categories) {
+    public RepeatingTransactionDialog(String title, CategoryListModel categories, Validator<RepeatingTransaction> validator) {
         super(title, categories);
+
+        this.validator = validator;
 
         setupUIComponents();
         displayDialog(contentPane, saveBtn, cancelBtn, new Dimension(600, 400));
     }
 
-    public RepeatingTransactionDialog(String title, RepeatingTransaction repeatingTransaction, CategoryListModel categories) {
+    public RepeatingTransactionDialog(String title, RepeatingTransaction repeatingTransaction, CategoryListModel categories, Validator<RepeatingTransaction> validator) {
         super(title, categories);
 
         this.repeatingTransaction = repeatingTransaction;
+        this.validator = validator;
 
         setupUIComponents();
         setupForEdit();
@@ -65,16 +70,17 @@ public class RepeatingTransactionDialog extends AbstractTransactionDialog {
             repeatingTransaction = new RepeatingTransaction();
         }
 
-        TransactionValidator validator = new TransactionValidator();
-        RepeatingTransaction tmpTransaction = validateAndGetRepeatingTransaction(validator);
+        RepeatingTransaction tmpTransaction = prepareTmpTransaction();
 
-        if (tmpTransaction != null) {
+        var validation = validator.validate(tmpTransaction);
+
+        if (validation.isValid()) {
             repeatingTransaction.setAll(tmpTransaction);
             dispose();
             return;
         }
 
-        showWarningDialog(validator.getErrorMessage());
+        showWarningDialog(validation.getValidationErrors().toString());
     }
 
     public RepeatingTransaction showDialog() {
@@ -156,34 +162,34 @@ public class RepeatingTransactionDialog extends AbstractTransactionDialog {
         }
     }
 
-    private RepeatingTransaction validateAndGetRepeatingTransaction(TransactionValidator validator) {
-        Transaction tmpTransaction = validateAndGetTransaction(
-                validator,
-                (Category) categoryComboBox.getSelectedItem(),
+    private RepeatingTransaction prepareTmpTransaction() {
+
+        var tmpRepeatingTransaction = new RepeatingTransaction(
                 incomingRadioButton.isSelected() ? TransactionType.Incoming : TransactionType.Outgoing,
-                amountField.getText(),
+                nameField.getText(),
                 descriptionField.getText(),
-                nameField.getText());
-
-        if (tmpTransaction == null) {
-            return null;
-        }
-
-        RepeatingTransaction tmpRepeatingTransaction = new RepeatingTransaction(
-                tmpTransaction.getTransactionType(), tmpTransaction.getName(), tmpTransaction.getDescription(),
-                tmpTransaction.getAmount(), tmpTransaction.getCategory(), dateFromPicker.getDate(), dateToPicker.getDate(),
-                TransactionFrequency.Daily);
+                amountField.getText().isEmpty() ? -1 : Double.parseDouble(amountField.getText()
+                        .replace("\u00a0", "").replace(",", ".")),
+                (Category) categoryComboBox.getSelectedItem(),
+                dateFromPicker.getDate(),
+                dateToPicker.getDate(),
+                TransactionFrequency.Daily
+        );
 
         tmpRepeatingTransaction.setFrequency((TransactionFrequency) frequencyComboBox.getSelectedItem());
         if (tmpRepeatingTransaction.getFrequency() == TransactionFrequency.Custom) {
-            tmpRepeatingTransaction.setDays(
-                    // formatter adds &ngsp; instead of spaces
-                    Integer.parseInt(customFrequencyField.getText().replace("\u00a0", "")) * 30);
+            if (customFrequencyField.getText().isEmpty()) {
+                tmpRepeatingTransaction.setDays(-1);
+            } else {
+                tmpRepeatingTransaction.setDays(
+                        // formatter adds &ngsp; instead of spaces
+                        Integer.parseInt(customFrequencyField.getText().replace("\u00a0", "")) * 30);
+            }
         } else {
             tmpRepeatingTransaction.setDays(tmpRepeatingTransaction.getFrequency().frequencyValue);
         }
 
-        return validator.isValidRepeatingTransaction(tmpRepeatingTransaction) ? tmpRepeatingTransaction : null;
+        return tmpRepeatingTransaction;
     }
 
     private void createUIComponents() {

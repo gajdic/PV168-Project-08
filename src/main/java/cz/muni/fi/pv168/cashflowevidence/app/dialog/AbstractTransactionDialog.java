@@ -92,6 +92,6 @@ public abstract class AbstractTransactionDialog extends JDialog {
         tmpTransaction.setDescription(description);
         tmpTransaction.setName(name);
 
-        return validator.isValidTransaction(tmpTransaction) ? tmpTransaction : null;
+        return validator.validate(tmpTransaction).isValid() ? tmpTransaction : null;
     }
 }

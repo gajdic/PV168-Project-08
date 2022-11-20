@@ -1,7 +1,9 @@
 package cz.muni.fi.pv168.cashflowevidence.action.repeatingTransaction;
 
 import cz.muni.fi.pv168.cashflowevidence.app.dialog.RepeatingTransactionDialog;
+import cz.muni.fi.pv168.cashflowevidence.data.validation.Validator;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryListModel;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.RepeatingTransaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.RepeatingTransactionTableModel;
 
 import javax.swing.AbstractAction;
@@ -15,8 +17,9 @@ public class EditRepeatingTransactionAction extends AbstractAction {
 
     private final JTable repeatingTransactionTable;
     private final CategoryListModel categoryListModel;
+    private final Validator<RepeatingTransaction> validator;
 
-    public EditRepeatingTransactionAction(JTable repeatingTransactionTable, CategoryListModel categoryListModel) {
+    public EditRepeatingTransactionAction(JTable repeatingTransactionTable, CategoryListModel categoryListModel, Validator<RepeatingTransaction> validator) {
         super("Edit", UIManager.getIcon("FileChooser.fileIcon"));
         putValue(SHORT_DESCRIPTION, "Edits selected record");
         putValue(MNEMONIC_KEY, KeyEvent.VK_E);
@@ -24,6 +27,7 @@ public class EditRepeatingTransactionAction extends AbstractAction {
 
         this.repeatingTransactionTable = repeatingTransactionTable;
         this.categoryListModel = categoryListModel;
+        this.validator = validator;
     }
 
     @Override
@@ -36,9 +40,11 @@ public class EditRepeatingTransactionAction extends AbstractAction {
         var repeatingTransactionTableModel = (RepeatingTransactionTableModel) repeatingTransactionTable.getModel();
         int modelRow = repeatingTransactionTable.convertRowIndexToModel(selectedRows[0]);
 
-        var categoryDialog = new RepeatingTransactionDialog(
-                "Edit Transaction", repeatingTransactionTableModel.getEntity(modelRow), categoryListModel);
-        var transaction = categoryDialog.showDialog();
-        repeatingTransactionTableModel.updateRow(transaction);
+        var repeatingTransactionDialog = new RepeatingTransactionDialog(
+                "Edit Transaction", repeatingTransactionTableModel.getEntity(modelRow), categoryListModel, validator);
+        var transaction = repeatingTransactionDialog.showDialog();
+        if (validator.validate(transaction).isValid()) {
+            repeatingTransactionTableModel.updateRow(transaction);
+        }
     }
 }
