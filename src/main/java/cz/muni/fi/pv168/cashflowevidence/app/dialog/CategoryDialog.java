@@ -1,8 +1,8 @@
 package cz.muni.fi.pv168.cashflowevidence.app.dialog;
 
 import cz.muni.fi.pv168.cashflowevidence.app.CashFlowEvidence;
+import cz.muni.fi.pv168.cashflowevidence.data.validation.Validator;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
-import cz.muni.fi.pv168.cashflowevidence.data.validation.CategoryValidator;
 
 import javax.swing.*;
 import java.awt.Color;
@@ -27,16 +27,18 @@ public class CategoryDialog extends JDialog {
     private JPanel colorChooserPanel;
     private Color color;
     private final Category category;
+    private Validator<Category> validator;
 
 
     /**
      * Constructor used to create new categories
      * @param title Title used for the dialog
      */
-    public CategoryDialog(String title) {
+    public CategoryDialog(String title, Validator<Category> validator) {
         super(CashFlowEvidence.frame, title);
         this.category = new Category();
         this.color = Color.RED;
+        this.validator = validator;
 
         dialogSetup();
     }
@@ -46,9 +48,10 @@ public class CategoryDialog extends JDialog {
      * @param title Title used for the dialog
      * @param category Category which is being edited
      */
-    public CategoryDialog(String title, Category category) {
+    public CategoryDialog(String title, Category category, Validator<Category> validator) {
         super(CashFlowEvidence.frame, title);
         this.category = category;
+        this.validator = validator;
 
         dialogSetup();
 
@@ -92,9 +95,11 @@ public class CategoryDialog extends JDialog {
     }
 
     private void onSave() {
-        if (!CategoryValidator.isValidName(nameField.getText())) {
+        var validation = validator.validate(new Category(nameField.getText(), color));
+
+        if (!validation.isValid()) {
             Object[] options = { "OK", "CANCEL" };
-            JOptionPane.showOptionDialog(null, "Name cannot be null", "Warning",
+            JOptionPane.showOptionDialog(null, validation.getValidationErrors(), "Warning",
                     JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
                     null, options, options[0]);
             return;

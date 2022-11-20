@@ -2,6 +2,7 @@ package cz.muni.fi.pv168.cashflowevidence.app.dialog;
 
 import com.github.lgooddatepicker.components.DateTimePicker;
 import cz.muni.fi.pv168.cashflowevidence.app.InputNumberFormatter;
+import cz.muni.fi.pv168.cashflowevidence.data.validation.Validator;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
@@ -42,13 +43,16 @@ public class TransactionDialog extends AbstractTransactionDialog {
     private JFormattedTextField amountField;
     private DateTimePicker dateTimePicker;
     private Transaction transaction;
+    private final Validator<Transaction> validator;
 
     /**
      * Constructor used to create new transaction
      * @param title Title used for the dialog
      */
-    public TransactionDialog(String title, CategoryListModel categories) {
+    public TransactionDialog(String title, CategoryListModel categories, Validator<Transaction> validator) {
         super(title, categories);
+
+        this.validator = validator;
 
         displayDialog(contentPane, saveBtn, cancelBtn, new Dimension(600, 360));
     }
@@ -58,9 +62,10 @@ public class TransactionDialog extends AbstractTransactionDialog {
      * @param title Title used for the dialog
      * @param transaction Transaction that is being edited
      */
-    public TransactionDialog(String title, Transaction transaction, CategoryListModel categories) {
+    public TransactionDialog(String title, Transaction transaction, CategoryListModel categories, Validator<Transaction> validator) {
         super(title, categories);
         this.transaction = transaction;
+        this.validator = validator;
 
         displayDialog(contentPane, saveBtn, cancelBtn, new Dimension(600, 360));
         setupForEdit();
@@ -93,33 +98,30 @@ public class TransactionDialog extends AbstractTransactionDialog {
             transaction = new Transaction();
         }
 
-        TransactionValidator validator = new TransactionValidator();
-        Transaction tmpTransaction = validateAndGetTransaction(validator);
+        Transaction tmpTransaction = prepareTmpTransaction();
 
-        if (tmpTransaction != null) {
+        var validation = validator.validate(tmpTransaction);
+
+        if (validation.isValid()) {
             transaction.setAll(tmpTransaction);
             dispose();
             return;
         }
 
-        showWarningDialog(validator.getErrorMessage());
+        showWarningDialog(validation.getValidationErrors().toString());
     }
 
-    private Transaction validateAndGetTransaction(TransactionValidator validator) {
-        Transaction tmpTransaction = super.validateAndGetTransaction(validator,
-                (Category) categoryComboBox.getSelectedItem(),
+    private Transaction prepareTmpTransaction() {
+
+        return new Transaction(
                 incomingRadioButton.isSelected() ? TransactionType.Incoming : TransactionType.Outgoing,
-                amountField.getText(),
+                nameField.getText(),
                 descriptionField.getText(),
-                nameField.getText());
-
-        if (tmpTransaction == null) {
-            return null;
-        }
-
-        return validator.isValidDateTime(dateTimePicker.getDateTimeStrict()) ? tmpTransaction : null;
+                amountField.getText().isEmpty() ? -1 : Double.parseDouble(amountField.getText()
+                        .replace("\u00a0", "").replace(",", ".")),
+                dateTimePicker.getDateTimeStrict(),
+                (Category) categoryComboBox.getSelectedItem());
     }
-
 
     private void createUIComponents() {
         categoryComboBox = new JComboBox<>(getCategoriesList().getCategories());

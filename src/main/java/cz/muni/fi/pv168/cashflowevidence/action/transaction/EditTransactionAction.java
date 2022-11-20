@@ -1,7 +1,9 @@
 package cz.muni.fi.pv168.cashflowevidence.action.transaction;
 
 import cz.muni.fi.pv168.cashflowevidence.app.dialog.TransactionDialog;
+import cz.muni.fi.pv168.cashflowevidence.data.validation.Validator;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryListModel;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionTableModel;
 
 import javax.swing.AbstractAction;
@@ -15,8 +17,9 @@ public class EditTransactionAction extends AbstractAction {
 
     private final JTable transactionTable;
     private final CategoryListModel categoryListModel;
+    private final Validator<Transaction> validator;
 
-    public EditTransactionAction(JTable transactionTable, CategoryListModel categoryListModel) {
+    public EditTransactionAction(JTable transactionTable, CategoryListModel categoryListModel, Validator<Transaction> validator) {
         super("Edit", UIManager.getIcon("FileChooser.fileIcon"));
         putValue(SHORT_DESCRIPTION, "Edits selected record");
         putValue(MNEMONIC_KEY, KeyEvent.VK_E);
@@ -24,6 +27,7 @@ public class EditTransactionAction extends AbstractAction {
 
         this.transactionTable = transactionTable;
         this.categoryListModel = categoryListModel;
+        this.validator = validator;
     }
 
     @Override
@@ -36,7 +40,7 @@ public class EditTransactionAction extends AbstractAction {
         var transactionTableModel = (TransactionTableModel) transactionTable.getModel();
         int modelRow = transactionTable.convertRowIndexToModel(selectedRows[0]);
 
-        var categoryDialog = new TransactionDialog("Edit Transaction", transactionTableModel.getEntity(modelRow), categoryListModel);
+        var categoryDialog = new TransactionDialog("Edit Transaction", transactionTableModel.getEntity(modelRow), categoryListModel, validator);
         var transaction = categoryDialog.showDialog();
         transactionTableModel.updateRow(transaction);
     }

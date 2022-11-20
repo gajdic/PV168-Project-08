@@ -155,7 +155,7 @@ public class CashFlowEvidence {
 
         categoryListModel = new CategoryListModel(categories);
 
-        initializeActions();
+        initializeActions(dependencyProvider);
 
         TransactionImporter jsonImporter = new JsonTransactionImporter();
         TransactionExporter jsonExporter = new JsonTransactionExporter();
@@ -179,17 +179,21 @@ public class CashFlowEvidence {
 
     }
 
-    private void initializeActions() {
-        addTAction = new AddTransactionAction(transactionTable, categoryListModel);
-        editTAction = new EditTransactionAction(transactionTable, categoryListModel);
+    private void initializeActions(DependencyProvider dependencyProvider) {
+        var categoryValidator = dependencyProvider.getCategoryValidator();
+        var transactionValidator = dependencyProvider.getTransactionValidator();
+        var repeatingTransactionValidator = dependencyProvider.getRepeatingTransactionValidator();
+
+        addTAction = new AddTransactionAction(transactionTable, categoryListModel, transactionValidator);
+        editTAction = new EditTransactionAction(transactionTable, categoryListModel, transactionValidator);
         deleteTAction = new DeleteTransactionAction(transactionTable);
 
-        addRTAction = new AddRepeatingTransactionAction(repeatingTransactionTable, categoryListModel);
-        editRTAction = new EditRepeatingTransactionAction(repeatingTransactionTable, categoryListModel);
+        addRTAction = new AddRepeatingTransactionAction(repeatingTransactionTable, categoryListModel, repeatingTransactionValidator);
+        editRTAction = new EditRepeatingTransactionAction(repeatingTransactionTable, categoryListModel, repeatingTransactionValidator);
         deleteRTAction = new DeleteRepeatingTransactionAction(repeatingTransactionTable);
 
-        addCAction = new AddCategoryAction(categoryTable, categoryListModel);
-        editCAction = new EditCategoryAction(categoryTable);
+        addCAction = new AddCategoryAction(categoryTable, categoryListModel, categoryValidator);
+        editCAction = new EditCategoryAction(categoryTable, categoryValidator);
         deleteCAction = new DeleteCategoryAction(categoryTable, transactionTable, categoryListModel);
     }
 
