@@ -21,9 +21,9 @@ import java.time.LocalDateTime;
  * @param dateTo        Date to which the transaction repeats
  * @param frequency     Frequency representing how often in does the transaction repeat
  */
-public record RepeatingTransactionEntity(
+public record RepeatingTransactionEntity (
         Long id,
-        long categoryId,
+        Long categoryId,
         String name,
         String description,
         double amount,
@@ -45,5 +45,5 @@ public record RepeatingTransactionEntity(
                              LocalDate dateTo,
                              TransactionFrequency frequency) {
         this(null, categoryId, name, description, amount, type, createdAt, days, dateFrom, dateTo, frequency);
-    }
+        }
 }
