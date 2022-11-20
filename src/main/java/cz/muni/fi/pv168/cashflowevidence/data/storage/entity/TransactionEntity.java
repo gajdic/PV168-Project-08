@@ -17,14 +17,14 @@ import java.time.LocalDateTime;
  */
 public record TransactionEntity(
         Long id,
-        long categoryId,
+        Long categoryId,
         String name,
         String description,
         double amount,
         TransactionType type,
         LocalDateTime createdAt
 ) {
-    public TransactionEntity(long categoryId,
+    public TransactionEntity(Long categoryId,
                              String name,
                              String description,
                              double amount,
