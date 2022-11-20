@@ -49,5 +49,5 @@ public interface DatabaseAccessObject<T> {
      * @param entity Entity with new values.
      * @throws DataStorageException when something goes wrong with the datasource
      */
-    void update(T entity);
+    T update(T entity);
 }

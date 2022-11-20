@@ -4,6 +4,7 @@ import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class RepeatingTransaction extends Transaction {
 
