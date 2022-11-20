@@ -138,7 +138,7 @@ public class CategoryDao implements DatabaseAccessObject<CategoryEntity> {
         }
     }
 
-    public void update(CategoryEntity entity) {
+    public CategoryEntity update(CategoryEntity entity) {
         String sql = "UPDATE Category SET name = ?, color = ? WHERE id = ?";
 
         try (
@@ -161,6 +161,7 @@ public class CategoryDao implements DatabaseAccessObject<CategoryEntity> {
         } catch (SQLException ex) {
             throw new DataStorageException("Unable to update category: %s %s".formatted(entity, ex));
         }
+        return findById(entity.id());
     }
 
     /**

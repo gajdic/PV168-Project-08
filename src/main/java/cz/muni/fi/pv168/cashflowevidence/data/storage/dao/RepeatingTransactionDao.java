@@ -131,7 +131,7 @@ public class RepeatingTransactionDao implements DatabaseAccessObject<RepeatingTr
         }
     }
 
-    public void update(RepeatingTransactionEntity entity) {
+    public RepeatingTransactionEntity update(RepeatingTransactionEntity entity) {
         String sql = "UPDATE RepeatingTransaction SET " +
                 "categoryId = ?, name = ?, description = ?, amount = ?, type = ?, days = ?, dateFrom = ?, dateTo = ?, frequency = ? " +
                 "WHERE id = ?";
@@ -163,6 +163,7 @@ public class RepeatingTransactionDao implements DatabaseAccessObject<RepeatingTr
         } catch (SQLException ex) {
             throw new DataStorageException("Unable to update repeating transaction: %s %s".formatted(entity, ex));
         }
+        return findById(entity.id());
     }
 
     private static RepeatingTransactionEntity resultSetToRepeatingTransactionEntity(ResultSet resultset) throws SQLException {

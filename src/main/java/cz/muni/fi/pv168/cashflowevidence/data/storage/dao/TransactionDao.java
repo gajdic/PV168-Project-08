@@ -126,7 +126,7 @@ public class TransactionDao implements DatabaseAccessObject<TransactionEntity>{
         }
     }
 
-    public void update(TransactionEntity entity) {
+    public TransactionEntity update(TransactionEntity entity) {
         String sql = "UPDATE Transaction SET " +
                 "categoryId = ?, name = ?, description = ?, amount = ?, type = ? WHERE id = ?";
 
@@ -153,6 +153,7 @@ public class TransactionDao implements DatabaseAccessObject<TransactionEntity>{
         } catch (SQLException ex) {
             throw new DataStorageException("Unable to update transaction: %s %s".formatted(entity, ex));
         }
+        return findById(entity.id());
     }
 
     private static TransactionEntity resultSetToTransactionEntity(ResultSet resultset) throws SQLException {

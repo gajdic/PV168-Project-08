@@ -71,6 +71,16 @@ public class CategoryRepository implements Repository<Category> {
     }
 
     @Override
+    public void update(Category entity) {
+        int index = categories.indexOf(entity);
+        Stream.of(entity)
+                .map(mapper::mapToEntity)
+                .map(dao::update)
+                .map(mapper::mapToModel)
+                .forEach(c -> categories.set(index, c));
+    }
+
+    @Override
     public void refresh() {
         categories = fetchAll();
     }

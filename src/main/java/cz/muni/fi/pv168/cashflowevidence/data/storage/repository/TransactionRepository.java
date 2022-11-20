@@ -70,6 +70,16 @@ public class TransactionRepository implements Repository<Transaction> {
     }
 
     @Override
+    public void update(Transaction entity) {
+        int index = transactions.indexOf(entity);
+        Stream.of(entity)
+                .map(mapper::mapToEntity)
+                .map(dao::update)
+                .map(mapper::mapToModel)
+                .forEach(t -> transactions.set(index, t));
+    }
+
+    @Override
     public void refresh() {
         transactions = fetchAll();
     }

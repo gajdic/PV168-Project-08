@@ -22,5 +22,7 @@ public interface Repository<M> {
 
     void deleteByIndex(int index);
 
+    void update(M entity);
+
     void refresh();
 }

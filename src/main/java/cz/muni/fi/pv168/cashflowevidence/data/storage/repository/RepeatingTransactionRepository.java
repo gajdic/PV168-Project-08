@@ -71,6 +71,16 @@ public class RepeatingTransactionRepository implements Repository<RepeatingTrans
     }
 
     @Override
+    public void update(RepeatingTransaction entity) {
+        int index = repeatingTransactions.indexOf(entity);
+        Stream.of(entity)
+                .map(mapper::mapToEntity)
+                .map(dao::update)
+                .map(mapper::mapToModel)
+                .forEach(rt -> repeatingTransactions.set(index, rt));
+    }
+
+    @Override
     public void refresh() {
         repeatingTransactions = fetchAll();
     }

@@ -51,6 +51,29 @@ final class CategoryRepositoryTest {
     }
 
     @Test
+    void updateCategory() {
+        Category category = findGreenCategory();
+
+        assertThat(category.getColor()).isNotEqualTo(Color.GREEN);
+
+        category.setColor(Color.GREEN);
+        categoryRepository.update(category);
+
+        Category updatedCategory = findGreenCategory();
+
+        assertThat(updatedCategory.getColor()).isEqualTo(Color.GREEN);
+    }
+
+    private Category findGreenCategory() {
+        return categoryRepository
+                .findAll()
+                .stream()
+                .filter(c -> c.getName().equals("GreenCategory"))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    @Test
     void findAll() {
         List<Category> categories = categoryRepository.findAll();
         assertThat(categories).hasSize(4);
@@ -68,7 +91,6 @@ final class CategoryRepositoryTest {
         assertThat(category.isPresent()).isFalse();
     }
 
-    // not working yet, should be fixed after category deletion change
     @Test
     void deleteByIndex() {
         categoryRepository.deleteByIndex(0);
