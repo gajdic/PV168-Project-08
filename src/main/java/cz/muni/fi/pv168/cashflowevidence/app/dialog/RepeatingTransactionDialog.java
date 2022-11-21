@@ -2,6 +2,7 @@ package cz.muni.fi.pv168.cashflowevidence.app.dialog;
 
 import com.github.lgooddatepicker.components.DatePicker;
 import cz.muni.fi.pv168.cashflowevidence.app.InputNumberFormatter;
+import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.data.validation.TransactionValidator;
 import cz.muni.fi.pv168.cashflowevidence.data.validation.Validator;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
@@ -45,8 +46,8 @@ public class RepeatingTransactionDialog extends AbstractTransactionDialog {
     private RepeatingTransaction repeatingTransaction;
     private Validator<RepeatingTransaction> validator;
 
-    public RepeatingTransactionDialog(String title, CategoryListModel categories, Validator<RepeatingTransaction> validator) {
-        super(title, categories);
+    public RepeatingTransactionDialog(String title, Repository<Category> categoryRepository, Validator<RepeatingTransaction> validator) {
+        super(title, categoryRepository);
 
         this.validator = validator;
 
@@ -54,8 +55,8 @@ public class RepeatingTransactionDialog extends AbstractTransactionDialog {
         displayDialog(contentPane, saveBtn, cancelBtn, new Dimension(600, 400));
     }
 
-    public RepeatingTransactionDialog(String title, RepeatingTransaction repeatingTransaction, CategoryListModel categories, Validator<RepeatingTransaction> validator) {
-        super(title, categories);
+    public RepeatingTransactionDialog(String title, RepeatingTransaction repeatingTransaction, Repository<Category> categoryRepository, Validator<RepeatingTransaction> validator) {
+        super(title, categoryRepository);
 
         this.repeatingTransaction = repeatingTransaction;
         this.validator = validator;
@@ -108,7 +109,7 @@ public class RepeatingTransactionDialog extends AbstractTransactionDialog {
         descriptionField.setText(repeatingTransaction.getDescription());
         amountField.setText(String.format("%.2f", repeatingTransaction.getAmount()));
 
-        int index = Arrays.stream(getCategoriesList().getCategories()).toList().indexOf(repeatingTransaction.getCategory());
+        int index = getCategoriesList().indexOf(repeatingTransaction.getCategory());
         categoryComboBox.setSelectedIndex(index + 1); // +1 to skip empty category
 
         dateFromPicker.setDate(repeatingTransaction.getDateFrom());
@@ -125,7 +126,7 @@ public class RepeatingTransactionDialog extends AbstractTransactionDialog {
     }
 
     private void setupCategories() {
-        for (Category category: getCategoriesList().getCategories()) {
+        for (Category category: getCategoriesList()) {
             categoryComboBox.addItem(category);
         }
         categoryComboBox.insertItemAt(null, 0);

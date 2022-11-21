@@ -114,7 +114,7 @@ public class Transaction {
                 ", category=" + category + '}';
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

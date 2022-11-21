@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.cashflowevidence.model.transaction;
 
+import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.model.Column;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class TransactionTableModel extends AbstractTableModel {
 
-    private final List<Transaction> transactions;
+    private final Repository<Transaction> transactions;
 
     private final List<Column<Transaction, ?>> columns = List.of(
             Column.editable("Name", String.class, Transaction::getName, Transaction::setName),
@@ -23,15 +24,15 @@ public class TransactionTableModel extends AbstractTableModel {
             Column.readonly("Type", TransactionType.class, Transaction::getTransactionType)
     );
 
-    public TransactionTableModel(Collection<Transaction> transactions) {
-        this.transactions = new ArrayList<>(transactions);
+    public TransactionTableModel(Repository<Transaction> transactions) {
+        this.transactions = transactions;
 
         //tmp
     }
 
     @Override
     public int getRowCount() {
-        return transactions.size();
+        return transactions.getSize();
     }
 
     @Override
@@ -61,26 +62,26 @@ public class TransactionTableModel extends AbstractTableModel {
     }
 
     public Transaction getEntity(int rowIndex) {
-        return transactions.get(rowIndex);
+        return transactions.findByIndex(rowIndex).orElseThrow();
     }
 
     public List<Transaction> getEntities() {
-        return Collections.unmodifiableList(transactions);
+        return transactions.findAll();
     }
 
     public void addRow(Transaction transaction) {
-        int newRowIndex = transactions.size();
-        transactions.add(transaction);
+        int newRowIndex = transactions.getSize();
+        transactions.create(transaction);
         fireTableRowsInserted(newRowIndex, newRowIndex);
     }
 
-    public void updateRow(Transaction transaction) {
-        int rowIndex = transactions.indexOf(transaction);
+    public void updateRow(int rowIndex, Transaction transaction) {
+        transactions.create(transaction);
         fireTableRowsUpdated(rowIndex, rowIndex);
     }
 
     public void deleteRow(int rowIndex) {
-        transactions.remove(rowIndex);
+        transactions.deleteByIndex(rowIndex);
         fireTableRowsDeleted(rowIndex, rowIndex);
     }
 }

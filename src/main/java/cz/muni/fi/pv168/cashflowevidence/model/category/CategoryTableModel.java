@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.cashflowevidence.model.category;
 
+import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.data.validation.CategoryValidator;
 import cz.muni.fi.pv168.cashflowevidence.model.Column;
 
@@ -12,20 +13,20 @@ import java.util.List;
 
 public class CategoryTableModel extends AbstractTableModel {
 
-    private final List<Category> categories;
+    private final Repository<Category> categories;
 
     private final List<Column<Category, ?>> columns = List.of(
             Column.editable("Name", String.class, Category::getName, Category::setName),
             Column.editable("Color", Color.class, Category::getColor, Category::setColor)
     );
 
-    public CategoryTableModel(Collection<Category> categories) {
-        this.categories = new ArrayList<>(categories);
+    public CategoryTableModel(Repository<Category> categories) {
+        this.categories = categories;
     }
 
     @Override
     public int getRowCount() {
-        return categories.size();
+        return categories.getSize();
     }
 
     @Override
@@ -55,26 +56,26 @@ public class CategoryTableModel extends AbstractTableModel {
     }
 
     public Category getEntity(int rowIndex) {
-        return categories.get(rowIndex);
+        return categories.findByIndex(rowIndex).orElseThrow();
     }
 
     public List<Category> getEntities() {
-        return Collections.unmodifiableList(categories);
+        return categories.findAll();
     }
 
     public void addRow(Category category) {
-        int newRowIndex = categories.size();
-        categories.add(category);
+        int newRowIndex = categories.getSize();
+        categories.create(category);
         fireTableRowsInserted(newRowIndex, newRowIndex);
     }
 
-    public void updateRow(Category category) {
-        int rowIndex = categories.indexOf(category);
+    public void updateRow(int rowIndex, Category category) {
+        categories.update(category);
         fireTableRowsUpdated(rowIndex, rowIndex);
     }
 
     public void deleteRow(int rowIndex) {
-        categories.remove(rowIndex);
+        categories.deleteByIndex(rowIndex);
         fireTableRowsDeleted(rowIndex, rowIndex);
     }
 }

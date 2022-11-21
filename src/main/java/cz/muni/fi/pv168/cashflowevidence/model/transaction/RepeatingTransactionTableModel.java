@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.cashflowevidence.model.transaction;
 
+import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.model.Column;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 
@@ -15,7 +16,7 @@ import java.util.List;
 
 public class RepeatingTransactionTableModel extends AbstractTableModel {
 
-    private final List<RepeatingTransaction> repeatingTransactions;
+    private final Repository<RepeatingTransaction> repeatingTransactions;
 
     private final List<Column<RepeatingTransaction, ?>> columns = List.of(
             Column.editable("Name", String.class, RepeatingTransaction::getName, RepeatingTransaction::setName),
@@ -29,13 +30,13 @@ public class RepeatingTransactionTableModel extends AbstractTableModel {
             Column.editable("Repeats every (days)", Integer.class, RepeatingTransaction::getDays, RepeatingTransaction::setDays)
     );
 
-    public RepeatingTransactionTableModel(Collection<RepeatingTransaction> repeatingTransactions) {
-        this.repeatingTransactions = new ArrayList<>(repeatingTransactions);
+    public RepeatingTransactionTableModel(Repository<RepeatingTransaction> repeatingTransactions) {
+        this.repeatingTransactions = repeatingTransactions;
     }
 
     @Override
     public int getRowCount() {
-        return repeatingTransactions.size();
+        return repeatingTransactions.getSize();
     }
 
     @Override
@@ -65,26 +66,26 @@ public class RepeatingTransactionTableModel extends AbstractTableModel {
     }
 
     public RepeatingTransaction getEntity(int rowIndex) {
-        return repeatingTransactions.get(rowIndex);
+        return repeatingTransactions.findByIndex(rowIndex).orElseThrow();
     }
 
     public List<RepeatingTransaction> getEntities() {
-        return Collections.unmodifiableList(repeatingTransactions);
+        return repeatingTransactions.findAll();
     }
 
     public void addRow(RepeatingTransaction transaction) {
-        int newRowIndex = repeatingTransactions.size();
-        repeatingTransactions.add(transaction);
+        int newRowIndex = repeatingTransactions.getSize();
+        repeatingTransactions.create(transaction);
         fireTableRowsInserted(newRowIndex, newRowIndex);
     }
 
-    public void updateRow(RepeatingTransaction transaction) {
-        int rowIndex = repeatingTransactions.indexOf(transaction);
+    public void updateRow(int rowIndex, RepeatingTransaction transaction) {
+        repeatingTransactions.create(transaction);
         fireTableRowsUpdated(rowIndex, rowIndex);
     }
 
     public void deleteRow(int rowIndex) {
-        repeatingTransactions.remove(rowIndex);
+        repeatingTransactions.deleteByIndex(rowIndex);
         fireTableRowsDeleted(rowIndex, rowIndex);
     }
 }

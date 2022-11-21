@@ -63,7 +63,7 @@ public class RepeatingTaskScheduler {
         Transaction transaction = repeatingTransaction.createNextTransaction();
         transactionTableModel.addRow(transaction);
         repeatingTransaction.setDoNotReschedule(true);
-        repeatingTransactionTableModel.updateRow(repeatingTransaction);
+        //repeatingTransactionTableModel.updateRow(repeatingTransaction);
     }
 
 
