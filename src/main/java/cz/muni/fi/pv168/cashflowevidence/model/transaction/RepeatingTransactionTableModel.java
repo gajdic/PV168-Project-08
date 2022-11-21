@@ -80,7 +80,7 @@ public class RepeatingTransactionTableModel extends AbstractTableModel {
     }
 
     public void updateRow(int rowIndex, RepeatingTransaction transaction) {
-        repeatingTransactions.create(transaction);
+        repeatingTransactions.update(transaction);
         fireTableRowsUpdated(rowIndex, rowIndex);
     }
 

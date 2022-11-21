@@ -76,7 +76,7 @@ public class TransactionTableModel extends AbstractTableModel {
     }
 
     public void updateRow(int rowIndex, Transaction transaction) {
-        transactions.create(transaction);
+        transactions.update(transaction);
         fireTableRowsUpdated(rowIndex, rowIndex);
     }
 

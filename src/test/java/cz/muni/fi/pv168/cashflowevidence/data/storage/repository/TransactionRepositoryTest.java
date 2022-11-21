@@ -36,7 +36,6 @@ class TransactionRepositoryTest {
         var dependencyProvider = new TestDependencyProvider(databaseManager);
         transactionRepository = dependencyProvider.getTransactionRepository();
         categoryRepository = dependencyProvider.getCategoryRepository();
-
     }
 
     @AfterEach
