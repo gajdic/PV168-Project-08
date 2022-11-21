@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.cashflowevidence.app.dialog;
 
 import cz.muni.fi.pv168.cashflowevidence.app.CashFlowEvidence;
+import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.data.validation.TransactionValidator;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryListModel;
@@ -18,11 +19,12 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public abstract class AbstractTransactionDialog extends JDialog {
-    private final CategoryListModel categories;
+    private final Repository<Category> categories;
 
-    public AbstractTransactionDialog(String title, CategoryListModel categories) {
+    public AbstractTransactionDialog(String title, Repository<Category> categories) {
         super(CashFlowEvidence.frame, title);
 
         this.categories = categories;
@@ -66,8 +68,8 @@ public abstract class AbstractTransactionDialog extends JDialog {
                 null, options, options[0]);
     }
 
-    public CategoryListModel getCategoriesList() {
-        return categories;
+    public List<Category> getCategoriesList() {
+        return categories.findAll();
     }
 
     protected Transaction validateAndGetTransaction(TransactionValidator validator, Category category,

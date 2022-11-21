@@ -5,6 +5,7 @@ import com.github.lgooddatepicker.components.DatePicker;
 import cz.muni.fi.pv168.cashflowevidence.app.InputNumberFormatter;
 import cz.muni.fi.pv168.cashflowevidence.app.RightClickMenu;
 import cz.muni.fi.pv168.cashflowevidence.app.TransactionFilter;
+import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.renderer.AmountCellRenderer;
@@ -32,6 +33,7 @@ import java.awt.event.KeyEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 
 // TODO: This class is too long. Consider splitting in multiple separate (Maybe more reusable?) Ones.
@@ -65,16 +67,16 @@ public class TransactionsOverview extends AbstractOverview {
     private final JButton resetFilterButton = new JButton("Reset filter");
     private final TransactionFilter filter;
 
-    private final CategoryListModel categoryListModel;
+    private final Repository<Category> categoryRepository;
 
     /**
      * Represents the panel of transactions
      */
-    public TransactionsOverview(JTable transactionsTable, ArrayList<Action> actions, JLabel totalBalance, JLabel filteredBalance, CategoryListModel categoryListModel) {
+    public TransactionsOverview(JTable transactionsTable, ArrayList<Action> actions, JLabel totalBalance, JLabel filteredBalance, Repository<Category> categoryRepository) {
         super(transactionsTable, actions);
         setLayout();
 
-        this.categoryListModel = categoryListModel;
+        this.categoryRepository = categoryRepository;
         this.filter = new TransactionFilter(transactionsTable, totalBalance, filteredBalance, this);
 
         var scrollPane = new JScrollPane(overviewTable);
@@ -173,7 +175,10 @@ public class TransactionsOverview extends AbstractOverview {
             @Override
             public void focusGained(FocusEvent e) {
                 categoriesJComboBox.removeAllItems();
-                Arrays.stream(categoryListModel.getCategories()).forEach(categoriesJComboBox::addItem);
+                List<Category> categoryList = categoryRepository.findAll();
+                for (Category category : categoryList) {
+                    categoriesJComboBox.addItem(category);
+                }
             }
         });
 

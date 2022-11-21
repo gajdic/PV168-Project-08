@@ -54,7 +54,18 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
     public DatabaseManager getDatabaseManager() {
         return databaseManager;
     }
-
+    @Override
+    public Repository<Category> getCategoryRepository() {
+        return categories;
+    }
+    @Override
+    public Repository<Transaction> getTransactionRepository() {
+        return transactions;
+    }
+    @Override
+    public Repository<RepeatingTransaction> getRepeatingTransactionRepository() {
+        return repeatingTransactions;
+    }
     @Override
     public Repository<Category> getCategoryRepository() {
         return categories;

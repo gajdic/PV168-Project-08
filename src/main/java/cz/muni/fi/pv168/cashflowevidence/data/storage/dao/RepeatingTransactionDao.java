@@ -32,9 +32,6 @@ public class RepeatingTransactionDao implements DatabaseAccessObject<RepeatingTr
                 var connection = connections.get();
                 var statement = connection.use().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         ) {
-            if (findById(entity.categoryId()) == null){
-                throw new DataStorageException("Category with id %d does not exist.".formatted(entity.categoryId()));
-            }
 
             statement.setString(1, entity.name());
             statement.setString(2, entity.description());

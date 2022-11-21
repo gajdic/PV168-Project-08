@@ -20,9 +20,7 @@ public class DeleteCategoryAction extends DeleteAction {
     private final JTable categoryTable;
     private final JTable transactionTable;
 
-    private final CategoryListModel categoryListModel;
-
-    public DeleteCategoryAction(JTable categoryTable, JTable transactionTable, CategoryListModel categoryListModel) {
+    public DeleteCategoryAction(JTable categoryTable, JTable transactionTable) {
         super();
 
         putValue(SHORT_DESCRIPTION, "Deletes selected record");
@@ -31,7 +29,6 @@ public class DeleteCategoryAction extends DeleteAction {
 
         this.categoryTable = categoryTable;
         this.transactionTable = transactionTable;
-        this.categoryListModel = categoryListModel;
     }
 
     @Override
@@ -52,7 +49,6 @@ public class DeleteCategoryAction extends DeleteAction {
                 .forEach(index -> {
                     categoriesToBeDeleted.add(categoryTableModel.getEntity(index));
                     categoryTableModel.deleteRow(index);
-                    categoryListModel.deleteCategory(index);
                 });
 
         transactionTableModel.getEntities().stream()
