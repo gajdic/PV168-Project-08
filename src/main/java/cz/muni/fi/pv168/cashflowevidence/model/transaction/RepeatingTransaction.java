@@ -172,7 +172,7 @@ public class RepeatingTransaction extends Transaction {
         this.doNotReschedule = doNotReschedule;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
