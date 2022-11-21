@@ -1,27 +1,31 @@
 package cz.muni.fi.pv168.cashflowevidence.data.storage.mapper;
 
 import cz.muni.fi.pv168.cashflowevidence.data.storage.entity.RepeatingTransactionEntity;
+import cz.muni.fi.pv168.cashflowevidence.data.validation.Validator;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.RepeatingTransaction;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 
 import java.util.Optional;
 
 public class RepeatingTransactionMapper implements EntityMapper<RepeatingTransactionEntity, RepeatingTransaction> {
-    // TODO: add validators
-
     @FunctionalInterface
     public interface Lookup<T> {
         Optional<T> get(Long id);
     }
 
     private final Lookup<Category> categorySupplier;
+    private final Validator<RepeatingTransaction> validator;
 
-    public RepeatingTransactionMapper(Lookup<Category> categorySupplier) {
+    public RepeatingTransactionMapper(Lookup<Category> categorySupplier, Validator<RepeatingTransaction> validator) {
         this.categorySupplier = categorySupplier;
+        this.validator = validator;
     }
 
     @Override
     public RepeatingTransactionEntity mapToEntity(RepeatingTransaction source) {
+        validator.validate(source).intoException();
+
         return new RepeatingTransactionEntity(
                 source.getId(),
                 source.getCategory().getId(),
@@ -38,7 +42,7 @@ public class RepeatingTransactionMapper implements EntityMapper<RepeatingTransac
 
     @Override
     public RepeatingTransaction mapToModel(RepeatingTransactionEntity entity) {
-        Category category = categorySupplier.get(entity.categoryId()).orElseThrow();
+        Category category = categorySupplier.get(entity.categoryId()).orElse(null);
 
         return new RepeatingTransaction(
                 entity.id(),

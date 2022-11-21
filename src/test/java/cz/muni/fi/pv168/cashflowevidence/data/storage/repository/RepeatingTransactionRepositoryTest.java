@@ -9,6 +9,7 @@ import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.RepeatingTransaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionFrequency;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionType;
+import cz.muni.fi.pv168.cashflowevidence.wiring.TestDependencyProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,9 +35,8 @@ class RepeatingTransactionRepositoryTest {
     @BeforeEach
     void setUp() {
         databaseManager = DatabaseManager.createTestInstance();
-        repeatingTransactionRepository = new RepeatingTransactionRepository(
-                new RepeatingTransactionDao(databaseManager::getConnectionHandler),
-                new RepeatingTransactionMapper(id -> Optional.of(testCategory)));
+        var dependencyProvider = new TestDependencyProvider(databaseManager);
+        repeatingTransactionRepository = dependencyProvider.getRepeatingTransactionRepository();
     }
 
     @AfterEach

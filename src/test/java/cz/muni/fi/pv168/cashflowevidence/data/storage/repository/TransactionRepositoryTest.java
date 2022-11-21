@@ -6,6 +6,7 @@ import cz.muni.fi.pv168.cashflowevidence.data.storage.mapper.TransactionMapper;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionType;
+import cz.muni.fi.pv168.cashflowevidence.wiring.TestDependencyProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,9 +33,8 @@ class TransactionRepositoryTest {
     @BeforeEach
     void setUp() {
         databaseManager = DatabaseManager.createTestInstance();
-        transactionRepository = new TransactionRepository(
-                new TransactionDao(databaseManager::getConnectionHandler),
-                new TransactionMapper(id -> Optional.of(testCategory)));
+        var dependencyProvider = new TestDependencyProvider(databaseManager);
+        transactionRepository = dependencyProvider.getTransactionRepository();
     }
 
     @AfterEach
