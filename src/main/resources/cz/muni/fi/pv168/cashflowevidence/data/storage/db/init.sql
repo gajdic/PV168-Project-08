@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS Transaction
 
 --
 -- Repeating Transaction table definition
+-- 'EachSecond' only for showcase
 --
 CREATE TABLE IF NOT EXISTS RepeatingTransaction
 (
@@ -37,5 +38,5 @@ CREATE TABLE IF NOT EXISTS RepeatingTransaction
     days         INT NOT NULL,
     dateFrom     DATE NOT NULL,
     dateTo       DATE NOT NULL,
-    frequency    ENUM('daily', 'weekly', 'monthly', 'everyThreeMonths', 'everySixMonths', 'yearly', 'custom') NOT NULL
+    frequency    ENUM('daily', 'weekly', 'monthly', 'everyThreeMonths', 'everySixMonths', 'yearly', 'custom', 'EachSecond') NOT NULL
 );

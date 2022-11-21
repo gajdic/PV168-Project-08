@@ -6,6 +6,7 @@ import cz.muni.fi.pv168.cashflowevidence.data.storage.mapper.TransactionMapper;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionType;
+import cz.muni.fi.pv168.cashflowevidence.wiring.TestDependencyProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,15 +27,15 @@ class TransactionRepositoryTest {
     private DatabaseManager databaseManager;
 
     private Repository<Transaction> transactionRepository;
+    private Repository<Category> categoryRepository;
 
-    Category testCategory = new Category(1L, "Test category", Color.RED);
 
     @BeforeEach
     void setUp() {
         databaseManager = DatabaseManager.createTestInstance();
-        transactionRepository = new TransactionRepository(
-                new TransactionDao(databaseManager::getConnectionHandler),
-                new TransactionMapper(id -> Optional.of(testCategory)));
+        var dependencyProvider = new TestDependencyProvider(databaseManager);
+        transactionRepository = dependencyProvider.getTransactionRepository();
+        categoryRepository = dependencyProvider.getCategoryRepository();
     }
 
     @AfterEach
@@ -44,6 +45,8 @@ class TransactionRepositoryTest {
 
     @Test
     void createNewTransaction() {
+        var category = categoryRepository.findByID(1).orElse(null);
+
         Transaction transactionToCreate = new Transaction(
                 1L,
                 TransactionType.Incoming,
@@ -51,7 +54,7 @@ class TransactionRepositoryTest {
                 "Test description",
                 200.0,
                 LocalDateTime.now(),
-                testCategory);
+                category);
         transactionRepository.create(transactionToCreate);
 
         Transaction storedTransaction = transactionRepository

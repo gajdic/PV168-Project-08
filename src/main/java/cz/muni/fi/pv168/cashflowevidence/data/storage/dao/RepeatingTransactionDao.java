@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import static java.sql.Types.BIGINT;
+
 public class RepeatingTransactionDao implements DatabaseAccessObject<RepeatingTransactionEntity> {
     Supplier<ConnectionHandler> connections;
 
@@ -32,15 +34,17 @@ public class RepeatingTransactionDao implements DatabaseAccessObject<RepeatingTr
                 var connection = connections.get();
                 var statement = connection.use().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         ) {
-            if (findById(entity.categoryId()) == null){
-                throw new DataStorageException("Category with id %d does not exist.".formatted(entity.categoryId()));
-            }
 
             statement.setString(1, entity.name());
             statement.setString(2, entity.description());
             statement.setDouble(3, entity.amount());
             statement.setString(4, entity.type().name());
-            statement.setLong(5, entity.categoryId());
+            if (entity.categoryId() != null) {
+                statement.setLong(5, entity.categoryId());
+            }
+            else {
+                statement.setNull(5, BIGINT);
+            }
             statement.setInt(6, entity.days());
             statement.setDate(7, Date.valueOf(entity.dateFrom()));
             statement.setDate(8, Date.valueOf(entity.dateTo()));

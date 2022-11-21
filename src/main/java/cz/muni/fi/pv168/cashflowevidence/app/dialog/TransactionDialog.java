@@ -2,6 +2,7 @@ package cz.muni.fi.pv168.cashflowevidence.app.dialog;
 
 import com.github.lgooddatepicker.components.DateTimePicker;
 import cz.muni.fi.pv168.cashflowevidence.app.InputNumberFormatter;
+import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.data.validation.Validator;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryListModel;
@@ -9,6 +10,7 @@ import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionType;
 import cz.muni.fi.pv168.cashflowevidence.data.validation.TransactionValidator;
 
+import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
@@ -49,7 +51,7 @@ public class TransactionDialog extends AbstractTransactionDialog {
      * Constructor used to create new transaction
      * @param title Title used for the dialog
      */
-    public TransactionDialog(String title, CategoryListModel categories, Validator<Transaction> validator) {
+    public TransactionDialog(String title, Repository<Category> categories, Validator<Transaction> validator) {
         super(title, categories);
 
         this.validator = validator;
@@ -62,7 +64,7 @@ public class TransactionDialog extends AbstractTransactionDialog {
      * @param title Title used for the dialog
      * @param transaction Transaction that is being edited
      */
-    public TransactionDialog(String title, Transaction transaction, CategoryListModel categories, Validator<Transaction> validator) {
+    public TransactionDialog(String title, Transaction transaction, Repository<Category> categories, Validator<Transaction> validator) {
         super(title, categories);
         this.transaction = transaction;
         this.validator = validator;
@@ -83,7 +85,7 @@ public class TransactionDialog extends AbstractTransactionDialog {
         amountField.setText(String.format("%.2f", transaction.getAmount()));
         dateTimePicker.setDateTimeStrict(transaction.getDateTime());
 
-        int index = Arrays.stream(getCategoriesList().getCategories()).toList().indexOf(transaction.getCategory());
+        int index = getCategoriesList().indexOf(transaction.getCategory());
         categoryComboBox.setSelectedIndex(index + 1); // +1 to skip empty category
     }
 
@@ -103,7 +105,15 @@ public class TransactionDialog extends AbstractTransactionDialog {
         var validation = validator.validate(tmpTransaction);
 
         if (validation.isValid()) {
-            transaction.setAll(tmpTransaction);
+            //transaction.setAll(tmpTransaction);
+
+            transaction.setTransactionType(incomingRadioButton.isSelected() ? TransactionType.Incoming : TransactionType.Outgoing);
+            transaction.setName(nameField.getText());
+            transaction.setDescription(descriptionField.getText());
+            transaction.setAmount(amountField.getText().isEmpty() ? -1 : Double.parseDouble(amountField.getText()
+                    .replace("\u00a0", "").replace(",", ".")));
+            transaction.setDate(dateTimePicker.getDateTimeStrict());
+            transaction.setCategory((Category) categoryComboBox.getSelectedItem());
             dispose();
             return;
         }
@@ -124,7 +134,10 @@ public class TransactionDialog extends AbstractTransactionDialog {
     }
 
     private void createUIComponents() {
-        categoryComboBox = new JComboBox<>(getCategoriesList().getCategories());
+        categoryComboBox = new JComboBox<>();
+        for (Category category : getCategoriesList()) {
+            categoryComboBox.addItem(category);
+        }
         categoryComboBox.insertItemAt(null, 0);
         categoryComboBox.setSelectedIndex(0);
 
