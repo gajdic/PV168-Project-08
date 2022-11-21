@@ -56,11 +56,15 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 
 /**
@@ -141,15 +145,15 @@ public class CashFlowEvidence {
         importJsonAction = new ImportAction(transactionTable, jsonImporter);
         exportJsonAction = new ExportAction(transactionTable, jsonExporter);
 
+        repeatingTaskScheduler = new RepeatingTaskScheduler(transactionTableModel, repeatingTransactionTable);
+
         initializeActionsState();
 
         JPanel content = getContent();
         frame.add(content, BorderLayout.CENTER);
         frame.setVisible(true);
 
-
-        repeatingTaskScheduler = new RepeatingTaskScheduler(transactionTableModel, repeatingTransactionTable);
-
+        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
     private void initializeActions(DependencyProvider dependencyProvider) {

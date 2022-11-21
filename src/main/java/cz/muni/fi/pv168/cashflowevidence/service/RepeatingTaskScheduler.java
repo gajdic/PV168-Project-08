@@ -103,6 +103,4 @@ public class RepeatingTaskScheduler {
                 .atZone(ZoneId.systemDefault())
                 .toInstant());
     }
-
-
 }
