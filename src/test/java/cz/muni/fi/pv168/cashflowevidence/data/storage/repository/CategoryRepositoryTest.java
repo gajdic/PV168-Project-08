@@ -4,6 +4,7 @@ import cz.muni.fi.pv168.cashflowevidence.data.storage.dao.CategoryDao;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.db.DatabaseManager;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.mapper.CategoryMapper;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
+import cz.muni.fi.pv168.cashflowevidence.wiring.TestDependencyProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,9 +25,8 @@ final class CategoryRepositoryTest {
     @BeforeEach
     void setUp() {
         databaseManager = DatabaseManager.createTestInstance();
-        categoryRepository = new CategoryRepository(
-                new CategoryDao(databaseManager::getConnectionHandler),
-                new CategoryMapper());
+        var dependencyProvider = new TestDependencyProvider(databaseManager);
+        categoryRepository = dependencyProvider.getCategoryRepository();
     }
 
     @AfterEach

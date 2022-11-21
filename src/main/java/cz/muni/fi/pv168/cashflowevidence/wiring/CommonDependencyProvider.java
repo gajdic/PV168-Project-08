@@ -22,6 +22,7 @@ import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 public abstract class CommonDependencyProvider implements DependencyProvider {
 
     private final DatabaseManager databaseManager;
+
     private final Repository<Category> categories;
     private final Repository<Transaction> transactions;
     private final Repository<RepeatingTransaction> repeatingTransactions;
@@ -38,20 +39,32 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
 
         this.categories = new CategoryRepository(
                 new CategoryDao(databaseManager::getConnectionHandler),
-                new CategoryMapper());
+                new CategoryMapper(categoryValidator));
 
         this.transactions = new TransactionRepository(
                 new TransactionDao(databaseManager::getConnectionHandler),
-                new TransactionMapper(categories::findByID));
+                new TransactionMapper(categories::findByID, transactionValidator));
 
         this.repeatingTransactions = new RepeatingTransactionRepository(
                 new RepeatingTransactionDao(databaseManager::getConnectionHandler),
-                new RepeatingTransactionMapper(categories::findByID));
+                new RepeatingTransactionMapper(categories::findByID, repeatingTransactionValidator));
     }
 
     @Override
     public DatabaseManager getDatabaseManager() {
         return databaseManager;
+    }
+    @Override
+    public Repository<Category> getCategoryRepository() {
+        return categories;
+    }
+    @Override
+    public Repository<Transaction> getTransactionRepository() {
+        return transactions;
+    }
+    @Override
+    public Repository<RepeatingTransaction> getRepeatingTransactionRepository() {
+        return repeatingTransactions;
     }
     @Override
     public Repository<Category> getCategoryRepository() {

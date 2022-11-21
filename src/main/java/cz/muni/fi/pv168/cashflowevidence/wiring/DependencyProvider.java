@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.cashflowevidence.wiring;
 
 import cz.muni.fi.pv168.cashflowevidence.data.storage.db.DatabaseManager;
+
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.CategoryRepository;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.RepeatingTransactionRepository;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
