@@ -27,14 +27,16 @@ class TransactionRepositoryTest {
     private DatabaseManager databaseManager;
 
     private Repository<Transaction> transactionRepository;
+    private Repository<Category> categoryRepository;
 
-    Category testCategory = new Category(1L, "Test category", Color.RED);
 
     @BeforeEach
     void setUp() {
         databaseManager = DatabaseManager.createTestInstance();
         var dependencyProvider = new TestDependencyProvider(databaseManager);
         transactionRepository = dependencyProvider.getTransactionRepository();
+        categoryRepository = dependencyProvider.getCategoryRepository();
+
     }
 
     @AfterEach
@@ -44,6 +46,8 @@ class TransactionRepositoryTest {
 
     @Test
     void createNewTransaction() {
+        var category = categoryRepository.findByID(1).orElse(null);
+
         Transaction transactionToCreate = new Transaction(
                 1L,
                 TransactionType.Incoming,
@@ -51,7 +55,7 @@ class TransactionRepositoryTest {
                 "Test description",
                 200.0,
                 LocalDateTime.now(),
-                testCategory);
+                category);
         transactionRepository.create(transactionToCreate);
 
         Transaction storedTransaction = transactionRepository

@@ -26,17 +26,17 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class RepeatingTransactionRepositoryTest {
 
-    DatabaseManager databaseManager;
+    private DatabaseManager databaseManager;
 
-    Repository<RepeatingTransaction> repeatingTransactionRepository;
-
-    Category testCategory = new Category(1L, "Test category", Color.RED);
+    private Repository<RepeatingTransaction> repeatingTransactionRepository;
+    private Repository<Category> categoryRepository;
 
     @BeforeEach
     void setUp() {
         databaseManager = DatabaseManager.createTestInstance();
         var dependencyProvider = new TestDependencyProvider(databaseManager);
         repeatingTransactionRepository = dependencyProvider.getRepeatingTransactionRepository();
+        categoryRepository = dependencyProvider.getCategoryRepository();
     }
 
     @AfterEach
@@ -46,13 +46,15 @@ class RepeatingTransactionRepositoryTest {
 
     @Test
     void createNewRepeatingTransaction() {
+        var category = categoryRepository.findByID(1).orElse(null);
+
         RepeatingTransaction repTransactionToCreate = new RepeatingTransaction(
                 1L,
                 TransactionType.Outgoing,
                 "Test name",
                 "Test description",
                 238.0,
-                testCategory,
+                category,
                 LocalDate.now(),
                 LocalDate.now().plusDays(4),
                 TransactionFrequency.Daily);
