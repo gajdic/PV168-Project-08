@@ -23,6 +23,7 @@ import cz.muni.fi.pv168.cashflowevidence.data.manipulation.TransactionExporter;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.TransactionImporter;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.TransactionPerLineExporter;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.TransactionPerLineImporter;
+import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryTableModel;
@@ -75,8 +76,9 @@ public class CashFlowEvidence {
     private final Action exitAction = new ExitApplicationAction();
     private final Action importJsonAction;
     private final Action exportJsonAction;
-
-
+    private final Repository<Category> categories;
+    private final Repository<Transaction> transactions;
+    private final Repository<RepeatingTransaction> repeatingTransactions;
     private Action addTAction;
     private Action editTAction;
     private Action deleteTAction;
@@ -108,6 +110,10 @@ public class CashFlowEvidence {
 
     public CashFlowEvidence(DependencyProvider dependencyProvider) {
         setBalanceFont();
+
+        this.categories = dependencyProvider.getCategoryRepository();
+        this.transactions = dependencyProvider.getTransactionRepository();
+        this.repeatingTransactions = dependencyProvider.getRepeatingTransactionRepository();
 
         // tmp
         var categories = new ArrayList<Category>();
@@ -380,5 +386,11 @@ public class CashFlowEvidence {
             }
         }
         return Transaction.formatAmount(amount) + " €";
+    }
+
+    private void refresh() {
+        categories.refresh();
+        transactions.refresh();
+        repeatingTransactions.refresh();
     }
 }
