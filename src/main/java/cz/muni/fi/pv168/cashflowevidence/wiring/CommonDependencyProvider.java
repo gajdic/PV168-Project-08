@@ -67,18 +67,6 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
         return repeatingTransactions;
     }
     @Override
-    public Repository<Category> getCategoryRepository() {
-        return categories;
-    }
-    @Override
-    public Repository<Transaction> getTransactionRepository() {
-        return transactions;
-    }
-    @Override
-    public Repository<RepeatingTransaction> getRepeatingTransactionRepository() {
-        return repeatingTransactions;
-    }
-    @Override
     public Validator<Category> getCategoryValidator() {
         return categoryValidator;
     }

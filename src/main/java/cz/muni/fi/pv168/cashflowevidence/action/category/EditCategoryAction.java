@@ -41,7 +41,7 @@ public class EditCategoryAction extends AbstractAction {
 
         CategoryDialog categoryDialog = new CategoryDialog("Edit Category", categoryTableModel.getEntity(modelRow), validator);
         Category category = categoryDialog.showDialog();
-        if (validator.validate(category).isValid()) {
+        if (category != null && validator.validate(category).isValid()) {
             categoryTableModel.updateRow(modelRow, category);
         }
     }

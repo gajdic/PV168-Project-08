@@ -36,7 +36,7 @@ public class AddCategoryAction extends AbstractAction {
         CategoryDialog categoryDialog = new CategoryDialog("Add Category", validator);
         Category category = categoryDialog.showDialog();
 
-        if (validator.validate(category).isValid()) {
+        if (category != null && validator.validate(category).isValid()) {
             categoryTableModel.addRow(category);
         }
     }

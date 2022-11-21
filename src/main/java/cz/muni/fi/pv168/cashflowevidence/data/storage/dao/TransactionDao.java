@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import static java.sql.Types.BIGINT;
+
 public class TransactionDao implements DatabaseAccessObject<TransactionEntity>{
     Supplier<ConnectionHandler> connections;
 
@@ -36,7 +38,12 @@ public class TransactionDao implements DatabaseAccessObject<TransactionEntity>{
             statement.setString(2, entity.description());
             statement.setDouble(3, entity.amount());
             statement.setString(4, entity.type().name());
-            statement.setLong(5, entity.categoryId());
+            if (entity.categoryId() != null) {
+                statement.setLong(5, entity.categoryId());
+            }
+            else {
+                statement.setNull(5, BIGINT);
+            }
             statement.executeUpdate();
 
             try (ResultSet keys = statement.getGeneratedKeys()) {

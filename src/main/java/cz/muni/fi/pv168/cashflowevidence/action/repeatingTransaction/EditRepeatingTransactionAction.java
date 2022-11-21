@@ -44,9 +44,9 @@ public class EditRepeatingTransactionAction extends AbstractAction {
 
         var repeatingTransactionDialog = new RepeatingTransactionDialog(
                 "Edit Transaction", repeatingTransactionTableModel.getEntity(modelRow), categoryRepository, validator);
-        var transaction = repeatingTransactionDialog.showDialog();
-        if (validator.validate(transaction).isValid()) {
-            repeatingTransactionTableModel.updateRow(modelRow, transaction);
+        var repeatingTransaction = repeatingTransactionDialog.showDialog();
+        if (repeatingTransaction != null && validator.validate(repeatingTransaction).isValid()) {
+            repeatingTransactionTableModel.updateRow(modelRow, repeatingTransaction);
         }
     }
 }

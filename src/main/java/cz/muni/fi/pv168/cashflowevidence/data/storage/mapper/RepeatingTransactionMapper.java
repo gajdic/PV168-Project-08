@@ -28,7 +28,7 @@ public class RepeatingTransactionMapper implements EntityMapper<RepeatingTransac
 
         return new RepeatingTransactionEntity(
                 source.getId(),
-                source.getCategory().getId(),
+                source.getCategory() != null ? source.getCategory().getId() : null,
                 source.getName(),
                 source.getDescription(),
                 source.getAmount(),

@@ -44,6 +44,8 @@ public class EditTransactionAction extends AbstractAction {
 
         var categoryDialog = new TransactionDialog("Edit Transaction", transactionTableModel.getEntity(modelRow),categoryRepository, validator);
         var transaction = categoryDialog.showDialog();
-        transactionTableModel.updateRow(modelRow, transaction);
+        if (transaction != null && validator.validate(transaction).isValid()) {
+            transactionTableModel.updateRow(modelRow, transaction);
+        }
     }
 }

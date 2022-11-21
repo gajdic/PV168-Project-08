@@ -41,7 +41,7 @@ public class AddRepeatingTransactionAction extends AbstractAction {
         var repeatingTransactionDialog = new RepeatingTransactionDialog("New Repeating Transaction", categoryRepository, validator);
         var repeatingTransaction = repeatingTransactionDialog.showDialog();
 
-        if (validator.validate(repeatingTransaction).isValid()) {
+        if (repeatingTransaction != null && validator.validate(repeatingTransaction).isValid()) {
             repeatingTransactionTableModel.addRow(repeatingTransaction);
         }
     }

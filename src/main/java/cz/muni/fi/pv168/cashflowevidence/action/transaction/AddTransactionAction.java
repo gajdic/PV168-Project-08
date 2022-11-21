@@ -40,7 +40,7 @@ public class AddTransactionAction extends AbstractAction {
         TransactionDialog transactionDialog = new TransactionDialog("New Transaction", categories, validator);
         Transaction transaction = transactionDialog.showDialog();
 
-        if (validator.validate(transaction).isValid()) {
+        if (transaction != null && validator.validate(transaction).isValid()) {
             transactionTableModel.addRow(transaction);
         }
     }
