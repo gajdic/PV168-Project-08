@@ -8,10 +8,7 @@ import cz.muni.fi.pv168.cashflowevidence.model.transaction.RepeatingTransaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionFrequency;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionType;
 
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -27,8 +24,8 @@ public class RepeatingTransactionDao implements DatabaseAccessObject<RepeatingTr
 
     public RepeatingTransactionEntity create(RepeatingTransactionEntity entity) {
         String sql = "INSERT INTO RepeatingTransaction" +
-                "(name, description, amount, type, categoryId, days, dateFrom, dateTo, frequency)" +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "(name, description, amount, type, categoryId, nextCreateAt, days, dateFrom, dateTo, frequency)" +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (
                 var connection = connections.get();
@@ -45,10 +42,11 @@ public class RepeatingTransactionDao implements DatabaseAccessObject<RepeatingTr
             else {
                 statement.setNull(5, BIGINT);
             }
-            statement.setInt(6, entity.days());
-            statement.setDate(7, Date.valueOf(entity.dateFrom()));
-            statement.setDate(8, Date.valueOf(entity.dateTo()));
-            statement.setString(9, entity.frequency().name());
+            statement.setTimestamp(6, Timestamp.valueOf(entity.nextCreatedAt()));
+            statement.setInt(7, entity.days());
+            statement.setTimestamp(8, Timestamp.valueOf(entity.dateFrom()));
+            statement.setTimestamp(9, Timestamp.valueOf(entity.dateTo()));
+            statement.setString(10, entity.frequency().name());
             statement.executeUpdate();
 
             try (ResultSet keys = statement.getGeneratedKeys()) {
@@ -137,7 +135,7 @@ public class RepeatingTransactionDao implements DatabaseAccessObject<RepeatingTr
 
     public RepeatingTransactionEntity update(RepeatingTransactionEntity entity) {
         String sql = "UPDATE RepeatingTransaction SET " +
-                "categoryId = ?, name = ?, description = ?, amount = ?, type = ?, days = ?, dateFrom = ?, dateTo = ?, frequency = ? " +
+                "categoryId = ?, name = ?, description = ?, amount = ?, type = ?, nextCreateAt = ?, days = ?, dateFrom = ?, dateTo = ?, frequency = ? " +
                 "WHERE id = ?";
 
         try (
@@ -149,11 +147,12 @@ public class RepeatingTransactionDao implements DatabaseAccessObject<RepeatingTr
             statement.setString(3, entity.description());
             statement.setDouble(4, entity.amount());
             statement.setString(5, entity.type().name());
-            statement.setInt(6, entity.days());
-            statement.setDate(7, Date.valueOf(entity.dateFrom()));
-            statement.setDate(8, Date.valueOf(entity.dateTo()));
-            statement.setString(9, entity.frequency().name());
-            statement.setLong(10, entity.id());
+            statement.setTimestamp(6, Timestamp.valueOf(entity.nextCreatedAt()));
+            statement.setInt(7, entity.days());
+            statement.setTimestamp(8, Timestamp.valueOf(entity.dateFrom()));
+            statement.setTimestamp(9, Timestamp.valueOf(entity.dateTo()));
+            statement.setString(10, entity.frequency().name());
+            statement.setLong(11, entity.id());
 
             int changedRows = statement.executeUpdate();
 
@@ -184,9 +183,10 @@ public class RepeatingTransactionDao implements DatabaseAccessObject<RepeatingTr
                 resultset.getString("type").equals("incoming") ?
                         TransactionType.Incoming : TransactionType.Outgoing,
                 resultset.getTimestamp("createdAt").toLocalDateTime(),
+                resultset.getTimestamp("nextCreateAt").toLocalDateTime(),
                 resultset.getInt("days"),
-                resultset.getDate("dateFrom").toLocalDate(),
-                resultset.getDate("dateTo").toLocalDate(),
+                resultset.getTimestamp("dateFrom").toLocalDateTime(),
+                resultset.getTimestamp("dateTo").toLocalDateTime(),
                 frequency
         );
     }

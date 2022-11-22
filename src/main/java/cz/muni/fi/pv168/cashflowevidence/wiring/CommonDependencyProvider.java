@@ -23,7 +23,7 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
 
     private final DatabaseManager databaseManager;
 
-    private final Repository<Category> categories;
+    protected final Repository<Category> categories;
     private final Repository<Transaction> transactions;
     private final Repository<RepeatingTransaction> repeatingTransactions;
     private final Validator<Category> categoryValidator;

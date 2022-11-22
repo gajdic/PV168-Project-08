@@ -21,7 +21,7 @@ public enum TransactionFrequency {
     },
     Yearly (365),
     Custom (0),
-    EachSecond (-1) // For testing purposes
+    EachSecond (999) // For testing purposes
     ;
 
 

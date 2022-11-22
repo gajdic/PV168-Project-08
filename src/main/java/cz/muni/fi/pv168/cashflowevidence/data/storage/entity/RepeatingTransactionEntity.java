@@ -29,9 +29,11 @@ public record RepeatingTransactionEntity (
         double amount,
         TransactionType type,
         LocalDateTime createdAt,
+
+        LocalDateTime nextCreatedAt,
         int days,
-        LocalDate dateFrom,
-        LocalDate dateTo,
+        LocalDateTime dateFrom,
+        LocalDateTime dateTo,
         TransactionFrequency frequency
 ) {
     public RepeatingTransactionEntity(long categoryId,
@@ -40,10 +42,11 @@ public record RepeatingTransactionEntity (
                              double amount,
                              TransactionType type,
                              LocalDateTime createdAt,
+                             LocalDateTime nextCreateAt,
                              int days,
-                             LocalDate dateFrom,
-                             LocalDate dateTo,
+                             LocalDateTime dateFrom,
+                             LocalDateTime dateTo,
                              TransactionFrequency frequency) {
-        this(null, categoryId, name, description, amount, type, createdAt, days, dateFrom, dateTo, frequency);
+        this(null, categoryId, name, description, amount, type, createdAt, nextCreateAt, days, dateFrom, dateTo, frequency);
         }
 }

@@ -10,6 +10,7 @@ import jdk.jshell.spi.ExecutionControl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +27,8 @@ public class TransactionDao implements DatabaseAccessObject<TransactionEntity>{
 
     public TransactionEntity create(TransactionEntity entity) {
         String sql = "INSERT INTO Transaction" +
-                "(name, description, amount, type, categoryId)" +
-                "VALUES (?, ?, ?, ?, ?)";
+                "(name, description, amount, type, categoryId, createdAt)" +
+                "VALUES (?, ?, ?, ?, ?, ?)";
 
         try (
                 var connection = connections.get();
@@ -44,6 +45,13 @@ public class TransactionDao implements DatabaseAccessObject<TransactionEntity>{
             else {
                 statement.setNull(5, BIGINT);
             }
+            if (entity.createdAt() != null) {
+                statement.setTimestamp(6, Timestamp.valueOf(entity.createdAt()));
+            }
+            else {
+                statement.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
+            }
+
             statement.executeUpdate();
 
             try (ResultSet keys = statement.getGeneratedKeys()) {

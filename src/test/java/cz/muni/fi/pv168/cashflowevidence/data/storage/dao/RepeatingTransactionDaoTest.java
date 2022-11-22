@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -47,9 +48,11 @@ public class RepeatingTransactionDaoTest {
                 9.99,
                 TransactionType.Outgoing,
                 LocalDateTime.now(),
+                LocalDateTime.now(),
+
                 1,
-                LocalDate.now(),
-                LocalDate.now().plusDays(1),
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(1),
                 TransactionFrequency.Daily
         );
 
@@ -69,8 +72,11 @@ public class RepeatingTransactionDaoTest {
         assertThat(createdRepeatingTransaction.categoryId()).isEqualTo(params.categoryId());
         assertThat(createdRepeatingTransaction.days()).isEqualTo(params.days());
         assertThat(createdRepeatingTransaction.frequency()).isEqualTo(params.frequency());
-        assertThat(createdRepeatingTransaction.dateFrom()).isEqualTo(params.dateFrom());
-        assertThat(createdRepeatingTransaction.dateTo()).isEqualTo(params.dateTo());
+        assertThat(createdRepeatingTransaction.dateFrom().truncatedTo(ChronoUnit.SECONDS)).isEqualTo(params.dateFrom().truncatedTo(ChronoUnit.SECONDS));
+        assertThat(createdRepeatingTransaction.dateTo().truncatedTo(ChronoUnit.SECONDS)).isEqualTo(params.dateTo().truncatedTo(ChronoUnit.SECONDS));
+        assertThat(createdRepeatingTransaction.createdAt().truncatedTo(ChronoUnit.SECONDS)).isEqualTo(params.createdAt().truncatedTo(ChronoUnit.SECONDS));
+        assertThat(createdRepeatingTransaction.nextCreatedAt().truncatedTo(ChronoUnit.SECONDS)).isEqualTo(params.nextCreatedAt().truncatedTo(ChronoUnit.SECONDS));
+
 
         var foundCreated = repeatingTransactionDao.findById(createdRepeatingTransaction.id());
 
@@ -79,6 +85,9 @@ public class RepeatingTransactionDaoTest {
                 .isNotNull()
                 .isEqualTo(createdRepeatingTransaction);
     }
+
+
+
 
     @Test
     void findRepeatingTransactionById() {
@@ -131,6 +140,55 @@ public class RepeatingTransactionDaoTest {
                 .isThrownBy(() -> repeatingTransactionDao.deleteById(repeatingTransactionEntity.id()));
     }
 
+    @Test
+    void createNewRepeatingTransactionCustomFrequency() {
+        var params = new RepeatingTransactionEntity(
+                1,
+                "Transaction",
+                "Description",
+                9.99,
+                TransactionType.Outgoing,
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                10,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(1),
+                TransactionFrequency.Custom
+        );
+
+        var createdRepeatingTransaction = repeatingTransactionDao.create(params);
+
+        assertThat(createdRepeatingTransaction)
+                .as("There should be a new transaction created")
+                .isNotNull();
+
+        assertThat(createdRepeatingTransaction.id())
+                .isGreaterThan(1);
+
+        assertThat(createdRepeatingTransaction.name()).isEqualTo(params.name());
+        assertThat(createdRepeatingTransaction.description()).isEqualTo(params.description());
+        assertThat(createdRepeatingTransaction.amount()).isEqualTo(params.amount());
+        assertThat(createdRepeatingTransaction.type()).isEqualTo(params.type());
+        assertThat(createdRepeatingTransaction.categoryId()).isEqualTo(params.categoryId());
+        assertThat(createdRepeatingTransaction.days()).isEqualTo(params.days());
+        assertThat(createdRepeatingTransaction.frequency()).isEqualTo(params.frequency());
+        assertThat(createdRepeatingTransaction.dateFrom().truncatedTo(ChronoUnit.SECONDS)).isEqualTo(params.dateFrom().truncatedTo(ChronoUnit.SECONDS));
+        assertThat(createdRepeatingTransaction.dateTo().truncatedTo(ChronoUnit.SECONDS)).isEqualTo(params.dateTo().truncatedTo(ChronoUnit.SECONDS));
+        assertThat(createdRepeatingTransaction.createdAt().truncatedTo(ChronoUnit.SECONDS)).isEqualTo(params.createdAt().truncatedTo(ChronoUnit.SECONDS));
+        assertThat(createdRepeatingTransaction.nextCreatedAt().truncatedTo(ChronoUnit.SECONDS)).isEqualTo(params.nextCreatedAt().truncatedTo(ChronoUnit.SECONDS));
+
+
+        var foundCreated = repeatingTransactionDao.findById(createdRepeatingTransaction.id());
+
+        assertThat(foundCreated)
+                .as("Created repeating transaction should be present")
+                .isNotNull()
+                .isEqualTo(createdRepeatingTransaction);
+    }
+
+
+
+
     private static RepeatingTransactionEntity createRepeatingTransactionEntity() {
         return new RepeatingTransactionEntity(
                 -1000L,
@@ -140,10 +198,14 @@ public class RepeatingTransactionDaoTest {
                 9.99,
                 TransactionType.Outgoing,
                 LocalDateTime.now(),
+                LocalDateTime.now(),
                 1,
-                LocalDate.now(),
-                LocalDate.now().plusDays(1),
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(1),
                 TransactionFrequency.Daily
         );
     }
+
+
+
 }
