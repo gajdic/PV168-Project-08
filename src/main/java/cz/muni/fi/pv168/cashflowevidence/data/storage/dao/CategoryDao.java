@@ -206,6 +206,7 @@ public class CategoryDao implements DatabaseAccessObject<CategoryEntity> {
                 entity.amount(),
                 entity.type(),
                 entity.createdAt(),
+                entity.nextCreatedAt(),
                 entity.days(),
                 entity.dateFrom(),
                 entity.dateTo(),

@@ -23,10 +23,8 @@ import cz.muni.fi.pv168.cashflowevidence.data.manipulation.TransactionExporter;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.TransactionImporter;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.TransactionPerLineExporter;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.TransactionPerLineImporter;
-import cz.muni.fi.pv168.cashflowevidence.data.storage.db.DatabaseManager;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
-import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryTableModel;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.*;
 import cz.muni.fi.pv168.cashflowevidence.service.RepeatingTaskScheduler;
@@ -51,15 +49,10 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.AbstractTableModel;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -145,7 +138,9 @@ public class CashFlowEvidence {
         importJsonAction = new ImportAction(transactionTable, jsonImporter);
         exportJsonAction = new ExportAction(transactionTable, jsonExporter);
 
-        repeatingTaskScheduler = new RepeatingTaskScheduler(transactionTableModel, repeatingTransactionTable);
+        repeatingTaskScheduler = new RepeatingTaskScheduler(dependencyProvider);
+        repeatingTaskScheduler.scheduleExistingTransactions();
+        repeatingTaskScheduler.setListenerForNewRepeatingTransaction(repeatingTransactionTable, transactionTableModel);
 
         initializeActionsState();
 

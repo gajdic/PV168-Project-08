@@ -34,9 +34,10 @@ public class RepeatingTransactionMapper implements EntityMapper<RepeatingTransac
                 source.getAmount(),
                 source.getTransactionType(),
                 source.getDateTime(),
+                source.getNextCreateAt(),
                 source.getDays(),
-                source.getDateFrom(),
-                source.getDateTo(),
+                source.getDateTimeFrom(),
+                source.getDateTimeTo(),
                 source.getFrequency());
     }
 
@@ -51,9 +52,12 @@ public class RepeatingTransactionMapper implements EntityMapper<RepeatingTransac
                 entity.description(),
                 entity.amount(),
                 category,
+                entity.createdAt(),
+                entity.nextCreatedAt(),
                 entity.dateFrom(),
                 entity.dateTo(),
-                entity.frequency()
+                entity.frequency(),
+                entity.days()
         );
     }
 }

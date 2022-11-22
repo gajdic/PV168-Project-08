@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS Transaction
     amount       DOUBLE NOT NULL,
     type         ENUM('outgoing', 'incoming') NOT NULL,
     categoryId   BIGINT REFERENCES Category (id),
-    createdAt    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    createdAt    TIMESTAMP NOT NULL
 );
 
 --
@@ -35,8 +35,9 @@ CREATE TABLE IF NOT EXISTS RepeatingTransaction
     type         ENUM('outgoing', 'incoming') NOT NULL,
     categoryId   BIGINT REFERENCES Category (id),
     createdAt    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    nextCreateAt TIMESTAMP NOT NULL,
     days         INT NOT NULL,
-    dateFrom     DATE NOT NULL,
-    dateTo       DATE NOT NULL,
+    dateFrom     TIMESTAMP NOT NULL,
+    dateTo       TIMESTAMP NOT NULL,
     frequency    ENUM('daily', 'weekly', 'monthly', 'everyThreeMonths', 'everySixMonths', 'yearly', 'custom', 'EachSecond') NOT NULL
 );

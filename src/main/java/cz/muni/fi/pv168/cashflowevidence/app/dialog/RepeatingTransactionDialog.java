@@ -3,12 +3,9 @@ package cz.muni.fi.pv168.cashflowevidence.app.dialog;
 import com.github.lgooddatepicker.components.DatePicker;
 import cz.muni.fi.pv168.cashflowevidence.app.InputNumberFormatter;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
-import cz.muni.fi.pv168.cashflowevidence.data.validation.TransactionValidator;
 import cz.muni.fi.pv168.cashflowevidence.data.validation.Validator;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
-import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.RepeatingTransaction;
-import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionFrequency;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionType;
 
@@ -16,7 +13,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.text.NumberFormat;
 import java.time.LocalDate;
-import java.util.Arrays;
+import java.time.LocalTime;
 
 public class RepeatingTransactionDialog extends AbstractTransactionDialog {
     private JPanel contentPane;
@@ -142,6 +139,9 @@ public class RepeatingTransactionDialog extends AbstractTransactionDialog {
 
     private void setupFrequencyComboBox () {
         for (TransactionFrequency frequency : TransactionFrequency.values()) {
+            if (frequency == TransactionFrequency.EachSecond) {
+                continue;
+            }
             frequencyComboBox.addItem(frequency);
         }
         frequencyComboBox.addActionListener(e -> onCustomFrequency());
@@ -153,7 +153,8 @@ public class RepeatingTransactionDialog extends AbstractTransactionDialog {
     }
 
     private void onCustomFrequency() {
-        if (frequencyComboBox.getSelectedItem() == TransactionFrequency.Custom) {
+        if (frequencyComboBox.getSelectedItem() == TransactionFrequency.Custom || frequencyComboBox.getSelectedItem() == TransactionFrequency.EachSecond
+        ) {
             setBounds(getX(), getY(), 600, 430);
             customFrequencyPanel.setVisible(true);
         }
@@ -172,8 +173,8 @@ public class RepeatingTransactionDialog extends AbstractTransactionDialog {
                 amountField.getText().isEmpty() ? -1 : Double.parseDouble(amountField.getText()
                         .replace("\u00a0", "").replace(",", ".")),
                 (Category) categoryComboBox.getSelectedItem(),
-                dateFromPicker.getDate(),
-                dateToPicker.getDate(),
+                dateFromPicker.getDate().atTime(LocalTime.now()),
+                dateToPicker.getDate().atTime(LocalTime.now()),
                 TransactionFrequency.Daily
         );
 
@@ -182,9 +183,10 @@ public class RepeatingTransactionDialog extends AbstractTransactionDialog {
             if (customFrequencyField.getText().isEmpty()) {
                 tmpRepeatingTransaction.setDays(-1);
             } else {
+                int multiplier = tmpRepeatingTransaction.getFrequency() == TransactionFrequency.Custom ? 30 : 1;
                 tmpRepeatingTransaction.setDays(
                         // formatter adds &ngsp; instead of spaces
-                        Integer.parseInt(customFrequencyField.getText().replace("\u00a0", "")) * 30);
+                        Integer.parseInt(customFrequencyField.getText().replace("\u00a0", "")) * multiplier);
             }
         } else {
             tmpRepeatingTransaction.setDays(tmpRepeatingTransaction.getFrequency().frequencyValue);
