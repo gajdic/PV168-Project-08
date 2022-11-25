@@ -139,9 +139,9 @@ public class RepeatingTransactionDialog extends AbstractTransactionDialog {
 
     private void setupFrequencyComboBox () {
         for (TransactionFrequency frequency : TransactionFrequency.values()) {
-            if (frequency == TransactionFrequency.EachSecond) {
-                continue;
-            }
+//            if (frequency == TransactionFrequency.EachSecond) {
+//                continue;
+//            }
             frequencyComboBox.addItem(frequency);
         }
         frequencyComboBox.addActionListener(e -> onCustomFrequency());
@@ -179,7 +179,10 @@ public class RepeatingTransactionDialog extends AbstractTransactionDialog {
         );
 
         tmpRepeatingTransaction.setFrequency((TransactionFrequency) frequencyComboBox.getSelectedItem());
-        if (tmpRepeatingTransaction.getFrequency() == TransactionFrequency.Custom) {
+        if (
+                tmpRepeatingTransaction.getFrequency() == TransactionFrequency.Custom ||
+                        tmpRepeatingTransaction.getFrequency() == TransactionFrequency.EachSecond
+        ) {
             if (customFrequencyField.getText().isEmpty()) {
                 tmpRepeatingTransaction.setDays(-1);
             } else {
