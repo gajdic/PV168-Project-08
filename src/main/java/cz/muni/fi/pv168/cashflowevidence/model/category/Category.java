@@ -9,12 +9,18 @@ import java.util.Objects;
 public class Category {
     private String name;
     private Color color;
+    private Long id;
 
     public Category() {
         setColor(Color.RED);
     }
 
     public Category(String name, Color color) {
+        this(null, name, color);
+    }
+
+    public Category(Long id, String name, Color color) {
+        this.id = id;
         setName(name);
         setColor(color);
     }
@@ -42,5 +48,13 @@ public class Category {
     @Override
     public String toString() {
         return name;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = Objects.requireNonNull(id, "when setting id, it must not be null");
     }
 }

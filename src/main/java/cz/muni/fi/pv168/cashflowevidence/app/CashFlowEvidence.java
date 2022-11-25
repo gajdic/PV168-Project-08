@@ -23,11 +23,12 @@ import cz.muni.fi.pv168.cashflowevidence.data.manipulation.TransactionExporter;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.TransactionImporter;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.TransactionPerLineExporter;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.TransactionPerLineImporter;
+import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
-import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryTableModel;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.*;
 import cz.muni.fi.pv168.cashflowevidence.service.RepeatingTaskScheduler;
+import cz.muni.fi.pv168.cashflowevidence.wiring.DependencyProvider;
 
 import javax.swing.Action;
 import javax.swing.Box;
@@ -48,16 +49,15 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.AbstractTableModel;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 
 /**
@@ -74,8 +74,9 @@ public class CashFlowEvidence {
     private final Action exitAction = new ExitApplicationAction();
     private final Action importJsonAction;
     private final Action exportJsonAction;
-
-
+    private final Repository<Category> categories;
+    private final Repository<Transaction> transactions;
+    private final Repository<RepeatingTransaction> repeatingTransactions;
     private Action addTAction;
     private Action editTAction;
     private Action deleteTAction;
@@ -97,7 +98,6 @@ public class CashFlowEvidence {
     private final JLabel filteredBalanceLabel = new JLabel();
 
     private final JTable categoryTable;
-    private final CategoryListModel categoryListModel;
 
     private final JTable transactionTable;
 
@@ -105,43 +105,16 @@ public class CashFlowEvidence {
 
     private final RepeatingTaskScheduler repeatingTaskScheduler;
 
-    public CashFlowEvidence() {
+    public CashFlowEvidence(DependencyProvider dependencyProvider) {
         setBalanceFont();
 
-        // tmp
-        var categories = new ArrayList<Category>();
-        var category = new Category("Jou", Color.RED);
-        var category2 = new Category("Bu", Color.BLUE);
-        categories.add(category);
-        categories.add(category2);
+        this.categories = dependencyProvider.getCategoryRepository();
+        this.transactions = dependencyProvider.getTransactionRepository();
+        this.repeatingTransactions = dependencyProvider.getRepeatingTransactionRepository();
 
-        categoryTable = createCategoryTable(categories);
-
-        // tmp
-        var repeatingTransactions = new ArrayList<RepeatingTransaction>();
-        repeatingTransactions.add(new RepeatingTransaction(TransactionType.Incoming, "name", "desc",
-                10000000, category,
-                LocalDate.now(), LocalDate.now().plusDays(7), TransactionFrequency.Daily));
-        repeatingTransactions.add(new RepeatingTransaction(TransactionType.Incoming, "repeatingTr1", "desc",
-                666, category,
-                LocalDate.now().minusDays(7), LocalDate.now().plusDays(7), TransactionFrequency.Daily));
-        repeatingTransactions.add(new RepeatingTransactionEverySecond(TransactionType.Incoming, "repeatingTrEveryTenSeconds",
-                "desc",666, category,
-                LocalDateTime.now(), LocalDateTime.now().plusSeconds(180), 10));
-       repeatingTransactions.add(new RepeatingTransactionEverySecond(TransactionType.Incoming, "every 5",
-                "desc",666, category,
-                LocalDateTime.now(), LocalDateTime.now().plusSeconds(60), 5));
-
-        repeatingTransactionTable = createRepeatingTransactionTable(repeatingTransactions);
-
-        // tmp
-        var transactions = new ArrayList<Transaction>();
-        transactions.add(new Transaction(TransactionType.Incoming, "name", "desc", 10000000, LocalDateTime.now(), category));
-        transactions.add(new Transaction(TransactionType.Incoming, "name2", "desc2", 9999, LocalDateTime.now().minusDays(1), category));
-        transactions.add(new Transaction(TransactionType.Outgoing, "name3", "desc3", 189, LocalDateTime.now().minusDays(3), category));
-        transactions.add(new Transaction(TransactionType.Outgoing, "name4", "desc4", 200, LocalDateTime.now().minusDays(7), category2));
-
-        transactionTable = createTransactionTable(transactions);
+        categoryTable = createCategoryTable();
+        repeatingTransactionTable = createRepeatingTransactionTable();
+        transactionTable = createTransactionTable();
 
         TransactionTableModel transactionTableModel = (TransactionTableModel) transactionTable.getModel();
 
@@ -152,9 +125,7 @@ public class CashFlowEvidence {
             filteredBalanceLabel.setText(calculateBalance(transactionTableModel));
         });
 
-        categoryListModel = new CategoryListModel(categories);
-
-        initializeActions();
+        initializeActions(dependencyProvider);
 
         TransactionImporter jsonImporter = new JsonTransactionImporter();
         TransactionExporter jsonExporter = new JsonTransactionExporter();
@@ -167,29 +138,35 @@ public class CashFlowEvidence {
         importJsonAction = new ImportAction(transactionTable, jsonImporter);
         exportJsonAction = new ExportAction(transactionTable, jsonExporter);
 
+        repeatingTaskScheduler = new RepeatingTaskScheduler(dependencyProvider);
+        repeatingTaskScheduler.scheduleExistingTransactions();
+        repeatingTaskScheduler.setListenerForNewRepeatingTransaction(repeatingTransactionTable, transactionTableModel);
+
         initializeActionsState();
 
         JPanel content = getContent();
         frame.add(content, BorderLayout.CENTER);
         frame.setVisible(true);
 
-
-        repeatingTaskScheduler = new RepeatingTaskScheduler(transactionTableModel, repeatingTransactionTable);
-
+        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
-    private void initializeActions() {
-        addTAction = new AddTransactionAction(transactionTable, categoryListModel);
-        editTAction = new EditTransactionAction(transactionTable, categoryListModel);
+    private void initializeActions(DependencyProvider dependencyProvider) {
+        var categoryValidator = dependencyProvider.getCategoryValidator();
+        var transactionValidator = dependencyProvider.getTransactionValidator();
+        var repeatingTransactionValidator = dependencyProvider.getRepeatingTransactionValidator();
+
+        addTAction = new AddTransactionAction(transactionTable, categories, transactionValidator);
+        editTAction = new EditTransactionAction(transactionTable,categories, transactionValidator);
         deleteTAction = new DeleteTransactionAction(transactionTable);
 
-        addRTAction = new AddRepeatingTransactionAction(repeatingTransactionTable, categoryListModel);
-        editRTAction = new EditRepeatingTransactionAction(repeatingTransactionTable, categoryListModel);
+        addRTAction = new AddRepeatingTransactionAction(repeatingTransactionTable, categories, repeatingTransactionValidator);
+        editRTAction = new EditRepeatingTransactionAction(repeatingTransactionTable, categories, repeatingTransactionValidator);
         deleteRTAction = new DeleteRepeatingTransactionAction(repeatingTransactionTable);
 
-        addCAction = new AddCategoryAction(categoryTable, categoryListModel);
-        editCAction = new EditCategoryAction(categoryTable);
-        deleteCAction = new DeleteCategoryAction(categoryTable, transactionTable, categoryListModel);
+        addCAction = new AddCategoryAction(categoryTable, categoryValidator);
+        editCAction = new EditCategoryAction(categoryTable, categoryValidator);
+        deleteCAction = new DeleteCategoryAction(categoryTable, transactionTable);
     }
 
     private JPanel getContent(){
@@ -209,22 +186,22 @@ public class CashFlowEvidence {
         balanceLabel.setFont(balanceFont);
     }
 
-    private JTable createCategoryTable(List<Category> categories) {
-        var table = createTable(new CategoryTableModel(categories));
+    private JTable createCategoryTable() {
+        var table = createTable(new CategoryTableModel(this.categories));
         table.getSelectionModel().addListSelectionListener(this::categoryRowSelectionChanged);
 
         return table;
     }
 
-    private JTable createRepeatingTransactionTable(List<RepeatingTransaction> transactions) {
-        var table = createTable(new RepeatingTransactionTableModel(transactions));
+    private JTable createRepeatingTransactionTable() {
+        var table = createTable(new RepeatingTransactionTableModel(this.repeatingTransactions));
         table.getSelectionModel().addListSelectionListener(this::repeatingTransactionRowSelectionChanged);
 
         return table;
     }
 
-    private JTable createTransactionTable(List<Transaction> transactions) {
-        var table = createTable(new TransactionTableModel(transactions));
+    private JTable createTransactionTable() {
+        var table = createTable(new TransactionTableModel(this.transactions));
         table.getSelectionModel().addListSelectionListener(this::transactionRowSelectionChanged);
 
         return table;
@@ -349,7 +326,7 @@ public class CashFlowEvidence {
         tabbedPane.setTabPlacement(SwingConstants.TOP);
 
         tabbedPane.addTab("Transactions", new TransactionsOverview(transactionTable,
-                new ArrayList<>(Arrays.asList(addTAction, editTAction, deleteTAction)), balanceLabel, filteredBalanceLabel, categoryListModel));
+                new ArrayList<>(Arrays.asList(addTAction, editTAction, deleteTAction)), balanceLabel, filteredBalanceLabel, categories));
         //TODO actions
         tabbedPane.addTab("Repeating transactions", new RepeatingTransactionsOverview(repeatingTransactionTable,
                 new ArrayList<>(Arrays.asList(addRTAction, editRTAction, deleteRTAction))));
@@ -375,5 +352,12 @@ public class CashFlowEvidence {
             }
         }
         return Transaction.formatAmount(amount) + " €";
+    }
+
+    //TODO, imports
+    private void refresh() {
+        categories.refresh();
+        transactions.refresh();
+        repeatingTransactions.refresh();
     }
 }

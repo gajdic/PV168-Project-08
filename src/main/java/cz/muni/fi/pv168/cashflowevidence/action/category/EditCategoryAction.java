@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.cashflowevidence.action.category;
 
 import cz.muni.fi.pv168.cashflowevidence.app.dialog.CategoryDialog;
+import cz.muni.fi.pv168.cashflowevidence.data.validation.Validator;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryTableModel;
 
@@ -14,14 +15,16 @@ import java.awt.event.KeyEvent;
 public class EditCategoryAction extends AbstractAction {
 
     private final JTable categoryTable;
+    private final Validator<Category> validator;
 
-    public EditCategoryAction(JTable categoryTable) {
+    public EditCategoryAction(JTable categoryTable, Validator<Category> validator) {
         super("Edit", UIManager.getIcon("FileChooser.fileIcon"));
         putValue(SHORT_DESCRIPTION, "Edits selected record");
         putValue(MNEMONIC_KEY, KeyEvent.VK_E);
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl E"));
 
         this.categoryTable = categoryTable;
+        this.validator = validator;
     }
 
     @Override
@@ -36,8 +39,10 @@ public class EditCategoryAction extends AbstractAction {
         CategoryTableModel categoryTableModel = (CategoryTableModel) categoryTable.getModel();
         int modelRow = categoryTable.convertRowIndexToModel(selectedRows[0]);
 
-        CategoryDialog categoryDialog = new CategoryDialog("Edit Category", categoryTableModel.getEntity(modelRow));
+        CategoryDialog categoryDialog = new CategoryDialog("Edit Category", categoryTableModel.getEntity(modelRow), validator);
         Category category = categoryDialog.showDialog();
-        categoryTableModel.updateRow(category);
+        if (category != null && validator.validate(category).isValid()) {
+            categoryTableModel.updateRow(modelRow, category);
+        }
     }
 }

@@ -4,6 +4,7 @@ import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class RepeatingTransaction extends Transaction {
 
@@ -13,29 +14,48 @@ public class RepeatingTransaction extends Transaction {
     private TransactionFrequency frequency;
     private int days;
 
+    private Long id;
     private boolean doNotReschedule = false;
 
     protected LocalDateTime nextCreateAt;
 
     public RepeatingTransaction() {}
 
-    public RepeatingTransaction(TransactionType transactionType, String name, String description,
-                                double amount, Category category, LocalDate dateFrom, LocalDate dateTo) {
+
+    /**
+     * Constructor used in mappers to set all fields
+     * */
+    public RepeatingTransaction(Long id, TransactionType transactionType, String name, String description,
+                                double amount, Category category,
+                                LocalDateTime createdAt, LocalDateTime nextCreateAt, LocalDateTime dateFrom, LocalDateTime dateTo,
+                                TransactionFrequency frequency, int days) {
+
+        super(transactionType, name, description, amount, createdAt, category);
+
+        this.id = id;
+        this.dateFrom = dateFrom;
+        this.nextCreateAt = nextCreateAt;
+        this.dateTo = dateTo;
+        this.frequency = frequency;
+        this.days = days;
+    }
+
+    public RepeatingTransaction(TransactionType transactionType, String name, String description, double amount, Category category,
+                                LocalDateTime dateFrom, LocalDateTime dateTo) {
         super(transactionType, name, description, amount, LocalDateTime.now(), category);
 
-        this.dateFrom = dateFrom.atStartOfDay();
-        this.nextCreateAt = dateFrom.atStartOfDay();
-        this.dateTo = dateTo.atStartOfDay();
-
+        this.dateFrom = dateFrom;
+        this.nextCreateAt = dateFrom;
+        this.dateTo = dateTo;
     }
+
 
     /**
      * Creates a RepeatingTransaction with predefined frequency.
      */
-    public RepeatingTransaction(TransactionType transactionType, String name, String description,
-                                double amount, Category category, LocalDate dateFrom, LocalDate dateTo,
+    public RepeatingTransaction(TransactionType transactionType, String name, String description, double amount, Category category,
+                                LocalDateTime dateFrom, LocalDateTime dateTo,
                                 TransactionFrequency frequency) {
-
         this(transactionType, name, description, amount, category, dateFrom, dateTo);
 
         if (frequency == TransactionFrequency.Custom) {
@@ -44,7 +64,6 @@ public class RepeatingTransaction extends Transaction {
 
         this.frequency = frequency;
         this.days = frequency.frequencyValue;
-
     }
 
     /**
@@ -52,7 +71,7 @@ public class RepeatingTransaction extends Transaction {
      */
     public RepeatingTransaction(TransactionType transactionType, String name, String description,
                                 double amount, Category category,
-                                LocalDate dateFrom, LocalDate dateTo, int days) {
+                                LocalDateTime dateFrom, LocalDateTime dateTo, int days) {
         this(transactionType, name, description, amount, category, dateFrom, dateTo);
 
         if (days <= 0) {
@@ -64,8 +83,17 @@ public class RepeatingTransaction extends Transaction {
     }
 
 
+
+
     public LocalDate getDateFrom() {
-        return dateFrom.toLocalDate();
+        if (dateFrom != null) {
+            return dateFrom.toLocalDate();
+        }
+        return null;
+    }
+
+    public LocalDateTime getDateTimeFrom() {
+        return dateFrom;
     }
 
     public void setDateFrom(LocalDate dateFrom) {
@@ -82,7 +110,10 @@ public class RepeatingTransaction extends Transaction {
 
 
     public LocalDate getDateTo() {
-        return dateTo.toLocalDate();
+        if (dateTo != null) {
+            return dateTo.toLocalDate();
+        }
+        return null;
     }
 
     public LocalDateTime getDateTimeTo() {
@@ -144,7 +175,12 @@ public class RepeatingTransaction extends Transaction {
     }
 
     protected void shiftNextCreateAt() {
-        this.nextCreateAt = this.nextCreateAt.plusDays(this.getDays());
+        if (this.frequency == TransactionFrequency.EachSecond) {
+            this.nextCreateAt = this.nextCreateAt.plusSeconds(this.getDays());
+        } else {
+            this.nextCreateAt = this.nextCreateAt.plusDays(this.getDays());
+        }
+
     }
 
     public boolean isDoNotReschedule() {
@@ -153,5 +189,13 @@ public class RepeatingTransaction extends Transaction {
 
     public void setDoNotReschedule(boolean doNotReschedule) {
         this.doNotReschedule = doNotReschedule;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = Objects.requireNonNull(id, "when setting id, it must not be null");
     }
 }

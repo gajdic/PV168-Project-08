@@ -1,7 +1,11 @@
 package cz.muni.fi.pv168.cashflowevidence.action.transaction;
 
 import cz.muni.fi.pv168.cashflowevidence.app.dialog.TransactionDialog;
+import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
+import cz.muni.fi.pv168.cashflowevidence.data.validation.Validator;
+import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryListModel;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionTableModel;
 
 import javax.swing.AbstractAction;
@@ -14,16 +18,18 @@ import java.awt.event.KeyEvent;
 public class EditTransactionAction extends AbstractAction {
 
     private final JTable transactionTable;
-    private final CategoryListModel categoryListModel;
+    private final Repository<Category> categoryRepository;
+    private final Validator<Transaction> validator;
 
-    public EditTransactionAction(JTable transactionTable, CategoryListModel categoryListModel) {
+    public EditTransactionAction(JTable transactionTable, Repository<Category> categoryRepository, Validator<Transaction> validator) {
         super("Edit", UIManager.getIcon("FileChooser.fileIcon"));
         putValue(SHORT_DESCRIPTION, "Edits selected record");
         putValue(MNEMONIC_KEY, KeyEvent.VK_E);
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl E"));
 
         this.transactionTable = transactionTable;
-        this.categoryListModel = categoryListModel;
+        this.categoryRepository = categoryRepository;
+        this.validator = validator;
     }
 
     @Override
@@ -36,8 +42,10 @@ public class EditTransactionAction extends AbstractAction {
         var transactionTableModel = (TransactionTableModel) transactionTable.getModel();
         int modelRow = transactionTable.convertRowIndexToModel(selectedRows[0]);
 
-        var categoryDialog = new TransactionDialog("Edit Transaction", transactionTableModel.getEntity(modelRow), categoryListModel);
+        var categoryDialog = new TransactionDialog("Edit Transaction", transactionTableModel.getEntity(modelRow),categoryRepository, validator);
         var transaction = categoryDialog.showDialog();
-        transactionTableModel.updateRow(transaction);
+        if (transaction != null && validator.validate(transaction).isValid()) {
+            transactionTableModel.updateRow(modelRow, transaction);
+        }
     }
 }
