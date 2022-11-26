@@ -5,6 +5,7 @@ import cz.muni.fi.pv168.cashflowevidence.data.storage.entity.CategoryEntity;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.entity.RepeatingTransactionEntity;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.entity.TransactionEntity;
 import cz.muni.fi.pv168.cashflowevidence.exceptions.DataStorageException;
+import org.tinylog.Logger;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,6 +22,8 @@ public class CategoryDao implements DatabaseAccessObject<CategoryEntity> {
     }
 
     public CategoryEntity create(CategoryEntity entity) {
+        Logger.debug("Storing new entity {}", entity);
+
         String sql = "INSERT INTO Category (name, color) VALUES (?, ?)";
 
         try (
@@ -36,7 +39,9 @@ public class CategoryDao implements DatabaseAccessObject<CategoryEntity> {
 
                 if (keys.next()) {
                     categoryId = keys.getLong("id");
+                    Logger.debug("Successfully stored {}", categoryId);
                 } else {
+                    Logger.debug("Unable to store {}", entity);
                     throw new DataStorageException("Failed to retrieve generated key for: " + entity);
                 }
 
@@ -52,6 +57,8 @@ public class CategoryDao implements DatabaseAccessObject<CategoryEntity> {
     }
 
     public CategoryEntity findById(long id) {
+        Logger.debug("Fetching by id {}", id);
+
         String sql = "SELECT * FROM Category WHERE id = ?";
 
         try (
@@ -68,6 +75,7 @@ public class CategoryDao implements DatabaseAccessObject<CategoryEntity> {
                         result.getString("color"));
             }
 
+            Logger.debug("No entity for id {}", id);
             return null;
         } catch (SQLException ex) {
             throw new DataStorageException("Failed to load category by id: " + id);
@@ -75,6 +83,8 @@ public class CategoryDao implements DatabaseAccessObject<CategoryEntity> {
     }
 
     public List<CategoryEntity> findAll() {
+        Logger.debug("Fetching all");
+
         String sql = "SELECT * FROM Category";
 
         try (
@@ -101,6 +111,8 @@ public class CategoryDao implements DatabaseAccessObject<CategoryEntity> {
     }
 
     public void deleteById(long id) {
+        Logger.debug("Deleting entity with id {}", id);
+
         String sql = "DELETE FROM Category WHERE id = ?";
 
         var transactionDao = new TransactionDao(connections);
@@ -127,6 +139,8 @@ public class CategoryDao implements DatabaseAccessObject<CategoryEntity> {
                 caught = true;
                 throw new DataStorageException("Multiple categories were deleted. (%d)".formatted(changedRows));
             }
+
+            Logger.debug("Successfully deleted entity with id {}", id);
         } catch (SQLException ex) {
             caught = true;
             throw new DataStorageException("Unable to delete category with id %d %s".formatted(id, ex));
@@ -139,6 +153,8 @@ public class CategoryDao implements DatabaseAccessObject<CategoryEntity> {
     }
 
     public CategoryEntity update(CategoryEntity entity) {
+        Logger.debug("Updating entity {}", entity);
+
         String sql = "UPDATE Category SET name = ?, color = ? WHERE id = ?";
 
         try (
@@ -158,6 +174,8 @@ public class CategoryDao implements DatabaseAccessObject<CategoryEntity> {
             if (changedRows > 1) {
                 throw new DataStorageException("Multiple categories were deleted. (%d)".formatted(changedRows));
             }
+
+            Logger.debug("Update successful for {}", entity);
         } catch (SQLException ex) {
             throw new DataStorageException("Unable to update category: %s %s".formatted(entity, ex));
         }

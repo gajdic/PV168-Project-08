@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import cz.muni.fi.pv168.cashflowevidence.data.adapter.TransactionAdapter;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
+import org.tinylog.Logger;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -15,6 +16,8 @@ import java.util.Collection;
 public final class JsonTransactionExporter implements TransactionExporter {
 
     public void exportTransactions(Collection<Transaction> transactions, String filePath){
+        Logger.info("Exporting transactions to {}", filePath);
+
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Transaction.class, new TransactionAdapter())
                 .disableHtmlEscaping()
@@ -27,7 +30,7 @@ public final class JsonTransactionExporter implements TransactionExporter {
             writer.write(gson.toJson(transactions));
         }
         catch (IOException e) {
-            //TODO: handle error behaviour
+            Logger.error("Error while exporting transactions");
             throw new RuntimeException();
         }
     }

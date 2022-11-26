@@ -7,6 +7,7 @@ import cz.muni.fi.pv168.cashflowevidence.exceptions.DataStorageException;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.RepeatingTransaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionFrequency;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionType;
+import org.tinylog.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -23,6 +24,8 @@ public class RepeatingTransactionDao implements DatabaseAccessObject<RepeatingTr
     }
 
     public RepeatingTransactionEntity create(RepeatingTransactionEntity entity) {
+        Logger.debug("Storing new entity {}", entity);
+
         String sql = "INSERT INTO RepeatingTransaction" +
                 "(name, description, amount, type, categoryId, nextCreateAt, days, dateFrom, dateTo, frequency)" +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -54,7 +57,9 @@ public class RepeatingTransactionDao implements DatabaseAccessObject<RepeatingTr
 
                 if (keys.next()) {
                     transactionId = keys.getLong(1);
+                    Logger.debug("Successfully stored {}", transactionId);
                 } else {
+                    Logger.debug("Unable to store {}", entity);
                     throw new DataStorageException("Failed to retrieve generated key for: " + entity);
                 }
 
@@ -71,6 +76,8 @@ public class RepeatingTransactionDao implements DatabaseAccessObject<RepeatingTr
     }
 
     public RepeatingTransactionEntity findById(long id) {
+        Logger.debug("Fetching by id {}", id);
+
         String sql = "SELECT * FROM RepeatingTransaction WHERE id = ?";
 
         try (
@@ -84,6 +91,7 @@ public class RepeatingTransactionDao implements DatabaseAccessObject<RepeatingTr
                 return resultSetToRepeatingTransactionEntity(result);
             }
 
+            Logger.debug("No entity for id {}", id);
             return null;
         } catch (SQLException e) {
             throw new DataStorageException("Unable to retrieve repeating transaction by id: " + id);
@@ -91,6 +99,8 @@ public class RepeatingTransactionDao implements DatabaseAccessObject<RepeatingTr
     }
 
     public List<RepeatingTransactionEntity> findAll() {
+        Logger.debug("Fetching all");
+
         String sql = "Select * FROM RepeatingTransaction";
 
         try (
@@ -113,6 +123,8 @@ public class RepeatingTransactionDao implements DatabaseAccessObject<RepeatingTr
     }
 
     public void deleteById(long id) {
+        Logger.debug("Deleting entity with id {}", id);
+
         String sql = "DELETE FROM RepeatingTransaction WHERE id = ?";
         try (
                 var connection = connections.get();
@@ -128,12 +140,16 @@ public class RepeatingTransactionDao implements DatabaseAccessObject<RepeatingTr
             if (changedRows > 1000L) {
                 throw new DataStorageException("Multiple repeating transactions were deleted. (%d)".formatted(changedRows));
             }
+
+            Logger.debug("Successfully deleted entity with id {}", id);
         } catch (SQLException ex) {
             throw new DataStorageException("Unable to delete repeating transaction with id %d %s".formatted(id, ex));
         }
     }
 
     public RepeatingTransactionEntity update(RepeatingTransactionEntity entity) {
+        Logger.debug("Updating entity {}", entity);
+
         String sql = "UPDATE RepeatingTransaction SET " +
                 "categoryId = ?, name = ?, description = ?, amount = ?, type = ?, nextCreateAt = ?, days = ?, dateFrom = ?, dateTo = ?, frequency = ? " +
                 "WHERE id = ?";
@@ -163,6 +179,8 @@ public class RepeatingTransactionDao implements DatabaseAccessObject<RepeatingTr
             if (changedRows > 1) {
                 throw new DataStorageException("Multiple repeating transactions were updated. (%d)".formatted(changedRows));
             }
+
+            Logger.debug("Update successful for {}", entity);
         } catch (SQLException ex) {
             throw new DataStorageException("Unable to update repeating transaction: %s %s".formatted(entity, ex));
         }

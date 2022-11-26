@@ -8,17 +8,13 @@ import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionType;
 
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
+import javax.swing.*;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class AbstractTransactionDialog extends JDialog {
@@ -61,8 +57,9 @@ public abstract class AbstractTransactionDialog extends JDialog {
 
     abstract void onSave();
 
-    protected void showWarningDialog(String message) {
+    protected void showWarningDialog(List<String> messages) {
         Object[] options = { "OK" };
+        String message = String.join("\n", messages);
         JOptionPane.showOptionDialog(null, message, "Warning",
                 JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
                 null, options, options[0]);
@@ -70,30 +67,5 @@ public abstract class AbstractTransactionDialog extends JDialog {
 
     public List<Category> getCategoriesList() {
         return categories.findAll();
-    }
-
-    protected Transaction validateAndGetTransaction(TransactionValidator validator, Category category,
-                                                  TransactionType transactionType, String amount,
-                                                  String description, String name) {
-        Transaction tmpTransaction = new Transaction();
-
-        tmpTransaction.setCategory(category);
-        tmpTransaction.setTransactionType(transactionType);
-        tmpTransaction.setDate(LocalDateTime.now());
-        try {
-            tmpTransaction.setAmount(
-                    Double.parseDouble(amount
-                            // formatter adds '&nbsp;' to the text instead of space
-                            .replace("\u00a0", "")
-                            .replace(",", ".")
-                    ));
-        } catch (NumberFormatException ex) {
-            validator.setErrorMessage("Amount cannot be empty");
-            return null;
-        }
-        tmpTransaction.setDescription(description);
-        tmpTransaction.setName(name);
-
-        return validator.validate(tmpTransaction).isValid() ? tmpTransaction : null;
     }
 }

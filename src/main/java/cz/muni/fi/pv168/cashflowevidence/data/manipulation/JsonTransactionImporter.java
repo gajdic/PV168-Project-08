@@ -8,6 +8,7 @@ import cz.muni.fi.pv168.cashflowevidence.data.adapter.TransactionAdapter;
 import cz.muni.fi.pv168.cashflowevidence.exceptions.InvalidImportException;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 import cz.muni.fi.pv168.cashflowevidence.data.validation.TransactionValidator;
+import org.tinylog.Logger;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -21,6 +22,8 @@ public class JsonTransactionImporter implements TransactionImporter {
 
 
     public Collection<Transaction> importRecords(String filePath) throws InvalidImportException {
+        Logger.info("Loading transactions from {}", filePath);
+
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Transaction.class, new TransactionAdapter())
                 .create();
@@ -33,7 +36,7 @@ public class JsonTransactionImporter implements TransactionImporter {
             transactions = gson.fromJson(reader, TRANSACTION_TYPE);
         }
         catch (IOException e) {
-            //TODO: what to do on error
+            Logger.error("Error while loading transactions");
             throw new InvalidImportException(e);
         }
 
@@ -42,7 +45,7 @@ public class JsonTransactionImporter implements TransactionImporter {
                 throw new InvalidImportException("Transaction " + transaction + " is not valid." + validator.getErrorMessage());
         }
 
-
+        Logger.info("Loaded {} records", transactions.size());
         return transactions;
     }
 
