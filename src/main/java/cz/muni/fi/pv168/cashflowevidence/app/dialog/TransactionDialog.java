@@ -118,7 +118,7 @@ public class TransactionDialog extends AbstractTransactionDialog {
             return;
         }
 
-        showWarningDialog(validation.getValidationErrors().toString());
+        showWarningDialog(validation.getValidationErrors());
     }
 
     private Transaction prepareTmpTransaction() {

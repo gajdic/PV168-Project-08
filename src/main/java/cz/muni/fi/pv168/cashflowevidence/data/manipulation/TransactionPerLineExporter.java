@@ -2,6 +2,7 @@ package cz.muni.fi.pv168.cashflowevidence.data.manipulation;
 
 import cz.muni.fi.pv168.cashflowevidence.data.adapter.TransactionSerializer;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
+import org.tinylog.Logger;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -19,14 +20,18 @@ public class TransactionPerLineExporter implements TransactionExporter{
 
     @Override
     public void exportTransactions(Collection<Transaction> transactions, String filePath) {
+        Logger.info("Exporting transactions to {}", filePath);
+
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, StandardCharsets.UTF_8))) {
             for (Transaction transaction: transactions) {
                 writer.write(serializer.serialize(transaction));
                 writer.newLine();
             }
+
+            Logger.info("Exported {} records", transactions.size());
         }
         catch (IOException e) {
-            //TODO: handle error behaviour
+            Logger.error("Error while exporting transactions");
             throw new RuntimeException();
         }
     }

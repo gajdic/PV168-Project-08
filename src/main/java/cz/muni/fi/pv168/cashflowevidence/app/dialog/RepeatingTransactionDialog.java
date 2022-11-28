@@ -41,7 +41,7 @@ public class RepeatingTransactionDialog extends AbstractTransactionDialog {
     private JPanel customFrequencyPanel;
 
     private RepeatingTransaction repeatingTransaction;
-    private Validator<RepeatingTransaction> validator;
+    private final Validator<RepeatingTransaction> validator;
 
     public RepeatingTransactionDialog(String title, Repository<Category> categoryRepository, Validator<RepeatingTransaction> validator) {
         super(title, categoryRepository);
@@ -78,7 +78,7 @@ public class RepeatingTransactionDialog extends AbstractTransactionDialog {
             return;
         }
 
-        showWarningDialog(validation.getValidationErrors().toString());
+        showWarningDialog(validation.getValidationErrors());
     }
 
     public RepeatingTransaction showDialog() {

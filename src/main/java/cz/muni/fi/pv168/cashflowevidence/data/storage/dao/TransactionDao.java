@@ -6,6 +6,7 @@ import cz.muni.fi.pv168.cashflowevidence.data.storage.entity.TransactionEntity;
 import cz.muni.fi.pv168.cashflowevidence.exceptions.DataStorageException;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionType;
 import jdk.jshell.spi.ExecutionControl;
+import org.tinylog.Logger;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,6 +27,8 @@ public class TransactionDao implements DatabaseAccessObject<TransactionEntity>{
     }
 
     public TransactionEntity create(TransactionEntity entity) {
+        Logger.debug("Storing new entity {}", entity);
+
         String sql = "INSERT INTO Transaction" +
                 "(name, description, amount, type, categoryId, createdAt)" +
                 "VALUES (?, ?, ?, ?, ?, ?)";
@@ -59,7 +62,9 @@ public class TransactionDao implements DatabaseAccessObject<TransactionEntity>{
 
                 if (keys.next()) {
                     transactionId = keys.getLong(1);
+                    Logger.debug("Successfully stored {}", transactionId);
                 } else {
+                    Logger.debug("Unable to store {}", entity);
                     throw new DataStorageException("Failed to retrieve generated key for: " + entity);
                 }
 
@@ -76,6 +81,8 @@ public class TransactionDao implements DatabaseAccessObject<TransactionEntity>{
     }
 
     public TransactionEntity findById(long id) {
+        Logger.debug("Fetching by id {}", id);
+
         String sql = "SELECT * FROM Transaction WHERE id = ?";
 
         try (
@@ -89,6 +96,7 @@ public class TransactionDao implements DatabaseAccessObject<TransactionEntity>{
                 return resultSetToTransactionEntity(result);
             }
 
+            Logger.debug("No entity for id {}", id);
             return null;
         } catch (SQLException e) {
             throw new DataStorageException("Unable to retrieve transaction by id: " + id);
@@ -96,6 +104,8 @@ public class TransactionDao implements DatabaseAccessObject<TransactionEntity>{
     }
 
     public List<TransactionEntity> findAll() {
+        Logger.debug("Fetching all");
+
         String sql = "Select * FROM Transaction";
 
         try (
@@ -118,6 +128,8 @@ public class TransactionDao implements DatabaseAccessObject<TransactionEntity>{
     }
 
     public void deleteById(long id) {
+        Logger.debug("Deleting entity with id {}", id);
+
         String sql = "DELETE FROM Transaction WHERE id = ?";
         try (
                 var connection = connections.get();
@@ -133,12 +145,16 @@ public class TransactionDao implements DatabaseAccessObject<TransactionEntity>{
             if (changedRows > 1) {
                 throw new DataStorageException("Multiple transactions were deleted. (%d)".formatted(changedRows));
             }
+
+            Logger.debug("Successfully deleted entity with id {}", id);
         } catch (SQLException ex) {
             throw new DataStorageException("Unable to delete transaction with id %d %s".formatted(id, ex));
         }
     }
 
     public TransactionEntity update(TransactionEntity entity) {
+        Logger.debug("Updating entity {}", entity);
+
         String sql = "UPDATE Transaction SET " +
                 "categoryId = ?, name = ?, description = ?, amount = ?, type = ? WHERE id = ?";
 
@@ -162,6 +178,8 @@ public class TransactionDao implements DatabaseAccessObject<TransactionEntity>{
             if (changedRows > 1) {
                 throw new DataStorageException("Multiple transactions were deleted. (%d)".formatted(changedRows));
             }
+
+            Logger.debug("Update successful for {}", entity);
         } catch (SQLException ex) {
             throw new DataStorageException("Unable to update transaction: %s %s".formatted(entity, ex));
         }
