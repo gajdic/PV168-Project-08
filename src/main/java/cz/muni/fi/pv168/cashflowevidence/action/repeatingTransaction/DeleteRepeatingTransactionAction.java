@@ -15,6 +15,8 @@ import java.util.Comparator;
 public class DeleteRepeatingTransactionAction extends DeleteAction {
 
     private final JTable repeatingTransactionTable;
+    private boolean yesToAll = false;
+
 
     public DeleteRepeatingTransactionAction(JTable repeatingTransactionTable) {
         super();
@@ -28,16 +30,27 @@ public class DeleteRepeatingTransactionAction extends DeleteAction {
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        var message = "Are you sure you want to delete selected repeating transactions?";
-        if (confirmDeleteTransaction(message) != 0) {
-            return;
-        }
-
         var repeatingTransactionTableModel = (RepeatingTransactionTableModel) repeatingTransactionTable.getModel();
         Arrays.stream(repeatingTransactionTable.getSelectedRows())
                 .map(repeatingTransactionTable::convertRowIndexToModel)
                 .boxed()
                 .sorted(Comparator.reverseOrder())
-                .forEach(repeatingTransactionTableModel::deleteRow);
+                .forEach(index -> {
+                    var deleteOption = -1;
+
+                    if (!yesToAll) {
+                        var message = String.format("Are you sure you want to delete repeating transaction %s?",
+                                repeatingTransactionTableModel.getEntity(index).getName());
+
+                        deleteOption = confirmDelete(message);
+                        yesToAll = deleteOption == 1;
+                    }
+
+                    if (deleteOption == 0 || yesToAll) {
+                        repeatingTransactionTableModel.deleteRow(index);
+                    }
+                });
+
+        yesToAll = false;
     }
 }

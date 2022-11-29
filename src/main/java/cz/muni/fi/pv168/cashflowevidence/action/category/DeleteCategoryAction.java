@@ -57,7 +57,7 @@ public class DeleteCategoryAction extends DeleteAction {
                     var deleteOption = -1;
 
                     if (!yesToAll) {
-                        deleteOption = confirmDeleteCategory(message);
+                        deleteOption = confirmDelete(message);
                         yesToAll = deleteOption == 1;
                     }
 
