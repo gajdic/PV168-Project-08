@@ -19,6 +19,8 @@ public class DeleteCategoryAction extends DeleteAction {
 
     private final JTable categoryTable;
     private final JTable transactionTable;
+    private boolean yesToAll = false;
+
 
     public DeleteCategoryAction(JTable categoryTable, JTable transactionTable) {
         super();
@@ -33,10 +35,6 @@ public class DeleteCategoryAction extends DeleteAction {
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        if (confirmDelete() != 0) {
-            return;
-        }
-
         CategoryTableModel categoryTableModel = (CategoryTableModel) categoryTable.getModel();
         TransactionTableModel transactionTableModel = (TransactionTableModel) transactionTable.getModel();
 
@@ -47,12 +45,32 @@ public class DeleteCategoryAction extends DeleteAction {
                 .boxed()
                 .sorted(Comparator.reverseOrder())
                 .forEach(index -> {
-                    categoriesToBeDeleted.add(categoryTableModel.getEntity(index));
-                    categoryTableModel.deleteRow(index);
+                    var message = String.format("Are you sure you want to delete category %s?",
+                            categoryTableModel.getEntity(index).getName());
+
+                    if (transactionTableModel.getEntities().stream()
+                            .anyMatch(t -> categoryTableModel.getEntity(index) == t.getCategory())) {
+                        message += String.format("\n%s is used in transaction",
+                                categoryTableModel.getEntity(index).getName());
+                    }
+
+                    var deleteOption = -1;
+
+                    if (!yesToAll) {
+                        deleteOption = confirmDeleteCategory(message);
+                        yesToAll = deleteOption == 1;
+                    }
+
+                    if (deleteOption == 0 || yesToAll) {
+                        categoriesToBeDeleted.add(categoryTableModel.getEntity(index));
+                        categoryTableModel.deleteRow(index);
+                    }
                 });
 
         transactionTableModel.getEntities().stream()
                 .filter(t -> categoriesToBeDeleted.contains(t.getCategory()))
                 .forEach(t -> t.setCategory(null));
+
+        yesToAll = false;
     }
 }

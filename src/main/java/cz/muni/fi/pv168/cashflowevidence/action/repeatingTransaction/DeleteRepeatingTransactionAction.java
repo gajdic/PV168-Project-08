@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.cashflowevidence.action.repeatingTransaction;
 
+import cz.muni.fi.pv168.cashflowevidence.action.DeleteAction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.RepeatingTransactionTableModel;
 
 import javax.swing.AbstractAction;
@@ -11,12 +12,12 @@ import java.awt.event.KeyEvent;
 import java.util.Arrays;
 import java.util.Comparator;
 
-public class DeleteRepeatingTransactionAction extends AbstractAction {
+public class DeleteRepeatingTransactionAction extends DeleteAction {
 
     private final JTable repeatingTransactionTable;
 
     public DeleteRepeatingTransactionAction(JTable repeatingTransactionTable) {
-        super("Delete", UIManager.getIcon("FileChooser.fileIcon"));
+        super();
 
         this.repeatingTransactionTable = repeatingTransactionTable;
 
@@ -27,6 +28,11 @@ public class DeleteRepeatingTransactionAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
+        var message = "Are you sure you want to delete selected repeating transactions?";
+        if (confirmDeleteTransaction(message) != 0) {
+            return;
+        }
+
         var repeatingTransactionTableModel = (RepeatingTransactionTableModel) repeatingTransactionTable.getModel();
         Arrays.stream(repeatingTransactionTable.getSelectedRows())
                 .map(repeatingTransactionTable::convertRowIndexToModel)

@@ -26,7 +26,8 @@ public class DeleteTransactionAction extends DeleteAction {
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        if (confirmDelete() != 0) {
+        var message = "Are you sure you want to delete selected transactions?";
+        if (confirmDeleteTransaction(message) != 0) {
             return;
         }
 
