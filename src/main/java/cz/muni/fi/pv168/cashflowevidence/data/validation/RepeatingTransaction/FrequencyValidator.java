@@ -18,7 +18,7 @@ public class FrequencyValidator extends PropertyValidator<TransactionFrequency> 
         var result = new ValidationResult();
 
         if (frequency == TransactionFrequency.Custom && days < 0) {
-            result.add("'%s' Months cannot be less than 0"
+            result.add("%s months cannot be less than 0"
                     .formatted(getName(frequency)));
         }
 
