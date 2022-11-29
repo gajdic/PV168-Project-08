@@ -8,9 +8,11 @@ import cz.muni.fi.pv168.cashflowevidence.wiring.DependencyProvider;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
+import javax.swing.table.AbstractTableModel;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -21,8 +23,14 @@ public class RepeatingTaskScheduler {
 
     private final Repository<Transaction> transactionRepository;
     private final Repository<RepeatingTransaction> repeatingTransactionRepository;
+    private TransactionTableModel transactionTableModel;
 
     private Timer timer = new Timer();
+
+    public RepeatingTaskScheduler(DependencyProvider dependencyProvider, TransactionTableModel transactionTableModel) {
+        this(dependencyProvider);
+        this.transactionTableModel = transactionTableModel;
+    }
 
     public RepeatingTaskScheduler(DependencyProvider dependencyProvider) {
         this.transactionRepository = dependencyProvider.getTransactionRepository();
@@ -38,7 +46,7 @@ public class RepeatingTaskScheduler {
     }
 
 
-    public void setListenerForNewRepeatingTransaction(JTable repeatingTransactionTable, TransactionTableModel transactionTableModel) {
+    public void setListenerForNewRepeatingTransaction(JTable repeatingTransactionTable) {
         RepeatingTransactionTableModel repeatingTransactionTableModel = (RepeatingTransactionTableModel) repeatingTransactionTable.getModel();
         repeatingTransactionTableModel.addTableModelListener( tableModelEvent -> {
             // Dropping and replanning all transactions to not have to deal with looking which
@@ -57,7 +65,6 @@ public class RepeatingTaskScheduler {
                 refreshPlannedTransactions();
             }
 
-            transactionTableModel.fireTableDataChanged();
             }
         );
     }
@@ -78,6 +85,11 @@ public class RepeatingTaskScheduler {
         repeatingTransaction.setDoNotReschedule(true);
 
         repeatingTransactionRepository.update(repeatingTransaction);
+
+        if (transactionTableModel != null) {
+            transactionTableModel.fireTableDataChanged();
+        }
+
     }
 
 

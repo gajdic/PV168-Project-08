@@ -138,9 +138,9 @@ public class CashFlowEvidence {
         importJsonAction = new ImportAction(transactionTable, jsonImporter);
         exportJsonAction = new ExportAction(transactionTable, jsonExporter);
 
-        repeatingTaskScheduler = new RepeatingTaskScheduler(dependencyProvider);
+        repeatingTaskScheduler = new RepeatingTaskScheduler(dependencyProvider, transactionTableModel);
         repeatingTaskScheduler.scheduleExistingTransactions();
-        repeatingTaskScheduler.setListenerForNewRepeatingTransaction(repeatingTransactionTable, transactionTableModel);
+        repeatingTaskScheduler.setListenerForNewRepeatingTransaction(repeatingTransactionTable);
 
         initializeActionsState();
 
