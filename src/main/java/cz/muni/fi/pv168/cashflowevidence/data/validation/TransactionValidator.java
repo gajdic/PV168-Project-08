@@ -83,10 +83,10 @@ public class TransactionValidator implements Validator<Transaction> {
     @Override
     public ValidationResult validate(Transaction transaction) {
         var validators = List.of(
-                extracting(Transaction::getName, new StringLengthValidator(1, 100, "Transaction name")),
-                extracting(Transaction::getDescription, new StringLengthValidator(0, 250, "Transaction description")),
-                extracting(Transaction::getAmount, new DoubleMinValueValidator(0, "Transaction amount")),
-                extracting(Transaction::getDateTime, new DateTimeValidator("Transaction date"))
+                extracting(Transaction::getName, new StringLengthValidator(1, 100, "Name")),
+                extracting(Transaction::getDescription, new StringLengthValidator(0, 250, "Description")),
+                extracting(Transaction::getAmount, new DoubleMinValueValidator(0, "Amount")),
+                extracting(Transaction::getDateTime, new DateTimeValidator("Date"))
         );
 
         return Validator.compose(validators).validate(transaction);

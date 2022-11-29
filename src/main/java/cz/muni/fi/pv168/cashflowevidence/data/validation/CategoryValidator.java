@@ -12,8 +12,8 @@ public class CategoryValidator implements Validator<Category> {
     @Override
     public ValidationResult validate(Category category) {
         var validators = List.of(
-                extracting(Category::getName, new StringLengthValidator(1, 50, "Category name")),
-                extracting(Category::getColorString, new StringLengthValidator(7, 50, "Category color"))
+                extracting(Category::getName, new StringLengthValidator(1, 50, "Name")),
+                extracting(Category::getColorString, new StringLengthValidator(7, 50, "Color"))
         );
 
         return Validator.compose(validators).validate(category);

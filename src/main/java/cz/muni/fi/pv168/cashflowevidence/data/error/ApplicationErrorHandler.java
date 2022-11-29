@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.cashflowevidence.data.error;
 
 import cz.muni.fi.pv168.cashflowevidence.action.ExitApplicationAction;
+import org.tinylog.Logger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,8 +10,17 @@ public class ApplicationErrorHandler implements Thread.UncaughtExceptionHandler 
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-        // TODO: Handle exceptions better
-        showGeneralError("Oops something went wrong!", true);
+        Logger.error("Application error handler: {}", e.getMessage());
+        Logger.error(e);
+
+        if (e instanceof FatalError ex) {
+            showGeneralError(ex.getUserMessage(), true);
+        } else if (e instanceof ApplicationException ex) {
+            showGeneralError(ex.getUserMessage(), false);
+        } else {
+            showGeneralError("Oops something went wrong!", true);
+        }
+
     }
 
     private static void showGeneralError(String message, boolean isFatal) {
