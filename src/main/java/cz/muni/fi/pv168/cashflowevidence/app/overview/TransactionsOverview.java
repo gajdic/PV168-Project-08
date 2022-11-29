@@ -175,6 +175,7 @@ public class TransactionsOverview extends AbstractOverview {
             @Override
             public void focusGained(FocusEvent e) {
                 categoriesJComboBox.removeAllItems();
+                categoriesJComboBox.addItem(null);
                 List<Category> categoryList = categoryRepository.findAll();
                 for (Category category : categoryList) {
                     categoriesJComboBox.addItem(category);
