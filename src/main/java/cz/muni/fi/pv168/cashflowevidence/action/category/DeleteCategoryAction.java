@@ -4,6 +4,7 @@ import cz.muni.fi.pv168.cashflowevidence.action.DeleteAction;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryTableModel;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.RepeatingTransactionTableModel;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionTableModel;
 
 import javax.swing.JTable;
@@ -19,10 +20,11 @@ public class DeleteCategoryAction extends DeleteAction {
 
     private final JTable categoryTable;
     private final JTable transactionTable;
+    private final JTable repeatingTransactionTable;
     private boolean yesToAll = false;
 
 
-    public DeleteCategoryAction(JTable categoryTable, JTable transactionTable) {
+    public DeleteCategoryAction(JTable categoryTable, JTable transactionTable, JTable repeatingTransactionTable) {
         super();
 
         putValue(SHORT_DESCRIPTION, "Deletes selected record");
@@ -31,12 +33,15 @@ public class DeleteCategoryAction extends DeleteAction {
 
         this.categoryTable = categoryTable;
         this.transactionTable = transactionTable;
+        this.repeatingTransactionTable = repeatingTransactionTable;
     }
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         CategoryTableModel categoryTableModel = (CategoryTableModel) categoryTable.getModel();
         TransactionTableModel transactionTableModel = (TransactionTableModel) transactionTable.getModel();
+        RepeatingTransactionTableModel repeatingTransactionTableModel =
+                (RepeatingTransactionTableModel) repeatingTransactionTable.getModel();
 
         List<Category> categoriesToBeDeleted = new ArrayList<>();
 
@@ -48,9 +53,14 @@ public class DeleteCategoryAction extends DeleteAction {
                     var message = String.format("Are you sure you want to delete category %s?",
                             categoryTableModel.getEntity(index).getName());
 
+                    var category = categoryTableModel.getEntity(index);
+
                     if (transactionTableModel.getEntities().stream()
-                            .anyMatch(t -> categoryTableModel.getEntity(index) == t.getCategory())) {
-                        message += String.format("\n%s is used in transaction",
+                            .anyMatch(t -> category == t.getCategory()) ||
+                        repeatingTransactionTableModel.getEntities().stream()
+                            .anyMatch(t -> category == t.getCategory())) {
+
+                        message += String.format("\n%s is used in existing transaction",
                                 categoryTableModel.getEntity(index).getName());
                     }
 
