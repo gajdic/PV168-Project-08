@@ -358,7 +358,6 @@ public class CashFlowEvidence {
         categories.refresh();
         transactions.refresh();
         repeatingTransactions.refresh();
-        TransactionTableModel model = (TransactionTableModel) transactionTable.getModel();
-        model.refresh();
+        ((TransactionTableModel) transactionTable.getModel()).fireTableDataChanged();
     }
 }
