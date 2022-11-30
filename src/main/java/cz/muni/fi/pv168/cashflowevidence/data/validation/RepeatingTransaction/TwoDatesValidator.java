@@ -19,7 +19,7 @@ public class TwoDatesValidator extends PropertyValidator<LocalDate> {
         var result = new ValidationResult();
 
         if (dateFrom == null || dateFrom.isAfter(dateTo)) {
-            result.add("'Repeat from' is either empty or after the 'Repeat to'");
+            result.add("Repeat from is either empty or after the Repeat to");
         }
 
         return result;

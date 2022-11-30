@@ -15,7 +15,7 @@ public class DateTimeValidator extends PropertyValidator<LocalDateTime> {
         var result = new ValidationResult();
 
         if (dateTime == null || dateTime.isAfter(LocalDateTime.now())) {
-            result.add("'%s' is invalid. Date cannot be after today"
+            result.add("%s is invalid. Date cannot be after today"
                     .formatted(getName(dateTime)));
         }
 

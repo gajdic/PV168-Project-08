@@ -27,7 +27,7 @@ public final class NumberRangeValidator extends PropertyValidator<Integer> {
         var result = new ValidationResult();
 
         if ( lowerBound > number ||  number >= upperBound ) {
-            result.add("'%s' is not between %d (inclusive) and %d (exclusive)"
+            result.add("%s is not between %d and %d"
                     .formatted(getName(number), lowerBound, upperBound)
             );
         }
