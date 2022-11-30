@@ -84,4 +84,8 @@ public class TransactionTableModel extends AbstractTableModel {
         transactions.deleteByIndex(rowIndex);
         fireTableRowsDeleted(rowIndex, rowIndex);
     }
+
+    public void refresh() {
+        fireTableDataChanged();
+    }
 }
