@@ -5,7 +5,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import cz.muni.fi.pv168.cashflowevidence.data.adapter.TransactionAdapter;
+import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.exceptions.InvalidImportException;
+import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 import cz.muni.fi.pv168.cashflowevidence.data.validation.TransactionValidator;
 import org.tinylog.Logger;
@@ -17,6 +19,11 @@ import java.util.Collection;
 import java.util.List;
 
 public class JsonTransactionImporter implements TransactionImporter {
+
+    private final Repository<Category> categoryRepository;
+    public JsonTransactionImporter(Repository<Category> categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
     private static final Type TRANSACTION_TYPE = new TypeToken<List<Transaction>>() {
     }.getType();
 
@@ -25,7 +32,7 @@ public class JsonTransactionImporter implements TransactionImporter {
         Logger.info("Loading transactions from {}", filePath);
 
         Gson gson = new GsonBuilder()
-                .registerTypeAdapter(Transaction.class, new TransactionAdapter())
+                .registerTypeAdapter(Transaction.class, new TransactionAdapter(categoryRepository))
                 .create();
 
         List<Transaction> transactions;

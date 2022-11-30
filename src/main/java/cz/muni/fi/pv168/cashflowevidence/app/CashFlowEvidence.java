@@ -127,9 +127,9 @@ public class CashFlowEvidence {
 
         initializeActions(dependencyProvider);
 
-        TransactionImporter jsonImporter = new JsonTransactionImporter();
+        TransactionImporter jsonImporter = new JsonTransactionImporter(categories);
         TransactionExporter jsonExporter = new JsonTransactionExporter();
-        TransactionImporter csvImporter = new TransactionPerLineImporter(new TransactionCSVSerializer());
+        TransactionImporter csvImporter = new TransactionPerLineImporter(new TransactionCSVSerializer(), categories);
         TransactionExporter csvExporter = new TransactionPerLineExporter(new TransactionCSVSerializer());
 
 
