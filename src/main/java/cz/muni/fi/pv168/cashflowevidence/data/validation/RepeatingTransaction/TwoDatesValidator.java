@@ -18,8 +18,17 @@ public class TwoDatesValidator extends PropertyValidator<LocalDate> {
     public ValidationResult validate(LocalDate dateFrom) {
         var result = new ValidationResult();
 
-        if (dateFrom == null || dateFrom.isAfter(dateTo)) {
-            result.add("Repeat from is either empty or after the Repeat to");
+        if (dateFrom == null) {
+            result.add("Repeat from field cannot be empty.");
+            return result;
+        }
+
+        if (dateFrom.isBefore(LocalDate.now())) {
+            result.add("Repeating transaction cannot start in the past.");
+        }
+
+        if (dateFrom.isAfter(dateTo)) {
+            result.add("Repeat from date cannot be after Repeat to date");
         }
 
         return result;
