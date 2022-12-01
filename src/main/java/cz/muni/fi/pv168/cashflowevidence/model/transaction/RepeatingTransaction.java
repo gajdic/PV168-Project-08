@@ -198,4 +198,24 @@ public class RepeatingTransaction extends Transaction {
     public void setId(Long id) {
         this.id = Objects.requireNonNull(id, "when setting id, it must not be null");
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        RepeatingTransaction that = (RepeatingTransaction) o;
+        return days == that.days &&
+                doNotReschedule == that.doNotReschedule &&
+                frequency == that.frequency &&
+                Objects.equals(dateFrom, that.dateFrom) &&
+                Objects.equals(dateTo, that.dateTo) &&
+                Objects.equals(nextCreateAt, that.nextCreateAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), dateFrom, dateTo, frequency, days, id, doNotReschedule, nextCreateAt);
+    }
 }
