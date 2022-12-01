@@ -65,18 +65,8 @@ public class RepeatingTransactionDaoTest {
         assertThat(createdRepeatingTransaction.id())
                 .isGreaterThan(1);
 
-        assertThat(createdRepeatingTransaction.name()).isEqualTo(params.name());
-        assertThat(createdRepeatingTransaction.description()).isEqualTo(params.description());
-        assertThat(createdRepeatingTransaction.amount()).isEqualTo(params.amount());
-        assertThat(createdRepeatingTransaction.type()).isEqualTo(params.type());
-        assertThat(createdRepeatingTransaction.categoryId()).isEqualTo(params.categoryId());
-        assertThat(createdRepeatingTransaction.days()).isEqualTo(params.days());
-        assertThat(createdRepeatingTransaction.frequency()).isEqualTo(params.frequency());
-        assertThat(createdRepeatingTransaction.dateFrom().truncatedTo(ChronoUnit.SECONDS)).isEqualTo(params.dateFrom().truncatedTo(ChronoUnit.SECONDS));
-        assertThat(createdRepeatingTransaction.dateTo().truncatedTo(ChronoUnit.SECONDS)).isEqualTo(params.dateTo().truncatedTo(ChronoUnit.SECONDS));
-        assertThat(createdRepeatingTransaction.createdAt().truncatedTo(ChronoUnit.SECONDS)).isEqualTo(params.createdAt().truncatedTo(ChronoUnit.SECONDS));
-        assertThat(createdRepeatingTransaction.nextCreatedAt().truncatedTo(ChronoUnit.SECONDS)).isEqualTo(params.nextCreatedAt().truncatedTo(ChronoUnit.SECONDS));
 
+        assertThat(createdRepeatingTransaction).isEqualTo(params);
 
         var foundCreated = repeatingTransactionDao.findById(createdRepeatingTransaction.id());
 
@@ -85,9 +75,6 @@ public class RepeatingTransactionDaoTest {
                 .isNotNull()
                 .isEqualTo(createdRepeatingTransaction);
     }
-
-
-
 
     @Test
     void findRepeatingTransactionById() {
@@ -165,18 +152,9 @@ public class RepeatingTransactionDaoTest {
         assertThat(createdRepeatingTransaction.id())
                 .isGreaterThan(1);
 
-        assertThat(createdRepeatingTransaction.name()).isEqualTo(params.name());
-        assertThat(createdRepeatingTransaction.description()).isEqualTo(params.description());
-        assertThat(createdRepeatingTransaction.amount()).isEqualTo(params.amount());
-        assertThat(createdRepeatingTransaction.type()).isEqualTo(params.type());
-        assertThat(createdRepeatingTransaction.categoryId()).isEqualTo(params.categoryId());
-        assertThat(createdRepeatingTransaction.days()).isEqualTo(params.days());
-        assertThat(createdRepeatingTransaction.frequency()).isEqualTo(params.frequency());
-        assertThat(createdRepeatingTransaction.dateFrom().truncatedTo(ChronoUnit.SECONDS)).isEqualTo(params.dateFrom().truncatedTo(ChronoUnit.SECONDS));
-        assertThat(createdRepeatingTransaction.dateTo().truncatedTo(ChronoUnit.SECONDS)).isEqualTo(params.dateTo().truncatedTo(ChronoUnit.SECONDS));
-        assertThat(createdRepeatingTransaction.createdAt().truncatedTo(ChronoUnit.SECONDS)).isEqualTo(params.createdAt().truncatedTo(ChronoUnit.SECONDS));
-        assertThat(createdRepeatingTransaction.nextCreatedAt().truncatedTo(ChronoUnit.SECONDS)).isEqualTo(params.nextCreatedAt().truncatedTo(ChronoUnit.SECONDS));
 
+
+        assertThat(createdRepeatingTransaction).isEqualTo(params);
 
         var foundCreated = repeatingTransactionDao.findById(createdRepeatingTransaction.id());
 
@@ -185,9 +163,6 @@ public class RepeatingTransactionDaoTest {
                 .isNotNull()
                 .isEqualTo(createdRepeatingTransaction);
     }
-
-
-
 
     private static RepeatingTransactionEntity createRepeatingTransactionEntity() {
         return new RepeatingTransactionEntity(

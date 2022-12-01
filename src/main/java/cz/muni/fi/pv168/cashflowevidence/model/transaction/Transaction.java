@@ -121,4 +121,23 @@ public class Transaction {
     public void setId(Long id) {
         this.id = Objects.requireNonNull(id, "when setting id, it must not be null");
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Transaction that = (Transaction) o;
+        return transactionType == that.transactionType &&
+                Double.compare(that.amount, amount) == 0 &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(description, that.description) &&
+                Objects.equals(dateTime, that.dateTime) &&
+                Objects.equals(category, that.category);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(transactionType, name, description, amount, dateTime, category, id);
+    }
 }

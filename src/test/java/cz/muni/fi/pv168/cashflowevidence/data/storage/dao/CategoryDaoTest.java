@@ -65,8 +65,7 @@ public class CategoryDaoTest {
                 .as("There should be a new category created")
                 .isNotNull();
         assertThat(createdCategory.id()).isGreaterThan(1);
-        assertThat(createdCategory.name()).isEqualTo(newCategoryParams.name());
-        assertThat(createdCategory.color()).isEqualTo(newCategoryParams.color());
+        assertThat(createdCategory).isEqualTo(newCategoryParams);
 
         var allCategories = categoryDao.findAll();
 
