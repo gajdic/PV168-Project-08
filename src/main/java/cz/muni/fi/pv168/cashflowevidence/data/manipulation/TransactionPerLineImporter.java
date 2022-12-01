@@ -1,9 +1,11 @@
 package cz.muni.fi.pv168.cashflowevidence.data.manipulation;
 
 import cz.muni.fi.pv168.cashflowevidence.data.adapter.TransactionSerializer;
+import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.data.validation.TransactionValidator;
 import cz.muni.fi.pv168.cashflowevidence.exceptions.InvalidCSVFormatException;
 import cz.muni.fi.pv168.cashflowevidence.exceptions.InvalidImportException;
+import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 import org.tinylog.Logger;
 
@@ -15,9 +17,11 @@ import java.util.List;
 public class TransactionPerLineImporter implements TransactionImporter{
 
     private final TransactionSerializer serializer;
+    private final Repository<Category> categories;
 
-    public TransactionPerLineImporter (TransactionSerializer serializer) {
+    public TransactionPerLineImporter (TransactionSerializer serializer, Repository<Category> categories) {
         this.serializer = serializer;
+        this.categories = categories;
     }
 
     @Override
@@ -29,7 +33,7 @@ public class TransactionPerLineImporter implements TransactionImporter{
             List<Transaction> transactions = reader.lines()
                     .map(csvLine -> {
                         try {
-                            return serializer.deserialize(csvLine);
+                            return serializer.deserialize(csvLine, categories);
                         } catch (InvalidCSVFormatException e) {
                             throw new InvalidImportException(e);
                         }
