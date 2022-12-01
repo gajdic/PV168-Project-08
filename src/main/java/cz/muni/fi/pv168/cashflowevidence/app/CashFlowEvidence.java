@@ -133,9 +133,9 @@ public class CashFlowEvidence {
         TransactionExporter csvExporter = new TransactionPerLineExporter(new TransactionCSVSerializer());
 
 
-        importAction = new ImportAction(transactionTable, csvImporter);
+        importAction = new ImportAction(transactionTable, csvImporter, transactions, this::refresh);
         exportAction = new ExportAction(transactionTable, csvExporter);
-        importJsonAction = new ImportAction(transactionTable, jsonImporter);
+        importJsonAction = new ImportAction(transactionTable, jsonImporter, transactions, this::refresh);
         exportJsonAction = new ExportAction(transactionTable, jsonExporter);
 
         repeatingTaskScheduler = new RepeatingTaskScheduler(dependencyProvider, transactionTableModel);
@@ -354,10 +354,10 @@ public class CashFlowEvidence {
         return Transaction.formatAmount(amount) + " €";
     }
 
-    //TODO, imports
     private void refresh() {
         categories.refresh();
         transactions.refresh();
         repeatingTransactions.refresh();
+        ((TransactionTableModel) transactionTable.getModel()).fireTableDataChanged();
     }
 }
