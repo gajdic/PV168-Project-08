@@ -7,23 +7,11 @@ import cz.muni.fi.pv168.cashflowevidence.app.RightClickMenu;
 import cz.muni.fi.pv168.cashflowevidence.app.TransactionFilter;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
-import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.renderer.AmountCellRenderer;
+import cz.muni.fi.pv168.cashflowevidence.renderer.CategoryColorListCellRenderer;
 import cz.muni.fi.pv168.cashflowevidence.renderer.DateTimeCellRenderer;
 
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFormattedTextField;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JTable;
+import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -32,7 +20,6 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -171,10 +158,13 @@ public class TransactionsOverview extends AbstractOverview {
         panel.add(specifiedCategories);
 
         categoriesJComboBox.setPreferredSize(new Dimension(120, 20));
+        categoriesJComboBox.setRenderer(new CategoryColorListCellRenderer());
+
         categoriesJComboBox.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
                 categoriesJComboBox.removeAllItems();
+                categoriesJComboBox.addItem(null);
                 List<Category> categoryList = categoryRepository.findAll();
                 for (Category category : categoryList) {
                     categoriesJComboBox.addItem(category);
