@@ -7,7 +7,7 @@ import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 
 public interface TransactionSerializer {
 
-    Transaction deserialize(String csvLine, Repository<Category> categories) throws InvalidCSVFormatException;
+    Transaction deserialize(String csvLine, Repository<Category> categoryRepository) throws InvalidCSVFormatException;
 
     String serialize(Transaction transaction);
 }

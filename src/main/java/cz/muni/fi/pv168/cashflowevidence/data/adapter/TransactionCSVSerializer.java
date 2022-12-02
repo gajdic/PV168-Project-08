@@ -17,8 +17,8 @@ import java.util.Objects;
 public class TransactionCSVSerializer implements TransactionSerializer {
 
     Repository<Category> categoryRepository;
-    public Transaction deserialize(String csvLine, Repository<Category> categories) throws InvalidCSVFormatException {
-        this.categoryRepository = categories;
+    public Transaction deserialize(String csvLine, Repository<Category> categoryRepository) throws InvalidCSVFormatException {
+        this.categoryRepository = categoryRepository;
         String[] tokens = csvLine.split(",");
         if (tokens.length != 7) {
             throw new InvalidCSVFormatException(
