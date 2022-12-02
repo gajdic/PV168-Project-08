@@ -166,7 +166,7 @@ public class CashFlowEvidence {
 
         addCAction = new AddCategoryAction(categoryTable, categoryValidator);
         editCAction = new EditCategoryAction(categoryTable, categoryValidator);
-        deleteCAction = new DeleteCategoryAction(categoryTable, transactionTable);
+        deleteCAction = new DeleteCategoryAction(categoryTable, transactionTable, repeatingTransactionTable);
     }
 
     private JPanel getContent(){

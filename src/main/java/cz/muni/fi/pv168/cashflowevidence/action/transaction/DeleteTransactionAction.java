@@ -13,6 +13,8 @@ import java.util.Comparator;
 public class DeleteTransactionAction extends DeleteAction {
 
     private final JTable transactionTable;
+    private boolean yesToAll = false;
+
 
     public DeleteTransactionAction(JTable transactionTable) {
         super();
@@ -26,15 +28,27 @@ public class DeleteTransactionAction extends DeleteAction {
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        if (confirmDelete() != 0) {
-            return;
-        }
-
         var transactionTableModel = (TransactionTableModel) transactionTable.getModel();
         Arrays.stream(transactionTable.getSelectedRows())
                 .map(transactionTable::convertRowIndexToModel)
                 .boxed()
                 .sorted(Comparator.reverseOrder())
-                .forEach(transactionTableModel::deleteRow);
+                .forEach(index -> {
+                    var deleteOption = -1;
+
+                    if (!yesToAll) {
+                        var message = String.format("Are you sure you want to delete transaction %s?",
+                                transactionTableModel.getEntity(index).getName());
+
+                        deleteOption = confirmDelete(message);
+                        yesToAll = deleteOption == 1;
+                    }
+
+                    if (deleteOption == 0 || yesToAll) {
+                        transactionTableModel.deleteRow(index);
+                    }
+                });
+
+        yesToAll = false;
     }
 }
