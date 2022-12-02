@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.cashflowevidence.data.manipulation;
 
 import cz.muni.fi.pv168.cashflowevidence.data.adapter.TransactionSerializer;
+import cz.muni.fi.pv168.cashflowevidence.exceptions.ExportFailedException;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 import org.tinylog.Logger;
 
@@ -19,7 +20,7 @@ public class TransactionPerLineExporter implements TransactionExporter{
     }
 
     @Override
-    public void exportTransactions(Collection<Transaction> transactions, String filePath) {
+    public void exportTransactions(Collection<Transaction> transactions, String filePath) throws ExportFailedException {
         Logger.info("Exporting transactions to {}", filePath);
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, StandardCharsets.UTF_8))) {
@@ -32,7 +33,7 @@ public class TransactionPerLineExporter implements TransactionExporter{
         }
         catch (IOException e) {
             Logger.error("Error while exporting transactions");
-            throw new RuntimeException();
+            throw new ExportFailedException(e);
         }
     }
 
