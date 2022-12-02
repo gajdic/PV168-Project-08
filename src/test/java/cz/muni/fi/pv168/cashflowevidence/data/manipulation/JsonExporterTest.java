@@ -33,38 +33,14 @@ public class JsonExporterTest {
 
         transactionExporter.exportTransactions(List.of(testData.getTransactionNullCategory()), exportFilePath);
 
-        assertExportedContent(
-                """
-                [
-                  {
-                    "name": "nákup v Lidlu",
-                    "description": "popis",
-                    "amount": 100.0,
-                    "date": "2020-12-12T12:12",
-                    "category_name": "",
-                    "category_color": "",
-                    "type": "Outgoing"
-                  }
-                ]""");
+        assertExportedContent(testData.getTransactionNullCategoryJson());
     }
 
     @Test
     void singleTransactionWithCategory() throws ExportFailedException, IOException {
         transactionExporter.exportTransactions(List.of(testData.getTransactionRedCategory()), exportFilePath);
 
-        assertExportedContent(
-                """
-                [
-                  {
-                    "name": "nákup v Lidlu",
-                    "description": "popis",
-                    "amount": 100.0,
-                    "date": "2020-12-12T12:12",
-                    "category_name": "category",
-                    "category_color": "#ff0000",
-                    "type": "Outgoing"
-                  }
-                ]""");
+        assertExportedContent(testData.getTransactionRedCategoryJson());
 
     }
 
@@ -75,28 +51,7 @@ public class JsonExporterTest {
         transactionExporter.exportTransactions(List.of(testData.getTransactionRedCategory(),
                 testData.getTransactionNullCategory()), exportFilePath);
 
-        assertExportedContent(
-                """
-                [
-                  {
-                    "name": "nákup v Lidlu",
-                    "description": "popis",
-                    "amount": 100.0,
-                    "date": "2020-12-12T12:12",
-                    "category_name": "category",
-                    "category_color": "#ff0000",
-                    "type": "Outgoing"
-                  },
-                  {
-                    "name": "nákup v Lidlu",
-                    "description": "popis",
-                    "amount": 100.0,
-                    "date": "2020-12-12T12:12",
-                    "category_name": "",
-                    "category_color": "",
-                    "type": "Outgoing"
-                  }
-                ]""");
+        assertExportedContent(testData.multiTransactionsJson());
     }
 
     private void assertExportedContent(String expectedContent) throws IOException {

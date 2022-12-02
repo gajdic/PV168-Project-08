@@ -34,22 +34,15 @@ public class CSVExporterTest {
 
         transactionExporter.exportTransactions(List.of(testData.getTransactionNullCategory()), exportFilePath);
 
-        assertExportedContent(
-                """
-                nákup v Lidlu,popis,100.0,2020-12-12T12:12,null,null,Outgoing
-                """);
+        assertExportedContent(testData.getTransactionNullCategoryCsv());
     }
 
     @Test
     void singleTransactionWithCategory() throws ExportFailedException, IOException {
         transactionExporter.exportTransactions(List.of(testData.getTransactionRedCategory()), exportFilePath);
 
-        assertExportedContent(
-                """
-                nákup v Lidlu,popis,100.0,2020-12-12T12:12,category,#ff0000,Outgoing
-                """);
+        assertExportedContent(testData.getTransactionRedCategoryCsv());
     }
-
 
     @Test
     void multipleTransactions() throws ExportFailedException, IOException {
@@ -57,16 +50,11 @@ public class CSVExporterTest {
         transactionExporter.exportTransactions(List.of(testData.getTransactionRedCategory(),
                 testData.getTransactionNullCategory()), exportFilePath);
 
-        assertExportedContent(
-            """
-            nákup v Lidlu,popis,100.0,2020-12-12T12:12,category,#ff0000,Outgoing
-            nákup v Lidlu,popis,100.0,2020-12-12T12:12,null,null,Outgoing
-            """);
+        assertExportedContent(testData.multiTransactionCsv());
     }
 
     private void assertExportedContent(String expectedContent) throws IOException {
         assertThat(Files.readString(Path.of(exportFilePath))).isEqualToIgnoringWhitespace(expectedContent);
     }
-
 
 }
