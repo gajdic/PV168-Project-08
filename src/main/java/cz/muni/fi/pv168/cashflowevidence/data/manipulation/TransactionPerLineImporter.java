@@ -17,11 +17,11 @@ import java.util.List;
 public class TransactionPerLineImporter implements TransactionImporter{
 
     private final TransactionSerializer serializer;
-    private final Repository<Category> categories;
+    private final Repository<Category> categoryRepository;
 
-    public TransactionPerLineImporter (TransactionSerializer serializer, Repository<Category> categories) {
+    public TransactionPerLineImporter (TransactionSerializer serializer, Repository<Category> categoryRepository) {
         this.serializer = serializer;
-        this.categories = categories;
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
@@ -33,7 +33,7 @@ public class TransactionPerLineImporter implements TransactionImporter{
             List<Transaction> transactions = reader.lines()
                     .map(csvLine -> {
                         try {
-                            return serializer.deserialize(csvLine, categories);
+                            return serializer.deserialize(csvLine, categoryRepository);
                         } catch (InvalidCSVFormatException e) {
                             throw new InvalidImportException(e);
                         }
