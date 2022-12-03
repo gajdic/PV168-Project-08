@@ -1,10 +1,9 @@
 package cz.muni.fi.pv168.cashflowevidence.action;
 
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.TransactionImporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.old.TransactionImporter;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.exceptions.InvalidImportException;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
-import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionTableModel;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
