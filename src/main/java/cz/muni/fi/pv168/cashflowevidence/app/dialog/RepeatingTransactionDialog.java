@@ -8,6 +8,7 @@ import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.RepeatingTransaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionFrequency;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionType;
+import cz.muni.fi.pv168.cashflowevidence.renderer.CategoryColorListCellRenderer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -128,6 +129,7 @@ public class RepeatingTransactionDialog extends AbstractTransactionDialog {
         }
         categoryComboBox.insertItemAt(null, 0);
         categoryComboBox.setSelectedIndex(0);
+        categoryComboBox.setRenderer(new CategoryColorListCellRenderer());
     }
 
     private void setupIncomingOutgoing() {
