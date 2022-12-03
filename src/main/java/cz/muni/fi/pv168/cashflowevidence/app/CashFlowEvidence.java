@@ -17,12 +17,7 @@ import cz.muni.fi.pv168.cashflowevidence.app.overview.CategoriesOverview;
 import cz.muni.fi.pv168.cashflowevidence.app.overview.RepeatingTransactionsOverview;
 import cz.muni.fi.pv168.cashflowevidence.app.overview.TransactionsOverview;
 import cz.muni.fi.pv168.cashflowevidence.data.adapter.TransactionCSVSerializer;
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.JsonTransactionExporter;
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.JsonTransactionImporter;
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.TransactionExporter;
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.TransactionImporter;
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.TransactionPerLineExporter;
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.TransactionPerLineImporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.*;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryTableModel;
@@ -74,6 +69,7 @@ public class CashFlowEvidence {
     private final Action exitAction = new ExitApplicationAction();
     private final Action importJsonAction;
     private final Action exportJsonAction;
+    private final Action exportPdfAxtion;
     private final Repository<Category> categories;
     private final Repository<Transaction> transactions;
     private final Repository<RepeatingTransaction> repeatingTransactions;
@@ -131,12 +127,14 @@ public class CashFlowEvidence {
         TransactionExporter jsonExporter = new JsonTransactionExporter();
         TransactionImporter csvImporter = new TransactionPerLineImporter(new TransactionCSVSerializer(), categories);
         TransactionExporter csvExporter = new TransactionPerLineExporter(new TransactionCSVSerializer());
+        TransactionExporter pdfExporter = new PdfTransactionExporter();
 
 
         importAction = new ImportAction(transactionTable, csvImporter, transactions, this::refresh);
         exportAction = new ExportAction(transactionTable, csvExporter);
         importJsonAction = new ImportAction(transactionTable, jsonImporter, transactions, this::refresh);
         exportJsonAction = new ExportAction(transactionTable, jsonExporter);
+        exportPdfAxtion = new ExportAction(transactionTable, pdfExporter);
 
         repeatingTaskScheduler = new RepeatingTaskScheduler(dependencyProvider, transactionTableModel);
         repeatingTaskScheduler.scheduleExistingTransactions();
@@ -264,7 +262,8 @@ public class CashFlowEvidence {
     private JMenuBar getMenuBar() {
 
         JMenu fileMenu = getMenu("File", KeyEvent.VK_F,
-                new ArrayList<>(Arrays.asList(importAction, importJsonAction, exportAction, exportJsonAction, exitAction)));
+                new ArrayList<>(Arrays.asList(importAction, importJsonAction, exportAction, exportJsonAction,
+                        exportPdfAxtion, exitAction)));
         JMenu transactionMenu = getMenu("Transaction", KeyEvent.VK_T,
                 new ArrayList<>(Arrays.asList(addTAction, editTAction, deleteTAction)));
         JMenu repeatingTransactionMenu = getMenu("Repeating Transaction", KeyEvent.VK_R,

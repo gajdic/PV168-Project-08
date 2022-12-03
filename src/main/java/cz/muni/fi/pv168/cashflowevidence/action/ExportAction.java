@@ -1,9 +1,11 @@
 package cz.muni.fi.pv168.cashflowevidence.action;
 
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.TransactionExporter;
+import cz.muni.fi.pv168.cashflowevidence.exceptions.ExportFailedException;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionTableModel;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -26,13 +28,20 @@ public class ExportAction extends AbstractAction {
     public void actionPerformed(ActionEvent actionEvent) {
         var fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+        fileChooser.setFileFilter(new FileNameExtensionFilter(exporter.getFormat().toString(),
+                exporter.getFormat().toString()));
 
         int dialogResult = fileChooser.showSaveDialog(table);
         if (dialogResult == JFileChooser.APPROVE_OPTION) {
             File exportFile = fileChooser.getSelectedFile();
             var transactionTableModel = (TransactionTableModel) table.getModel();
+            try {
+                exporter.exportTransactions(transactionTableModel.getEntities(), exportFile.getAbsolutePath());
+            } catch (ExportFailedException e) {
+//                TODO: Show nice message to the user
+                throw new RuntimeException(e);
+            }
 
-            exporter.exportTransactions(transactionTableModel.getEntities(), exportFile.getAbsolutePath());
         }
     }
 }
