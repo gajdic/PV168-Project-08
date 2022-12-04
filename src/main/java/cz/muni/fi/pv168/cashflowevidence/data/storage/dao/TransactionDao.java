@@ -184,6 +184,19 @@ public class TransactionDao implements DatabaseAccessObject<TransactionEntity>{
         return findById(entity.id());
     }
 
+    @Override
+    public int deleteAll() {
+        var sql = "DELETE FROM Transaction";
+        try (
+                var connection = connections.get();
+                var statement = connection.use().prepareStatement(sql)
+        ){
+            return statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataStorageException("Failed to delete all departments", e);
+        }
+    }
+
     private static TransactionEntity resultSetToTransactionEntity(ResultSet resultset) throws SQLException {
         return new TransactionEntity(
                 resultset.getLong("id"),

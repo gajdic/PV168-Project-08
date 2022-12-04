@@ -187,6 +187,19 @@ public class RepeatingTransactionDao implements DatabaseAccessObject<RepeatingTr
         return findById(entity.id());
     }
 
+    @Override
+    public int deleteAll() {
+        var sql = "DELETE FROM RepeatingTransaction";
+        try (
+                var connection = connections.get();
+                var statement = connection.use().prepareStatement(sql)
+        ){
+            return statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataStorageException("Failed to delete all departments", e);
+        }
+    }
+
     private static RepeatingTransactionEntity resultSetToRepeatingTransactionEntity(ResultSet resultset) throws SQLException {
         String frequencyStr = resultset.getString("frequency");
         var frequency = TransactionFrequency.valueOf(

@@ -175,6 +175,19 @@ public class CategoryDao implements DatabaseAccessObject<CategoryEntity> {
         return findById(entity.id());
     }
 
+    @Override
+    public int deleteAll() {
+        var sql = "DELETE FROM Category";
+        try (
+                var connection = connections.get();
+                var statement = connection.use().prepareStatement(sql)
+        ) {
+            return statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataStorageException("Failed to delete all categories", e);
+        }
+    }
+
     /**
      * Changes categoryId of the provided TransactionEntity or RepeatingTransactionEntity.
      * ikr...
