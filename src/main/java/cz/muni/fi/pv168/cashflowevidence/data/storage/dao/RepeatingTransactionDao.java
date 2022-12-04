@@ -196,7 +196,7 @@ public class RepeatingTransactionDao implements DatabaseAccessObject<RepeatingTr
         ){
             return statement.executeUpdate();
         } catch (SQLException e) {
-            throw new DataStorageException("Failed to delete all departments", e);
+            throw new DataStorageException("Failed to delete all repeating transactions", e);
         }
     }
 

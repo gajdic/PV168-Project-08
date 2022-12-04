@@ -193,7 +193,7 @@ public class TransactionDao implements DatabaseAccessObject<TransactionEntity>{
         ){
             return statement.executeUpdate();
         } catch (SQLException e) {
-            throw new DataStorageException("Failed to delete all departments", e);
+            throw new DataStorageException("Failed to delete all transactions", e);
         }
     }
 
