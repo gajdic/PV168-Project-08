@@ -2,6 +2,7 @@ package cz.muni.fi.pv168.cashflowevidence.data.manipulation;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import cz.muni.fi.pv168.cashflowevidence.data.adapter.TransactionAdapter;
@@ -41,9 +42,11 @@ public class JsonTransactionImporter implements TransactionImporter {
 
         try (JsonReader reader = new JsonReader(new FileReader(filePath))) {
             transactions = gson.fromJson(reader, TRANSACTION_TYPE);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             Logger.error("Error while loading transactions");
+            throw new InvalidImportException(e);
+        } catch (JsonSyntaxException e) {
+            Logger.error("Error while loading transactions, the format of provided file is not valid json");
             throw new InvalidImportException(e);
         }
 
