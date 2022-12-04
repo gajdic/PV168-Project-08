@@ -7,9 +7,6 @@ import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import javax.swing.table.AbstractTableModel;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 // TODO somehow use TransactionTableModel here

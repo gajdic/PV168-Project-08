@@ -1,11 +1,9 @@
 package cz.muni.fi.pv168.cashflowevidence.data.storage.dao;
 
 import cz.muni.fi.pv168.cashflowevidence.data.storage.db.ConnectionHandler;
-import cz.muni.fi.pv168.cashflowevidence.data.storage.entity.CategoryEntity;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.entity.TransactionEntity;
 import cz.muni.fi.pv168.cashflowevidence.exceptions.DataStorageException;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionType;
-import jdk.jshell.spi.ExecutionControl;
 import org.tinylog.Logger;
 
 import java.sql.ResultSet;
