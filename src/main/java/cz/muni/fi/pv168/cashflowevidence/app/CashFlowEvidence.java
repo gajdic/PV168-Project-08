@@ -17,7 +17,7 @@ import cz.muni.fi.pv168.cashflowevidence.app.overview.CategoriesOverview;
 import cz.muni.fi.pv168.cashflowevidence.app.overview.RepeatingTransactionsOverview;
 import cz.muni.fi.pv168.cashflowevidence.app.overview.TransactionsOverview;
 import cz.muni.fi.pv168.cashflowevidence.data.adapter.TransactionCSVSerializer;
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.*;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.old.*;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryTableModel;

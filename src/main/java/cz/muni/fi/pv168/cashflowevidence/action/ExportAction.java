@@ -1,6 +1,6 @@
 package cz.muni.fi.pv168.cashflowevidence.action;
 
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.TransactionExporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.old.TransactionExporter;
 import cz.muni.fi.pv168.cashflowevidence.exceptions.ExportFailedException;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionTableModel;
 

@@ -1,4 +1,4 @@
-package cz.muni.fi.pv168.cashflowevidence.data.manipulation;
+package cz.muni.fi.pv168.cashflowevidence.data.manipulation.old;
 
 import cz.muni.fi.pv168.cashflowevidence.data.adapter.TransactionSerializer;
 import cz.muni.fi.pv168.cashflowevidence.exceptions.ExportFailedException;

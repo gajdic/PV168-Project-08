@@ -1,5 +1,7 @@
 package cz.muni.fi.pv168.cashflowevidence.wiring;
 
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.Exporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.Importer;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.dao.CategoryDao;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.dao.RepeatingTransactionDao;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.dao.TransactionDao;
@@ -18,6 +20,8 @@ import cz.muni.fi.pv168.cashflowevidence.data.validation.Validator;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.RepeatingTransaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
+
+import java.util.List;
 
 public abstract class CommonDependencyProvider implements DependencyProvider {
 
@@ -77,5 +81,17 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
     @Override
     public Validator<RepeatingTransaction> getRepeatingTransactionValidator() {
         return repeatingTransactionValidator;
+    }
+
+    //TODO implement
+    @Override
+    public Importer getImporter() {
+        return null;
+    }
+
+    //TODO implement
+    @Override
+    public Exporter getExporter() {
+        return null;
     }
 }

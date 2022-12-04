@@ -1,4 +1,4 @@
-package cz.muni.fi.pv168.cashflowevidence.data.manipulation;
+package cz.muni.fi.pv168.cashflowevidence.data.manipulation.old;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
