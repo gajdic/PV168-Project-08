@@ -113,42 +113,35 @@ public class CategoryDao implements DatabaseAccessObject<CategoryEntity> {
     public void deleteById(long id) {
         Logger.debug("Deleting entity with id {}", id);
 
-        String sql = "DELETE FROM Category WHERE id = ?";
+        String deleteCategorySql = "DELETE FROM Category WHERE id = ?";
+        String transactionSql = "UPDATE Transaction SET categoryId = 0 WHERE categoryId = ?";
+        String repeatingTransactionSql = "UPDATE RepeatingTransaction SET categoryId = 0 WHERE categoryId = ?";
 
-        var transactionDao = new TransactionDao(connections);
-        var allTransactions = transactionDao.findAll();
-        removeTransactionCategoryIds(allTransactions, id, transactionDao);
-
-        var repeatingDao = new RepeatingTransactionDao(connections);
-        var allRepeating = repeatingDao.findAll();
-        removeTransactionCategoryIds(allRepeating, id,  repeatingDao);
-
-        var caught = false;
         try (
                 var connection = connections.get();
-                var statement = connection.use().prepareStatement(sql);
+                var categoryDeleteStatement = connection.use().prepareStatement(deleteCategorySql);
+                var transactionUpdateStatement = connection.use().prepareStatement(transactionSql);
+                var repeatingTransactionStatement = connection.use().prepareStatement(repeatingTransactionSql)
         ) {
-            statement.setLong(1, id);
-            int changedRows = statement.executeUpdate();
+            transactionUpdateStatement.setLong(1, id);
+            repeatingTransactionStatement.setLong(1, id);
+            categoryDeleteStatement.setLong(1, id);
 
+            transactionUpdateStatement.executeUpdate();
+            repeatingTransactionStatement.executeUpdate();
+            int changedRows = categoryDeleteStatement.executeUpdate();
+            
             if (changedRows == 0) {
-                caught = true;
                 throw new DataStorageException("Category with id %d does not exist.".formatted(id));
             }
+
             if (changedRows > 1) {
-                caught = true;
                 throw new DataStorageException("Multiple categories were deleted. (%d)".formatted(changedRows));
             }
 
             Logger.debug("Successfully deleted entity with id {}", id);
         } catch (SQLException ex) {
-            caught = true;
             throw new DataStorageException("Unable to delete category with id %d %s".formatted(id, ex));
-        } finally {
-            if (caught) {
-                allTransactions.forEach(transactionDao::update);
-                allRepeating.forEach(repeatingDao::update);
-            }
         }
     }
 

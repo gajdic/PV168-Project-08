@@ -9,6 +9,7 @@ import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionTableModel
 
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
+import javax.swing.table.AbstractTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -78,6 +79,10 @@ public class DeleteCategoryAction extends DeleteAction {
                 });
 
         transactionTableModel.getEntities().stream()
+                .filter(t -> categoriesToBeDeleted.contains(t.getCategory()))
+                .forEach(t -> t.setCategory(null));
+
+        repeatingTransactionTableModel.getEntities().stream()
                 .filter(t -> categoriesToBeDeleted.contains(t.getCategory()))
                 .forEach(t -> t.setCategory(null));
 
