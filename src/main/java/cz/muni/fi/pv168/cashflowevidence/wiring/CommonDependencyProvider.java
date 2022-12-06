@@ -1,7 +1,14 @@
 package cz.muni.fi.pv168.cashflowevidence.wiring;
 
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.DaoExporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.DaoImporter;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.Exporter;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.Importer;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.csv.CsvExporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.csv.CsvImporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.json.JsonExporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.json.JsonImporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.pdf.PdfExporter;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.dao.CategoryDao;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.dao.RepeatingTransactionDao;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.dao.TransactionDao;
@@ -33,6 +40,8 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
     private final Validator<Category> categoryValidator;
     private final Validator<Transaction> transactionValidator;
     private final Validator<RepeatingTransaction> repeatingTransactionValidator;
+    private Importer importer;
+    private Exporter exporter;
 
 
     protected CommonDependencyProvider(DatabaseManager databaseManager) {
@@ -83,15 +92,33 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
         return repeatingTransactionValidator;
     }
 
-    //TODO implement
     @Override
     public Importer getImporter() {
-        return null;
+        if (importer == null) {
+            var database = getDatabaseManager();
+
+            importer = new DaoImporter(
+                    TransactionDao::new,
+                    CategoryDao::new,
+                    database::getTransactionHandler,
+                    getTransactionValidator(),
+                    getCategoryValidator(),
+                    List.of(new CsvImporter(), new JsonImporter())
+            );
+        }
+        return importer;
     }
 
-    //TODO implement
     @Override
     public Exporter getExporter() {
-        return null;
+        if (exporter == null) {
+
+            exporter = new DaoExporter(
+                    categories,
+                    transactions,
+                    List.of(new CsvExporter(), new JsonExporter(), new PdfExporter())
+            );
+        }
+        return exporter;
     }
 }
