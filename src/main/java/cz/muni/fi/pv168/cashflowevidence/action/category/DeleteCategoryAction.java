@@ -22,7 +22,6 @@ public class DeleteCategoryAction extends DeleteAction {
     private final JTable categoryTable;
     private final JTable transactionTable;
     private final JTable repeatingTransactionTable;
-    private boolean yesToAll = false;
 
 
     public DeleteCategoryAction(JTable categoryTable, JTable transactionTable, JTable repeatingTransactionTable) {
@@ -45,38 +44,48 @@ public class DeleteCategoryAction extends DeleteAction {
                 (RepeatingTransactionTableModel) repeatingTransactionTable.getModel();
 
         List<Category> categoriesToBeDeleted = new ArrayList<>();
+        List<Integer> categoryIndexes = new ArrayList<>();
 
         Arrays.stream(categoryTable.getSelectedRows())
                 .map(categoryTable::convertRowIndexToModel)
                 .boxed()
-                .sorted(Comparator.reverseOrder())
                 .forEach(index -> {
-                    var message = String.format("Are you sure you want to delete category %s?",
-                            categoryTableModel.getEntity(index).getName());
-
-                    var category = categoryTableModel.getEntity(index);
-
-                    if (transactionTableModel.getEntities().stream()
-                            .anyMatch(t -> category == t.getCategory()) ||
-                        repeatingTransactionTableModel.getEntities().stream()
-                            .anyMatch(t -> category == t.getCategory())) {
-
-                        message += String.format("\n%s is used in existing transaction",
-                                categoryTableModel.getEntity(index).getName());
-                    }
-
-                    var deleteOption = -1;
-
-                    if (!yesToAll) {
-                        deleteOption = confirmDelete(message);
-                        yesToAll = deleteOption == 1;
-                    }
-
-                    if (deleteOption == 0 || yesToAll) {
-                        categoriesToBeDeleted.add(categoryTableModel.getEntity(index));
-                        categoryTableModel.deleteRow(index);
-                    }
+                    categoryIndexes.add(index);
+                    categoriesToBeDeleted.add(categoryTableModel.getEntity(index));
                 });
+
+        var sb = new StringBuilder("Are you sure you want to delete categories: ");
+
+        var idx = 0;
+        while (idx < 5 && idx != categoriesToBeDeleted.size()) {
+            sb.append(categoriesToBeDeleted.get(idx).getName()).append(", ");
+            idx += 1;
+        }
+        sb.deleteCharAt(sb.toString().length()-2);
+
+        var remainingCategories = categoriesToBeDeleted.size() - idx;
+        if (remainingCategories > 0) {
+            sb.append(String.format("and %d more ", remainingCategories));
+        }
+        sb.append("?");
+
+        if (transactionTableModel.getEntities().stream()
+                .anyMatch(t -> categoriesToBeDeleted.contains(t.getCategory())) ||
+            repeatingTransactionTableModel.getEntities().stream()
+                .anyMatch(t -> categoriesToBeDeleted.contains(t.getCategory())))
+        {
+            sb.append("\nSome of them are used in existing transactions.");
+        }
+
+        var deleteOption = confirmDelete(sb.toString());
+
+        if (deleteOption == 0) {
+            categoryIndexes.stream()
+                    .sorted(Comparator.reverseOrder())
+                    .forEach(categoryTableModel::deleteRow);
+        } else {
+            return;
+        }
 
         transactionTableModel.getEntities().stream()
                 .filter(t -> categoriesToBeDeleted.contains(t.getCategory()))
@@ -85,7 +94,5 @@ public class DeleteCategoryAction extends DeleteAction {
         repeatingTransactionTableModel.getEntities().stream()
                 .filter(t -> categoriesToBeDeleted.contains(t.getCategory()))
                 .forEach(t -> t.setCategory(null));
-
-        yesToAll = false;
     }
 }

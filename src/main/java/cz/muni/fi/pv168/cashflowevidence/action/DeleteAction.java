@@ -11,7 +11,7 @@ abstract public class DeleteAction extends AbstractAction {
     }
 
     protected int confirmDelete(String message) {
-        Object[] options = { "Yes", "Yes to all", "Cancel" };
+        Object[] options = { "Yes", "Cancel" };
         return JOptionPane.showOptionDialog(
                 null,
                 message, "Warning",
