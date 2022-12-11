@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.cashflowevidence.data.manipulation;
 
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.json.JsonImporter;
 import cz.muni.fi.pv168.cashflowevidence.exceptions.InvalidImportException;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,7 @@ public class JsonImporterTest {
         private static Path testDir;
         private final String importFilePath = testDir.resolve("import.json").toAbsolutePath().toString();
 
-        private final TransactionImporter importer = new JsonTransactionImporter(new MockCategoryRepository());
+        private final JsonImporter importer = new JsonImporter(new MockCategoryRepository());
 
         private void prepareImportFile(String data) throws IOException {
             try (FileWriter fileWriter = new FileWriter(importFilePath)){
@@ -33,7 +34,7 @@ public class JsonImporterTest {
         public void importWithoutCategory() throws IOException {
             prepareImportFile(testData.getTransactionNullCategoryJson());
 
-            Collection<Transaction> importedTransactions = importer.importRecords(importFilePath);
+            Collection<Transaction> importedTransactions = importer.importBatch(importFilePath).getTransactions();
 
             assertThat(testData.getTransactionNullCategory()).isIn(importedTransactions);
             assertThat(importedTransactions.size()).isEqualTo(1);
@@ -43,7 +44,7 @@ public class JsonImporterTest {
         public void importWithCategory() throws IOException {
             prepareImportFile(testData.getTransactionRedCategoryJson());
 
-            Collection<Transaction> importedTransactions = importer.importRecords(importFilePath);
+            Collection<Transaction> importedTransactions = importer.importBatch(importFilePath).getTransactions();
 
             assertThat(testData.getTransactionRedCategory()).isIn(importedTransactions);
             assertThat(importedTransactions.size()).isEqualTo(1);
@@ -53,7 +54,7 @@ public class JsonImporterTest {
         public void importMultipleCategories() throws IOException {
             prepareImportFile(testData.multiTransactionsJson());
 
-            Collection<Transaction> importedTransactions = importer.importRecords(importFilePath);
+            Collection<Transaction> importedTransactions = importer.importBatch(importFilePath).getTransactions();
 
             assertThat(testData.getTransactionRedCategory()).isIn(importedTransactions);
             assertThat(testData.getTransactionNullCategory()).isIn(importedTransactions);
@@ -63,13 +64,13 @@ public class JsonImporterTest {
 
         @Test
         public void importInvalidPath() {
-            assertThrows(InvalidImportException.class, () -> importer.importRecords("invalid path"));
+            assertThrows(DataManipulationException.class, () -> importer.importBatch("invalid path"));
         }
 
         @Test
         public void importInvalidFormat() throws IOException {
             prepareImportFile(testData.getTransactionNullCategoryCsv());
 
-            assertThrows(InvalidImportException.class, () -> importer.importRecords(importFilePath));
+            assertThrows(InvalidImportException.class, () -> importer.importBatch(importFilePath));
         }
 }

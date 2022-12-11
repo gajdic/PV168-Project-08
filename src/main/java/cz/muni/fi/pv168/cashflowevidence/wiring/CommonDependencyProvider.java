@@ -103,7 +103,7 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
                     database::getTransactionHandler,
                     getTransactionValidator(),
                     getCategoryValidator(),
-                    List.of(new CsvImporter(), new JsonImporter())
+                    List.of(new CsvImporter(getCategoryRepository()), new JsonImporter(getCategoryRepository()))
             );
         }
         return importer;

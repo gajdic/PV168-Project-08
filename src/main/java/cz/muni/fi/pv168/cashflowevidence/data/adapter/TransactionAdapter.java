@@ -68,37 +68,37 @@ public class TransactionAdapter extends TypeAdapter<Transaction> {
             }
 
             if ("name".equals(fieldName)) {
-                token = reader.peek();
+                reader.peek();
                 transaction.setName(reader.nextString());
             }
 
             if("description".equals(fieldName)) {
-                token = reader.peek();
+                reader.peek();
                 transaction.setDescription(reader.nextString());
             }
 
             if ("amount".equals(fieldName)) {
-                token = reader.peek();
+                reader.peek();
                 transaction.setAmount(reader.nextDouble());
             }
 
             if ("date".equals(fieldName)) {
-                token = reader.peek();
+                reader.peek();
                 transaction.setDate(LocalDateTime.parse(reader.nextString()));
             }
 
             if ("category_name".equals(fieldName)) {
-                token = reader.peek();
+                reader.peek();
                 categoryName = reader.nextString();
             }
 
             if ("category_color".equals(fieldName)) {
-                token = reader.peek();
+                reader.peek();
                 categoryColor = reader.nextString();
             }
 
             if ("type".equals(fieldName)) {
-                token = reader.peek();
+                reader.peek();
                 transaction.setTransactionType(TransactionType.valueOf(reader.nextString()));
             }
         }

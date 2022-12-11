@@ -1,6 +1,6 @@
 package cz.muni.fi.pv168.cashflowevidence.action;
 
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.old.TransactionImporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.BatchImporter;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.exceptions.InvalidImportException;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
@@ -11,30 +11,26 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static cz.muni.fi.pv168.cashflowevidence.app.CashFlowEvidence.frame;
 
 public class ImportAction extends AbstractAction {
 
     private final JTable table;
-    private final TransactionImporter importer;
+    private final BatchImporter importer;
     private final Repository<Transaction> transactionRepository;
 
     private final Runnable callback;
 
     public ImportAction(JTable table,
-                        TransactionImporter importer,
+                        BatchImporter importer,
                         Repository<Transaction> transactionRepository,
                         Runnable callback)
     {
-        super("Import " + importer.getFormat(), UIManager.getIcon("FileChooser.fileIcon"));
+        super("Import " + importer.getFormat().getName(), UIManager.getIcon("FileChooser.fileIcon"));
         this.table = Objects.requireNonNull(table);
         this.importer = Objects.requireNonNull(importer);
         this.transactionRepository = transactionRepository;
@@ -48,8 +44,8 @@ public class ImportAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         var fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
-        fileChooser.setFileFilter(new FileNameExtensionFilter(importer.getFormat().toString(),
-                importer.getFormat().toString()));
+        fileChooser.setFileFilter(new FileNameExtensionFilter(importer.getFormat().getName(),
+                importer.getFormat().getName()));
 
         int dialogResult = fileChooser.showOpenDialog(table);
         if (dialogResult != JFileChooser.APPROVE_OPTION) {
@@ -60,12 +56,11 @@ public class ImportAction extends AbstractAction {
         Collection<Transaction> importedTransactions;
 
         try {
-            importedTransactions = importer.importRecords(importFile.getAbsolutePath());
+            importedTransactions = importer.importBatch(importFile.getAbsolutePath()).getTransactions();
         } catch (InvalidImportException ex) {
             JOptionPane.showMessageDialog(frame,
-                    "There has been an error with the import, the chosen file is invalid. Nothing was imported," +
-                            "please try again");
-            ex.printStackTrace();
+                    "There has been an error with the import, the chosen file is invalid. Nothing was imported, " +
+                            "please try again.");
             return;
         }
 
