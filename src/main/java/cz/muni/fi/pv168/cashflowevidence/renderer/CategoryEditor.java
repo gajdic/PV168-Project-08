@@ -42,10 +42,10 @@ public class CategoryEditor extends BasicComboBoxEditor {
             panel.setBackground(Color.WHITE);
             return;
         }
-        Category category = (Category) item;
-        selectedValue = category;
+
+        selectedValue = (Category) item;
         labelItem.setText(selectedValue.getName());
         labelItem.setForeground(pickTextColorBasedOnBgColor(selectedValue.getColor()));
-        panel.setBackground(category.getColor());
+        panel.setBackground(selectedValue.getColor());
     }
 }
