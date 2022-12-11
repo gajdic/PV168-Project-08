@@ -7,13 +7,14 @@ import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 public class DeleteTransactionAction extends DeleteAction {
 
     private final JTable transactionTable;
-    private boolean yesToAll = false;
 
 
     public DeleteTransactionAction(JTable transactionTable) {
@@ -29,26 +30,31 @@ public class DeleteTransactionAction extends DeleteAction {
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         var transactionTableModel = (TransactionTableModel) transactionTable.getModel();
+
+        List<Integer> transactionIndexes = new ArrayList<>();
         Arrays.stream(transactionTable.getSelectedRows())
                 .map(transactionTable::convertRowIndexToModel)
                 .boxed()
-                .sorted(Comparator.reverseOrder())
-                .forEach(index -> {
-                    var deleteOption = -1;
+                .forEach(transactionIndexes::add);
 
-                    if (!yesToAll) {
-                        var message = String.format("Are you sure you want to delete transaction %s?",
-                                transactionTableModel.getEntity(index).getName());
+        var sb = new StringBuilder("Are you sure you want to delete transactions: ");
 
-                        deleteOption = confirmDelete(message);
-                        yesToAll = deleteOption == 1;
-                    }
+        var idx = 0;
+        while (idx < 5 && idx != transactionIndexes.size()) {
+            sb.append(transactionTableModel.getEntities().get(transactionIndexes.get(idx)).getName()).append(", ");
+            idx += 1;
+        }
+        sb.deleteCharAt(sb.toString().length()-2);
 
-                    if (deleteOption == 0 || yesToAll) {
-                        transactionTableModel.deleteRow(index);
-                    }
-                });
+        var remainingCategories = transactionIndexes.size() - idx;
+        if (remainingCategories > 0) {
+            sb.append(String.format("and %d more ", remainingCategories));
+        }
+        sb.append("?");
 
-        yesToAll = false;
+        var deleteOption = confirmDelete(sb.toString());
+        if (deleteOption == 0) {
+            transactionIndexes.stream().sorted(Comparator.reverseOrder()).forEach(transactionTableModel::deleteRow);
+        }
     }
 }
