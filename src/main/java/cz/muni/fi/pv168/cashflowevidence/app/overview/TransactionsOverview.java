@@ -9,6 +9,7 @@ import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.renderer.AmountCellRenderer;
 import cz.muni.fi.pv168.cashflowevidence.renderer.CategoryColorListCellRenderer;
+import cz.muni.fi.pv168.cashflowevidence.renderer.CategoryEditor;
 import cz.muni.fi.pv168.cashflowevidence.renderer.DateTimeCellRenderer;
 
 import javax.swing.*;
@@ -157,18 +158,17 @@ public class TransactionsOverview extends AbstractOverview {
         panel.add(allCategories);
         panel.add(specifiedCategories);
 
+        fillComboBox();
         categoriesJComboBox.setPreferredSize(new Dimension(120, 20));
         categoriesJComboBox.setRenderer(new CategoryColorListCellRenderer());
+        //categoriesJComboBox.setEditable(true);
+        //categoriesJComboBox.setEditor(new CategoryEditor());
 
         categoriesJComboBox.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
                 categoriesJComboBox.removeAllItems();
-                categoriesJComboBox.addItem(null);
-                List<Category> categoryList = categoryRepository.findAll();
-                for (Category category : categoryList) {
-                    categoriesJComboBox.addItem(category);
-                }
+                fillComboBox();
             }
         });
 
@@ -186,6 +186,14 @@ public class TransactionsOverview extends AbstractOverview {
 
     private void specifiedCategorySetTrue() {
         categoriesJComboBox.setEnabled(specifiedCategories.isSelected());
+    }
+
+    private void fillComboBox() {
+        List<Category> categoryList = categoryRepository.findAll();
+        categoriesJComboBox.addItem(null);
+        for (Category category : categoryList) {
+            categoriesJComboBox.addItem(category);
+        }
     }
 
     private JPanel filterActionsPanel() {
