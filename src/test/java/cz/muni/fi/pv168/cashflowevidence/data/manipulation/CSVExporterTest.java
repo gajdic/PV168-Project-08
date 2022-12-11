@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.cashflowevidence.data.manipulation;
 
 import cz.muni.fi.pv168.cashflowevidence.data.adapter.TransactionCSVSerializer;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.csv.CsvExporter;
 import cz.muni.fi.pv168.cashflowevidence.exceptions.ExportFailedException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -20,35 +21,36 @@ public class CSVExporterTest {
     @TempDir
     private static Path testDir;
     private final String exportFilePath = testDir.resolve("export.csv").toAbsolutePath().toString();
-    private final TransactionExporter transactionExporter = new TransactionPerLineExporter(new TransactionCSVSerializer());
+    private final CsvExporter transactionExporter = new CsvExporter();
 
     @Test
-    void noTransaction() throws ExportFailedException, IOException {
-        transactionExporter.exportTransactions(new ArrayList<>(), exportFilePath);
+    void noTransaction() throws DataManipulationException, IOException {
+        var batch = new Batch(new ArrayList<>(), new ArrayList<>());
+        transactionExporter.exportBatch(batch, exportFilePath);
         assertExportedContent("");
     }
 
     @Test
-    void singleTransactionEmptyCategory() throws ExportFailedException, IOException {
-
-
-        transactionExporter.exportTransactions(List.of(testData.getTransactionNullCategory()), exportFilePath);
+    void singleTransactionEmptyCategory() throws DataManipulationException, IOException {
+        var batch = new Batch(List.of(testData.getRedCategory()), List.of(testData.getTransactionNullCategory()));
+        transactionExporter.exportBatch(batch, exportFilePath);
 
         assertExportedContent(testData.getTransactionNullCategoryCsv());
     }
 
     @Test
-    void singleTransactionWithCategory() throws ExportFailedException, IOException {
-        transactionExporter.exportTransactions(List.of(testData.getTransactionRedCategory()), exportFilePath);
+    void singleTransactionWithCategory() throws DataManipulationException, IOException {
+        var batch = new Batch(List.of(testData.getRedCategory()), List.of(testData.getTransactionRedCategory()));
+        transactionExporter.exportBatch(batch, exportFilePath);
 
         assertExportedContent(testData.getTransactionRedCategoryCsv());
     }
 
     @Test
-    void multipleTransactions() throws ExportFailedException, IOException {
-
-        transactionExporter.exportTransactions(List.of(testData.getTransactionRedCategory(),
-                testData.getTransactionNullCategory()), exportFilePath);
+    void multipleTransactions() throws DataManipulationException, IOException {
+        var batch = new Batch(List.of(testData.getRedCategory()),
+                List.of(testData.getTransactionRedCategory(), testData.getTransactionNullCategory()));
+        transactionExporter.exportBatch(batch, exportFilePath);
 
         assertExportedContent(testData.multiTransactionCsv());
     }

@@ -2,6 +2,7 @@ package cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted;
 
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.Batch;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.DataManipulationException;
+import cz.muni.fi.pv168.cashflowevidence.exceptions.ExportFailedException;
 
 /**
  * Generic mechanism, allowing to export a {@link Batch} of entities to a file.

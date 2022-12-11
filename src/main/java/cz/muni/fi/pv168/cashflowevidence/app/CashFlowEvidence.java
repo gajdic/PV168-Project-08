@@ -16,8 +16,13 @@ import cz.muni.fi.pv168.cashflowevidence.action.transaction.EditTransactionActio
 import cz.muni.fi.pv168.cashflowevidence.app.overview.CategoriesOverview;
 import cz.muni.fi.pv168.cashflowevidence.app.overview.RepeatingTransactionsOverview;
 import cz.muni.fi.pv168.cashflowevidence.app.overview.TransactionsOverview;
-import cz.muni.fi.pv168.cashflowevidence.data.adapter.TransactionCSVSerializer;
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.old.*;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.BatchExporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.BatchImporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.csv.CsvExporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.csv.CsvImporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.json.JsonExporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.json.JsonImporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.pdf.PdfExporter;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryTableModel;
@@ -69,7 +74,7 @@ public class CashFlowEvidence {
     private final Action exitAction = new ExitApplicationAction();
     private final Action importJsonAction;
     private final Action exportJsonAction;
-    private final Action exportPdfAxtion;
+    private final Action exportPdfAction;
     private final Repository<Category> categories;
     private final Repository<Transaction> transactions;
     private final Repository<RepeatingTransaction> repeatingTransactions;
@@ -123,18 +128,18 @@ public class CashFlowEvidence {
 
         initializeActions(dependencyProvider);
 
-        TransactionImporter jsonImporter = new JsonTransactionImporter(categories);
-        TransactionExporter jsonExporter = new JsonTransactionExporter();
-        TransactionImporter csvImporter = new TransactionPerLineImporter(new TransactionCSVSerializer(), categories);
-        TransactionExporter csvExporter = new TransactionPerLineExporter(new TransactionCSVSerializer());
-        TransactionExporter pdfExporter = new PdfTransactionExporter();
+        BatchImporter jsonImporter = new JsonImporter(categories);
+        BatchExporter jsonExporter = new JsonExporter();
+        BatchImporter csvImporter = new CsvImporter(categories);
+        BatchExporter csvExporter = new CsvExporter();
+        BatchExporter pdfExporter = new PdfExporter();
 
 
         importAction = new ImportAction(transactionTable, csvImporter, transactions, this::refresh);
         exportAction = new ExportAction(transactionTable, csvExporter);
         importJsonAction = new ImportAction(transactionTable, jsonImporter, transactions, this::refresh);
         exportJsonAction = new ExportAction(transactionTable, jsonExporter);
-        exportPdfAxtion = new ExportAction(transactionTable, pdfExporter);
+        exportPdfAction = new ExportAction(transactionTable, pdfExporter);
 
         repeatingTaskScheduler = new RepeatingTaskScheduler(dependencyProvider, transactionTableModel);
         repeatingTaskScheduler.scheduleExistingTransactions();
@@ -262,14 +267,13 @@ public class CashFlowEvidence {
     private JMenuBar getMenuBar() {
 
         JMenu fileMenu = getMenu("File", KeyEvent.VK_F,
-                new ArrayList<>(Arrays.asList(importAction, importJsonAction, exportAction, exportJsonAction,
-                        exportPdfAxtion, exitAction)));
+                new ArrayList<>(List.of(importAction, importJsonAction, exportAction, exportJsonAction, exportPdfAction, exitAction)));
         JMenu transactionMenu = getMenu("Transaction", KeyEvent.VK_T,
-                new ArrayList<>(Arrays.asList(addTAction, editTAction, deleteTAction)));
+                new ArrayList<>(List.of(addTAction, editTAction, deleteTAction)));
         JMenu repeatingTransactionMenu = getMenu("Repeating Transaction", KeyEvent.VK_R,
-                new ArrayList<>(Arrays.asList(addRTAction, editRTAction, deleteRTAction)));
+                new ArrayList<>(List.of(addRTAction, editRTAction, deleteRTAction)));
         JMenu categoryMenu = getMenu("Category", KeyEvent.VK_C,
-                new ArrayList<>(Arrays.asList(addCAction, editCAction, deleteCAction)));
+                new ArrayList<>(List.of(addCAction, editCAction, deleteCAction)));
 
         JMenu helpMenu = getMenu("Help", KeyEvent.VK_H,
                 new ArrayList<>(List.of(helpAction)));

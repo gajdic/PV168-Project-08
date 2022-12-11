@@ -1,6 +1,6 @@
 package cz.muni.fi.pv168.cashflowevidence.data.manipulation;
 
-import cz.muni.fi.pv168.cashflowevidence.data.adapter.TransactionCSVSerializer;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.csv.CsvImporter;
 import cz.muni.fi.pv168.cashflowevidence.exceptions.InvalidImportException;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ public class CSVImporterTest {
     private static Path testDir;
     private final String importFilePath = testDir.resolve("import.csv").toAbsolutePath().toString();
 
-    private final TransactionImporter importer = new TransactionPerLineImporter(new TransactionCSVSerializer(), new MockCategoryRepository());
+    private final CsvImporter importer = new CsvImporter(new MockCategoryRepository());
 
     private void prepareImportFile(String data) throws IOException {
         try (FileWriter fileWriter = new FileWriter(importFilePath)){
@@ -35,7 +35,7 @@ public class CSVImporterTest {
     public void importWithoutCategory() throws IOException {
         prepareImportFile(testData.getTransactionNullCategoryCsv());
 
-        Collection<Transaction> importedTransactions = importer.importRecords(importFilePath);
+        Collection<Transaction> importedTransactions = importer.importBatch(importFilePath).getTransactions();
 
         assertThat(testData.getTransactionNullCategory()).isIn(importedTransactions);
         assertThat(importedTransactions.size()).isEqualTo(1);
@@ -45,7 +45,7 @@ public class CSVImporterTest {
     public void importWithCategory() throws IOException {
         prepareImportFile(testData.getTransactionRedCategoryCsv());
 
-        Collection<Transaction> importedTransactions = importer.importRecords(importFilePath);
+        Collection<Transaction> importedTransactions = importer.importBatch(importFilePath).getTransactions();
 
         assertThat(testData.getTransactionRedCategory()).isIn(importedTransactions);
         assertThat(importedTransactions.size()).isEqualTo(1);
@@ -55,7 +55,7 @@ public class CSVImporterTest {
     public void importMultipleCategories() throws IOException {
         prepareImportFile(testData.multiTransactionCsv());
 
-        Collection<Transaction> importedTransactions = importer.importRecords(importFilePath);
+        Collection<Transaction> importedTransactions = importer.importBatch(importFilePath).getTransactions();
 
         assertThat(testData.getTransactionRedCategory()).isIn(importedTransactions);
         assertThat(testData.getTransactionNullCategory()).isIn(importedTransactions);
@@ -65,13 +65,13 @@ public class CSVImporterTest {
 
     @Test
     public void importInvalidPath() {
-        assertThrows(InvalidImportException.class, () -> importer.importRecords("invalid path"));
+        assertThrows(DataManipulationException.class, () -> importer.importBatch("invalid path"));
     }
 
     @Test
     public void importInvalidFormat() throws IOException {
         prepareImportFile(testData.getTransactionNullCategoryJson());
 
-        assertThrows(InvalidImportException.class, () -> importer.importRecords(importFilePath));
+        assertThrows(InvalidImportException.class, () -> importer.importBatch(importFilePath));
     }
 }
