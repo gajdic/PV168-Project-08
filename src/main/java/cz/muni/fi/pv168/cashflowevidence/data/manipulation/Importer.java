@@ -7,7 +7,7 @@ import java.util.Collection;
 /**
  * Generic mechanism, allowing to import data from a file.
  */
-public interface Importer {
+public interface Importer extends FileFormats {
 
     /**
      * Imports data from a file.
@@ -18,8 +18,4 @@ public interface Importer {
      */
     void importData(String filePath);
 
-    /**
-     * Gets all available formats for import.
-     */
-    Collection<Format> getFormats();
 }

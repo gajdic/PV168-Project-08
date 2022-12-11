@@ -1,6 +1,9 @@
 package cz.muni.fi.pv168.cashflowevidence.action;
 
+import cz.muni.fi.pv168.cashflowevidence.app.workers.AsyncImporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.Importer;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.BatchImporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.Format;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.exceptions.InvalidImportException;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
@@ -20,21 +23,27 @@ import static cz.muni.fi.pv168.cashflowevidence.app.CashFlowEvidence.frame;
 public class ImportAction extends AbstractAction {
 
     private final JTable table;
-    private final BatchImporter importer;
+    private final Importer importer;
+
+    private final Format format;
     private final Repository<Transaction> transactionRepository;
 
     private final Runnable callback;
 
     public ImportAction(JTable table,
-                        BatchImporter importer,
+                        Importer importer,
+                        Format format,
                         Repository<Transaction> transactionRepository,
                         Runnable callback)
     {
-        super("Import " + importer.getFormat().getName(), UIManager.getIcon("FileChooser.fileIcon"));
+        super("Import " + format.getName(), UIManager.getIcon("FileChooser.fileIcon"));
         this.table = Objects.requireNonNull(table);
-        this.importer = Objects.requireNonNull(importer);
+        this.importer = new AsyncImporter(Objects.requireNonNull(importer),
+                callback
+                );
         this.transactionRepository = transactionRepository;
         this.callback = callback;
+        this.format = format;
         putValue(SHORT_DESCRIPTION, "Imports selected record");
         putValue(MNEMONIC_KEY, KeyEvent.VK_I);
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl I"));
@@ -44,8 +53,8 @@ public class ImportAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         var fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
-        fileChooser.setFileFilter(new FileNameExtensionFilter(importer.getFormat().getName(),
-                importer.getFormat().getName()));
+        String fileFormat = format.getExtensions().stream().findFirst().orElse(format.getName());
+        fileChooser.setFileFilter(new FileNameExtensionFilter(fileFormat, fileFormat));
 
         int dialogResult = fileChooser.showOpenDialog(table);
         if (dialogResult != JFileChooser.APPROVE_OPTION) {
@@ -53,10 +62,11 @@ public class ImportAction extends AbstractAction {
         }
 
         File importFile = fileChooser.getSelectedFile();
-        Collection<Transaction> importedTransactions;
 
         try {
-            importedTransactions = importer.importBatch(importFile.getAbsolutePath()).getTransactions();
+            String fileName = importFile.getAbsolutePath();
+
+            importer.importData(fileName);
         } catch (InvalidImportException ex) {
             JOptionPane.showMessageDialog(frame,
                     "There has been an error with the import, the chosen file is invalid. Nothing was imported, " +
@@ -64,7 +74,6 @@ public class ImportAction extends AbstractAction {
             return;
         }
 
-        getTransactionsToImport(importedTransactions).forEach(transactionRepository::create);
         callback.run();
     }
 

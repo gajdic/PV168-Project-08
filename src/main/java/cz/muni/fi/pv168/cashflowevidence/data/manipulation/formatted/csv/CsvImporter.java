@@ -50,12 +50,12 @@ public final class CsvImporter implements BatchImporter {
                     .peek(Logger::debug)
                     .collect(Collectors.toList());
 
-            var categories = transactions.stream()
-                    .map(Transaction::getCategory)
-                    .collect(Collectors.toList());
+            // TODO: @Martin Pilát please review this and explain, why was this different in csv and json
+            // In prev implementaions, the DAO exporter failed, when some categories were null
+            var categories = new HashMap<String, Category>();
 
-            Logger.info("Loaded {} records", categories.size());
-            return new Batch(categories, transactions);
+            Logger.info("Loaded {} records", transactions.size());
+            return new Batch(categories.values(), transactions);
         } catch (IOException ex) {
             Logger.error("Error while loading transactions.");
             throw new DataManipulationException("Unable to read file", ex);

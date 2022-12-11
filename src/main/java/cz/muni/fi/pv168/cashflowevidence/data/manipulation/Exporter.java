@@ -7,7 +7,7 @@ import java.util.Collection;
 /**
  * Generic mechanism, allowing to export data to a file.
  */
-public interface Exporter {
+public interface Exporter extends FileFormats {
 
     /**
      * Exports data to a file.
@@ -18,8 +18,4 @@ public interface Exporter {
      */
     void exportData(String filePath);
 
-    /**
-     * Gets all available formats for export.
-     */
-    Collection<Format> getFormats();
 }
