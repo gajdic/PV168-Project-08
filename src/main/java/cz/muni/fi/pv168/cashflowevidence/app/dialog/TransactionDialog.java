@@ -5,13 +5,11 @@ import cz.muni.fi.pv168.cashflowevidence.app.InputNumberFormatter;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.data.validation.Validator;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
-import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionType;
-import cz.muni.fi.pv168.cashflowevidence.data.validation.TransactionValidator;
 import cz.muni.fi.pv168.cashflowevidence.renderer.CategoryColorListCellRenderer;
+import cz.muni.fi.pv168.cashflowevidence.renderer.CategoryEditor;
 
-import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
@@ -21,7 +19,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import java.awt.Dimension;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 
 
 /**
@@ -142,6 +139,8 @@ public class TransactionDialog extends AbstractTransactionDialog {
         categoryComboBox.insertItemAt(null, 0);
         categoryComboBox.setSelectedIndex(0);
         categoryComboBox.setRenderer(new CategoryColorListCellRenderer());
+        categoryComboBox.setEditable(true);
+        categoryComboBox.setEditor(new CategoryEditor());
 
         dateTimePicker = new DateTimePicker();
         dateTimePicker.setDateTimeStrict(LocalDateTime.now());
