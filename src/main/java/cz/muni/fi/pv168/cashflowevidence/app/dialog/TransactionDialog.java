@@ -8,7 +8,6 @@ import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionType;
 import cz.muni.fi.pv168.cashflowevidence.renderer.CategoryColorListCellRenderer;
-import cz.muni.fi.pv168.cashflowevidence.renderer.CategoryEditor;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -139,8 +138,6 @@ public class TransactionDialog extends AbstractTransactionDialog {
         categoryComboBox.insertItemAt(null, 0);
         categoryComboBox.setSelectedIndex(0);
         categoryComboBox.setRenderer(new CategoryColorListCellRenderer());
-        categoryComboBox.setEditable(true);
-        categoryComboBox.setEditor(new CategoryEditor());
 
         dateTimePicker = new DateTimePicker();
         dateTimePicker.setDateTimeStrict(LocalDateTime.now());

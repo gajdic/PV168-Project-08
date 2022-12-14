@@ -9,7 +9,6 @@ import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.renderer.AmountCellRenderer;
 import cz.muni.fi.pv168.cashflowevidence.renderer.CategoryColorListCellRenderer;
-import cz.muni.fi.pv168.cashflowevidence.renderer.CategoryEditor;
 import cz.muni.fi.pv168.cashflowevidence.renderer.DateTimeCellRenderer;
 
 import javax.swing.*;
@@ -161,8 +160,6 @@ public class TransactionsOverview extends AbstractOverview {
         fillComboBox();
         categoriesJComboBox.setPreferredSize(new Dimension(120, 20));
         categoriesJComboBox.setRenderer(new CategoryColorListCellRenderer());
-        //categoriesJComboBox.setEditable(true);
-        //categoriesJComboBox.setEditor(new CategoryEditor());
 
         categoriesJComboBox.addFocusListener(new FocusAdapter() {
             @Override
