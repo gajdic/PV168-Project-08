@@ -38,7 +38,7 @@ public class CategoryColorListCellRenderer extends JLabel implements ListCellRen
 
     // Calculates text color based on background contrast following the W3C guidelines
     // More info about values and how it is calculated at https://www.w3.org/TR/WCAG20/#relativeluminancedef
-    public static Color pickTextColorBasedOnBgColor(Color background) {
+    private Color pickTextColorBasedOnBgColor(Color background) {
         double[] rgb = new double[] {background.getRed(), background.getGreen(), background.getBlue()};
         double[] calculatedRGB = new double[3];
 
