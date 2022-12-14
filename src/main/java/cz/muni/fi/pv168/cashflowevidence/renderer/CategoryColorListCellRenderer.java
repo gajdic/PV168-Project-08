@@ -2,10 +2,11 @@ package cz.muni.fi.pv168.cashflowevidence.renderer;
 
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.plaf.basic.BasicBorders;
-import java.awt.*;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
+import java.awt.Color;
+import java.awt.Component;
 
 public class CategoryColorListCellRenderer extends JLabel implements ListCellRenderer<Category> {
 
