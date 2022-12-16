@@ -1,14 +1,12 @@
 package cz.muni.fi.pv168.cashflowevidence.action.category;
 
 import cz.muni.fi.pv168.cashflowevidence.app.dialog.CategoryDialog;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.DataManipulationException;
 import cz.muni.fi.pv168.cashflowevidence.data.validation.Validator;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryTableModel;
 
-import javax.swing.AbstractAction;
-import javax.swing.JTable;
-import javax.swing.KeyStroke;
-import javax.swing.UIManager;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
@@ -42,7 +40,12 @@ public class EditCategoryAction extends AbstractAction {
         CategoryDialog categoryDialog = new CategoryDialog("Edit Category", categoryTableModel.getEntity(modelRow), validator);
         Category category = categoryDialog.showDialog();
         if (category != null && validator.validate(category).isValid()) {
-            categoryTableModel.updateRow(modelRow, category);
+            try {
+                categoryTableModel.updateRow(modelRow, category);
+            } catch (DataManipulationException ex) {
+                JOptionPane.showMessageDialog(
+                        null, "We were unable to update the category. Please try again.");
+            }
         }
     }
 }

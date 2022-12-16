@@ -7,6 +7,7 @@ import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 
+import javax.swing.*;
 import java.util.Collection;
 
 public class DaoExporter implements Exporter {
@@ -34,6 +35,8 @@ public class DaoExporter implements Exporter {
         try {
             exporter.exportBatch(batch, filePath);
         } catch (RuntimeException ex) {
+            JOptionPane.showMessageDialog(
+                    null, "Something went wrong while exporting your transactions.");
             throw new BatchOperationException("Export failed", ex);
         }
     }
@@ -41,8 +44,12 @@ public class DaoExporter implements Exporter {
     private BatchExporter getExporter(String filePath) {
         var extension = filePath.substring(filePath.lastIndexOf('.') + 1);
         var exporter = exporters.findByExtension(extension);
-        if (exporter == null)
+        if (exporter == null) {
+            JOptionPane.showMessageDialog(
+                    null, "Something went wrong while exporting your transactions.");
             throw new BatchOperationException("Extension %s has no registered formatter".formatted(extension));
+        }
+
         return exporter;
     }
 }

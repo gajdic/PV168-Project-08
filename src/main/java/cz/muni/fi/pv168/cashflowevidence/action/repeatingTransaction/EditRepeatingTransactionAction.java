@@ -1,17 +1,14 @@
 package cz.muni.fi.pv168.cashflowevidence.action.repeatingTransaction;
 
 import cz.muni.fi.pv168.cashflowevidence.app.dialog.RepeatingTransactionDialog;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.DataManipulationException;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.data.validation.Validator;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
-import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.RepeatingTransaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.RepeatingTransactionTableModel;
 
-import javax.swing.AbstractAction;
-import javax.swing.JTable;
-import javax.swing.KeyStroke;
-import javax.swing.UIManager;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
@@ -46,7 +43,12 @@ public class EditRepeatingTransactionAction extends AbstractAction {
                 "Edit Transaction", repeatingTransactionTableModel.getEntity(modelRow), categoryRepository, validator);
         var repeatingTransaction = repeatingTransactionDialog.showDialog();
         if (repeatingTransaction != null && validator.validate(repeatingTransaction).isValid()) {
-            repeatingTransactionTableModel.updateRow(modelRow, repeatingTransaction);
+            try {
+                repeatingTransactionTableModel.updateRow(modelRow, repeatingTransaction);
+            } catch (DataManipulationException ex) {
+                JOptionPane.showMessageDialog(
+                        null, "We were unable to update the repeating transaction. Please try again.");
+            }
         }
     }
 }

@@ -11,6 +11,7 @@ import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.Format;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 import org.tinylog.Logger;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -40,8 +41,7 @@ public final class JsonExporter implements BatchExporter {
 
         try (var writer = Files.newBufferedWriter(Path.of(filePath), StandardCharsets.UTF_8)) {
             writer.write(gson.toJson(batch.getTransactions()));
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             Logger.error("Error while exporting transactions");
             throw new DataManipulationException("Unable to write to file", ex);
         }

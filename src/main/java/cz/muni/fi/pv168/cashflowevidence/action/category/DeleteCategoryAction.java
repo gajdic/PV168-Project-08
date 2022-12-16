@@ -1,14 +1,14 @@
 package cz.muni.fi.pv168.cashflowevidence.action.category;
 
 import cz.muni.fi.pv168.cashflowevidence.action.DeleteAction;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.DataManipulationException;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryTableModel;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.RepeatingTransactionTableModel;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionTableModel;
 
-import javax.swing.JTable;
-import javax.swing.KeyStroke;
+import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -61,7 +61,7 @@ public class DeleteCategoryAction extends DeleteAction {
             sb.append(categoriesToBeDeleted.get(idx).getName()).append(", ");
             idx += 1;
         }
-        sb.deleteCharAt(sb.toString().length()-2);
+        sb.deleteCharAt(sb.toString().length() - 2);
 
         var remainingCategories = categoriesToBeDeleted.size() - idx;
         if (remainingCategories > 0) {
@@ -71,28 +71,32 @@ public class DeleteCategoryAction extends DeleteAction {
 
         if (transactionTableModel.getEntities().stream()
                 .anyMatch(t -> categoriesToBeDeleted.contains(t.getCategory())) ||
-            repeatingTransactionTableModel.getEntities().stream()
-                .anyMatch(t -> categoriesToBeDeleted.contains(t.getCategory())))
-        {
+                repeatingTransactionTableModel.getEntities().stream()
+                        .anyMatch(t -> categoriesToBeDeleted.contains(t.getCategory()))) {
             sb.append("\nSome of them are used in existing transactions.");
         }
 
         var deleteOption = confirmDelete(sb.toString());
 
-        if (deleteOption == 0) {
-            categoryIndexes.stream()
-                    .sorted(Comparator.reverseOrder())
-                    .forEach(categoryTableModel::deleteRow);
-        } else {
-            return;
+        try {
+            if (deleteOption == 0) {
+                categoryIndexes.stream()
+                        .sorted(Comparator.reverseOrder())
+                        .forEach(categoryTableModel::deleteRow);
+            } else {
+                return;
+            }
+
+            transactionTableModel.getEntities().stream()
+                    .filter(t -> categoriesToBeDeleted.contains(t.getCategory()))
+                    .forEach(t -> t.setCategory(null));
+
+            repeatingTransactionTableModel.getEntities().stream()
+                    .filter(t -> categoriesToBeDeleted.contains(t.getCategory()))
+                    .forEach(t -> t.setCategory(null));
+        } catch (DataManipulationException ex) {
+            JOptionPane.showMessageDialog(
+                    null, "We were unable to delete the category. Please try again.");
         }
-
-        transactionTableModel.getEntities().stream()
-                .filter(t -> categoriesToBeDeleted.contains(t.getCategory()))
-                .forEach(t -> t.setCategory(null));
-
-        repeatingTransactionTableModel.getEntities().stream()
-                .filter(t -> categoriesToBeDeleted.contains(t.getCategory()))
-                .forEach(t -> t.setCategory(null));
     }
 }

@@ -1,8 +1,6 @@
 package cz.muni.fi.pv168.cashflowevidence.data.manipulation;
 
-import cz.muni.fi.pv168.cashflowevidence.data.adapter.TransactionCSVSerializer;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.csv.CsvExporter;
-import cz.muni.fi.pv168.cashflowevidence.exceptions.ExportFailedException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 

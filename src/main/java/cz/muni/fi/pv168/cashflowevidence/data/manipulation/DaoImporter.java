@@ -15,6 +15,7 @@ import cz.muni.fi.pv168.cashflowevidence.data.validation.Validator;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 
+import javax.swing.*;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -78,8 +79,12 @@ public class DaoImporter implements Importer {
     private BatchImporter getImporter(String filePath) {
         var extension = filePath.substring(filePath.lastIndexOf('.') + 1);
         var importer = importers.findByExtension(extension);
-        if (importer == null)
+        if (importer == null) {
+            JOptionPane.showMessageDialog(
+                    null, "Something went wrong while importing your transactions.");
             throw new BatchOperationException("Extension %s has no registered formatter".formatted(extension));
+        }
+
         return importer;
     }
 }

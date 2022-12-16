@@ -18,8 +18,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-import static cz.muni.fi.pv168.cashflowevidence.app.CashFlowEvidence.frame;
-
 public class ImportAction extends AbstractAction {
 
     private final JTable table;
@@ -68,9 +66,8 @@ public class ImportAction extends AbstractAction {
 
             importer.importData(fileName);
         } catch (InvalidImportException ex) {
-            JOptionPane.showMessageDialog(frame,
-                    "There has been an error with the import, the chosen file is invalid. Nothing was imported, " +
-                            "please try again.");
+            JOptionPane.showMessageDialog(
+                    null, "Nothing was imported. \n\nThe file that you provided is invalid, please try again.");
             return;
         }
 

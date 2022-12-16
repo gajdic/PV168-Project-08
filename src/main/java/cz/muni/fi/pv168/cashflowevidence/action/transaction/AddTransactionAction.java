@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.cashflowevidence.action.transaction;
 
 import cz.muni.fi.pv168.cashflowevidence.app.dialog.TransactionDialog;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.DataManipulationException;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.data.validation.Validator;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
@@ -9,10 +10,7 @@ import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionTableModel;
 
 
-import javax.swing.AbstractAction;
-import javax.swing.JTable;
-import javax.swing.KeyStroke;
-import javax.swing.UIManager;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
@@ -41,7 +39,12 @@ public class AddTransactionAction extends AbstractAction {
         Transaction transaction = transactionDialog.showDialog();
 
         if (transaction != null && validator.validate(transaction).isValid()) {
-            transactionTableModel.addRow(transaction);
+            try {
+                transactionTableModel.addRow(transaction);
+            } catch (DataManipulationException ex) {
+                JOptionPane.showMessageDialog(
+                        null, "We were unable to create the transaction. Please try again.");
+            }
         }
     }
 }
