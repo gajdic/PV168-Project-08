@@ -6,9 +6,9 @@ import java.awt.event.KeyEvent;
 import java.util.List;
 
 public class ExportOptionsAction extends AbstractAction{
-    private final List<ExportAction> exportActions;
+    private final List<Action> exportActions;
 
-    public ExportOptionsAction(List<ExportAction> exportActions) {
+    public ExportOptionsAction(List<Action> exportActions) {
         super("Export", UIManager.getIcon("FileChooser.fileIcon"));
         this.exportActions = exportActions;
         putValue(SHORT_DESCRIPTION, "Exports selected record");
@@ -19,24 +19,8 @@ public class ExportOptionsAction extends AbstractAction{
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-
-        int exportFormat = chooseExporter();
-
-        for (int i = 0; i < exportActions.size(); i++) {
-            if (exportFormat == i) {
-                exportActions.get(i).actionPerformed(actionEvent);
-            }
-        }
+        OptionsSelector.selectAction(exportActions, actionEvent,
+                "Choose export format", "Export");
     }
 
-    private int chooseExporter() {
-        Object[] options = exportActions.stream()
-                .map(ExportAction::toString).toArray();
-        return JOptionPane.showOptionDialog(
-                null,
-                "Choose export format", "Export",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
-                null, options, options[0]
-        );
-    }
 }

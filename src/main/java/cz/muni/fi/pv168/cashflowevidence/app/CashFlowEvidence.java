@@ -72,6 +72,8 @@ public class CashFlowEvidence {
     private Action editCAction;
     private Action deleteCAction;
 
+    private Action addOptionsAction;
+
     private final Action helpAction = new HelpAction();
 
     // help menu
@@ -124,13 +126,13 @@ public class CashFlowEvidence {
 
 
         exportAction = new ExportOptionsAction(List.of(
-                (ExportAction) exportCSVAction,
-                (ExportAction) exportJsonAction,
-                (ExportAction) exportPdfAction));
+                exportCSVAction,
+                exportJsonAction,
+                exportPdfAction));
 
         importAction = new ImportOptionsAction(List.of(
-                (ImportAction) importCSVAction,
-                (ImportAction) importJsonAction
+                importCSVAction,
+                importJsonAction
         ));
 
         repeatingTaskScheduler = new RepeatingTaskScheduler(dependencyProvider, transactionTableModel);
@@ -179,6 +181,8 @@ public class CashFlowEvidence {
         addCAction = new AddCategoryAction(categoryTable, categoryValidator);
         editCAction = new EditCategoryAction(categoryTable, categoryValidator);
         deleteCAction = new DeleteCategoryAction(categoryTable, transactionTable, repeatingTransactionTable);
+
+        addOptionsAction = new AddOptionsAction(List.of(addTAction, addRTAction, addCAction));
     }
 
     private JPanel getContent(){
@@ -276,7 +280,15 @@ public class CashFlowEvidence {
     private JMenuBar getMenuBar() {
 
         JMenu fileMenu = getMenu("File", KeyEvent.VK_F,
-                new ArrayList<>(List.of(importCSVAction, importJsonAction, importAction, exportCSVAction, exportJsonAction, exportPdfAction, exportAction, exitAction)));
+                new ArrayList<>(List.of(importCSVAction,
+                        importJsonAction,
+                        importAction,
+                        exportCSVAction,
+                        exportJsonAction,
+                        exportPdfAction,
+                        exportAction,
+                        addOptionsAction,
+                        exitAction)));
         JMenu transactionMenu = getMenu("Transaction", KeyEvent.VK_T,
                 new ArrayList<>(List.of(addTAction, editTAction, deleteTAction)));
         JMenu repeatingTransactionMenu = getMenu("Repeating Transaction", KeyEvent.VK_R,

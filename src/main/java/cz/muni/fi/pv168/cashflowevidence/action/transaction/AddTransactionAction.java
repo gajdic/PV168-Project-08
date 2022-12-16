@@ -29,7 +29,6 @@ public class AddTransactionAction extends AbstractAction {
 
         putValue(SHORT_DESCRIPTION, "Adds new record");
         putValue(MNEMONIC_KEY, KeyEvent.VK_A);
-        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl N"));
     }
 
     @Override
@@ -46,5 +45,9 @@ public class AddTransactionAction extends AbstractAction {
                         null, "We were unable to create the transaction. Please try again.");
             }
         }
+    }
+
+    @Override public String toString() {
+        return "Transaction";
     }
 }

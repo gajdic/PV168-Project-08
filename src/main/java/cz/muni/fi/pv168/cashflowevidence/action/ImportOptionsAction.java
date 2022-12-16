@@ -6,11 +6,11 @@ import java.awt.event.KeyEvent;
 import java.util.List;
 
 public class ImportOptionsAction extends AbstractAction{
-    private final List<ImportAction> importActions;
+    private final List<Action> importActions;
 
-    public ImportOptionsAction(List<ImportAction> exportActions) {
+    public ImportOptionsAction(List<Action> importActions) {
         super("Import", UIManager.getIcon("FileChooser.fileIcon"));
-        this.importActions = exportActions;
+        this.importActions = importActions;
         putValue(SHORT_DESCRIPTION, "Imports selected record");
         putValue(MNEMONIC_KEY, KeyEvent.VK_I);
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl I"));
@@ -19,24 +19,7 @@ public class ImportOptionsAction extends AbstractAction{
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-
-        int exportFormat = chooseExporter();
-
-        for (int i = 0; i < importActions.size(); i++) {
-            if (exportFormat == i) {
-                importActions.get(i).actionPerformed(actionEvent);
-            }
-        }
-    }
-
-    private int chooseExporter() {
-        Object[] options = importActions.stream()
-                .map(ImportAction::toString).toArray();
-        return JOptionPane.showOptionDialog(
-                null,
-                "Choose import format", "Import",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
-                null, options, options[0]
-        );
+        OptionsSelector.selectAction(importActions, actionEvent,
+                "Choose import format", "Import");
     }
 }

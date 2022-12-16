@@ -26,7 +26,6 @@ public class AddRepeatingTransactionAction extends AbstractAction {
         super("Add", UIManager.getIcon("FileChooser.fileIcon"));
         putValue(SHORT_DESCRIPTION, "Adds new record");
         putValue(MNEMONIC_KEY, KeyEvent.VK_A);
-        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl N"));
 
         this.repeatingTransactionsTable = repeatingTransactionsTable;
         this.categoryRepository = categoryRepository;
@@ -47,5 +46,9 @@ public class AddRepeatingTransactionAction extends AbstractAction {
                         null, "We were unable to create the repeating transaction. Please try again.");
             }
         }
+    }
+
+    @Override public String toString() {
+        return "Repeating Transaction";
     }
 }
