@@ -95,10 +95,19 @@ public class CategoryDialog extends JDialog {
     }
 
     private void onSave() {
+        Object[] options = { "Ok"};
+
+        if (color == null) {
+            JOptionPane.showOptionDialog(null, String.join("\n",
+                            "Color is not selected"), "Warning",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                    null, options, options[0]);
+            return;
+        }
+
         var validation = validator.validate(new Category(nameField.getText(), color));
 
         if (!validation.isValid()) {
-            Object[] options = { "OK", "CANCEL" };
             JOptionPane.showOptionDialog(null, String.join("\n",
                             validation.getValidationErrors()), "Warning",
                     JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
@@ -107,6 +116,7 @@ public class CategoryDialog extends JDialog {
         }
 
         category.setName(nameField.getText());
+
         category.setColor(color);
 
         dispose();

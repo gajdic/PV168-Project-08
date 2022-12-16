@@ -14,6 +14,7 @@ import org.tinylog.Logger;
 
 import java.awt.*;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -50,13 +51,11 @@ public final class CsvImporter implements BatchImporter {
                     .peek(Logger::debug)
                     .collect(Collectors.toList());
 
-            // TODO: @Martin Pilát please review this and explain, why was this different in csv and json
-            // In prev implementaions, the DAO exporter failed, when some categories were null
             var categories = new HashMap<String, Category>();
 
             Logger.info("Loaded {} records", transactions.size());
             return new Batch(categories.values(), transactions);
-        } catch (IOException ex) {
+        } catch (IOException | UncheckedIOException ex ) {
             Logger.error("Error while loading transactions.");
             throw new DataManipulationException("Unable to read file", ex);
         }
