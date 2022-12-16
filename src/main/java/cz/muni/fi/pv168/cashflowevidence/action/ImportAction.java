@@ -24,14 +24,12 @@ public class ImportAction extends AbstractAction {
     private final Importer importer;
 
     private final Format format;
-    private final Repository<Transaction> transactionRepository;
 
     private final Runnable callback;
 
     public ImportAction(JTable table,
                         Importer importer,
                         Format format,
-                        Repository<Transaction> transactionRepository,
                         Runnable callback)
     {
         super("Import " + format.getName(), UIManager.getIcon("FileChooser.fileIcon"));
@@ -39,7 +37,6 @@ public class ImportAction extends AbstractAction {
         this.importer = new AsyncImporter(Objects.requireNonNull(importer),
                 callback
                 );
-        this.transactionRepository = transactionRepository;
         this.callback = callback;
         this.format = format;
         putValue(SHORT_DESCRIPTION, "Imports selected record");
@@ -72,57 +69,5 @@ public class ImportAction extends AbstractAction {
         }
 
         callback.run();
-    }
-
-    private List<Transaction> getTransactionsToImport(Collection<Transaction> importedTransactions) {
-        List<Transaction> duplicates = findDuplicate(importedTransactions);
-        List<Transaction> transactionsToImport = new ArrayList<>(importedTransactions
-                .stream()
-                .filter(t -> !duplicates.contains(t))
-                .toList());
-
-        outerloop:
-        for (Transaction transaction : duplicates) {
-            int option = confirmDuplicateImports(
-                    String.format(
-                            "You are trying to import duplicate transaction %s. How do you want to continue?",
-                            transaction.getName()));
-            switch (option) {
-                case 0:
-                    transactionsToImport.add(transaction);
-                    break;
-                case 1:
-                    transactionsToImport.addAll(duplicates);
-                    break outerloop;
-                case 2:
-                    transactionsToImport.removeAll(duplicates);
-                    break outerloop;
-                case 3:
-                    transactionsToImport.clear();
-                    break outerloop;
-            }
-        }
-        return transactionsToImport;
-    }
-
-    private List<Transaction> findDuplicate(Collection<Transaction> importedTransactions) {
-        List<Transaction> storedTransactions = transactionRepository.findAll();
-        return  storedTransactions.stream()
-                .filter(st -> importedTransactions.stream().anyMatch(it -> Objects.equals(st, it)))
-                .toList();
-    }
-
-    private int confirmDuplicateImports(String message) {
-        Object[] options = {"Import", "Import all","Import only non duplicate", "Do not import any"};
-
-        return  JOptionPane.showOptionDialog(
-                null,
-                message,
-                "Warning",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                options,
-                options[2]);
     }
 }
