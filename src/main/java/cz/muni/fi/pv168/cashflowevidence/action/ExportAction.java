@@ -1,24 +1,16 @@
 package cz.muni.fi.pv168.cashflowevidence.action;
 
 import cz.muni.fi.pv168.cashflowevidence.app.workers.AsyncExporter;
-import cz.muni.fi.pv168.cashflowevidence.app.workers.AsyncImporter;
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.Batch;
-<<<<<<< src/main/java/cz/muni/fi/pv168/cashflowevidence/action/ExportAction.java
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.DataManipulationException;
-=======
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.Exporter;
->>>>>>> src/main/java/cz/muni/fi/pv168/cashflowevidence/action/ExportAction.java
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.BatchExporter;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.Format;
-import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
-import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionTableModel;
+
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.util.Arrays;
 import java.util.Objects;
 
 public class ExportAction extends AbstractAction {
