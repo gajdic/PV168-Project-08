@@ -1,9 +1,6 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
-import cz.muni.fi.pv168.cashflowevidence.action.ExitApplicationAction;
-import cz.muni.fi.pv168.cashflowevidence.action.ExportAction;
-import cz.muni.fi.pv168.cashflowevidence.action.HelpAction;
-import cz.muni.fi.pv168.cashflowevidence.action.ImportAction;
+import cz.muni.fi.pv168.cashflowevidence.action.*;
 import cz.muni.fi.pv168.cashflowevidence.action.category.AddCategoryAction;
 import cz.muni.fi.pv168.cashflowevidence.action.category.DeleteCategoryAction;
 import cz.muni.fi.pv168.cashflowevidence.action.category.EditCategoryAction;
@@ -53,8 +50,10 @@ public class CashFlowEvidence {
     // file menu
 
 
-    private final Action importAction;
+    private final Action importCSVAction;
+    private final Action exportCSVAction;
     private final Action exportAction;
+
     private final Action exitAction = new ExitApplicationAction();
     private final Action importJsonAction;
     private final Action exportJsonAction;
@@ -118,12 +117,16 @@ public class CashFlowEvidence {
         Importer importer = dependencyProvider.getImporter();
         Exporter exporter = dependencyProvider.getExporter();
 
-        importAction = new ImportAction(transactionTable, importer, getFormat(importer, "CSV"), this::refresh, this::updateBusy);
-        exportAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "CSV"), this::refresh, this::updateBusy);
+        importCSVAction = new ImportAction(transactionTable, importer, getFormat(importer, "CSV"), this::refresh, this::updateBusy);
+        exportCSVAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "CSV"), this::refresh, this::updateBusy);
         importJsonAction = new ImportAction(transactionTable, importer, getFormat(importer, "JSON"), this::refresh, this::updateBusy);
         exportJsonAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "JSON"), this::refresh, this::updateBusy);
         exportPdfAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "PDF"), this::refresh, this::updateBusy);
 
+        exportAction = new ExportOptionsAction(List.of(
+                (ExportAction) exportCSVAction,
+                (ExportAction) exportJsonAction,
+                (ExportAction) exportPdfAction));
 
         repeatingTaskScheduler = new RepeatingTaskScheduler(dependencyProvider, transactionTableModel);
         repeatingTaskScheduler.scheduleExistingTransactions();
@@ -268,7 +271,7 @@ public class CashFlowEvidence {
     private JMenuBar getMenuBar() {
 
         JMenu fileMenu = getMenu("File", KeyEvent.VK_F,
-                new ArrayList<>(List.of(importAction, importJsonAction, exportAction, exportJsonAction, exportPdfAction, exitAction)));
+                new ArrayList<>(List.of(importCSVAction, importJsonAction, exportCSVAction, exportJsonAction, exportPdfAction, exportAction, exitAction)));
         JMenu transactionMenu = getMenu("Transaction", KeyEvent.VK_T,
                 new ArrayList<>(List.of(addTAction, editTAction, deleteTAction)));
         JMenu repeatingTransactionMenu = getMenu("Repeating Transaction", KeyEvent.VK_R,
