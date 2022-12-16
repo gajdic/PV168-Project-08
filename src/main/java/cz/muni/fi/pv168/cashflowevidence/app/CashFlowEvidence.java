@@ -291,7 +291,7 @@ public class CashFlowEvidence {
                         exitAction)));
         JMenu transactionMenu = getMenu("Transaction", KeyEvent.VK_T,
                 new ArrayList<>(List.of(addTAction, editTAction, deleteTAction)));
-        JMenu repeatingTransactionMenu = getMenu("Repeating Transaction", KeyEvent.VK_R,
+        JMenu repeatingTransactionMenu = getMenu("Repeating Transaction", KeyEvent.VK_P,
                 new ArrayList<>(List.of(addRTAction, editRTAction, deleteRTAction)));
         JMenu categoryMenu = getMenu("Category", KeyEvent.VK_C,
                 new ArrayList<>(List.of(addCAction, editCAction, deleteCAction)));
