@@ -3,7 +3,11 @@ package cz.muni.fi.pv168.cashflowevidence.action;
 import cz.muni.fi.pv168.cashflowevidence.app.workers.AsyncExporter;
 import cz.muni.fi.pv168.cashflowevidence.app.workers.AsyncImporter;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.Batch;
+<<<<<<< src/main/java/cz/muni/fi/pv168/cashflowevidence/action/ExportAction.java
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.DataManipulationException;
+=======
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.Exporter;
+>>>>>>> src/main/java/cz/muni/fi/pv168/cashflowevidence/action/ExportAction.java
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.BatchExporter;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.Format;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
@@ -46,16 +50,20 @@ public class ExportAction extends AbstractAction {
         if (dialogResult == JFileChooser.APPROVE_OPTION) {
             String filePath = addFormatIfNotPresent(fileChooser.getSelectedFile().getAbsolutePath());
 
-            exporter.exportData(filePath);
+            try {
+                exporter.exportData(filePath);
+            } catch (DataManipulationException ex) {
+                JOptionPane.showMessageDialog(
+                        null, "Something went wrong with the export. Please try again.");
+            }
         }
-
-
     }
 
     private String getExtension() {
         return format.getExtensions().stream().findFirst().orElse(format.getName());
     }
 
+            
     private String addFormatIfNotPresent(String filePath) {
         String extension = filePath.substring(filePath.lastIndexOf('.') + 1);
         if (!extension.equals(getExtension())) {

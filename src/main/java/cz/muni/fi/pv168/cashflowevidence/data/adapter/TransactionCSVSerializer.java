@@ -6,7 +6,7 @@ import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionType;
 
-import java.awt.*;
+import javax.swing.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -21,6 +21,8 @@ public class TransactionCSVSerializer implements TransactionSerializer {
         this.categoryRepository = categoryRepository;
         String[] tokens = csvLine.split(",");
         if (tokens.length != 7) {
+            JOptionPane.showMessageDialog(
+                    null, "Format of the provided CSV file is invalid.\n\n Invalid Line: %s".formatted(csvLine));
             throw new InvalidCSVFormatException(
                     "The line: " + csvLine + " is not valid."
             );
@@ -72,7 +74,7 @@ public class TransactionCSVSerializer implements TransactionSerializer {
         }
     }
 
-    private Category convertCategory(String categoryName, String categoryColor) throws InvalidCSVFormatException {
+    private Category convertCategory(String categoryName, String categoryColor) {
         List<Category> categories = categoryRepository.findAll();
         return categories.stream()
                 .filter(c -> Objects.equals(c.getName(), categoryName) &&

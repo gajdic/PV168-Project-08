@@ -1,12 +1,10 @@
 package cz.muni.fi.pv168.cashflowevidence.action.repeatingTransaction;
 
 import cz.muni.fi.pv168.cashflowevidence.action.DeleteAction;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.DataManipulationException;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.RepeatingTransactionTableModel;
 
-import javax.swing.AbstractAction;
-import javax.swing.JTable;
-import javax.swing.KeyStroke;
-import javax.swing.UIManager;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -56,7 +54,12 @@ public class DeleteRepeatingTransactionAction extends DeleteAction {
 
         var deleteOption = confirmDelete(sb.toString());
         if (deleteOption == 0) {
+            try {
             transactionIndexes.stream().sorted(Comparator.reverseOrder()).forEach(repeatingTransactionTableModel::deleteRow);
+            } catch (DataManipulationException ex) {
+                JOptionPane.showMessageDialog(
+                        null, "We were unable to delete the repeating transaction. Please try again.");
+            }
         }
     }
 }

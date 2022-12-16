@@ -1,10 +1,10 @@
 package cz.muni.fi.pv168.cashflowevidence.action.transaction;
 
 import cz.muni.fi.pv168.cashflowevidence.action.DeleteAction;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.DataManipulationException;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionTableModel;
 
-import javax.swing.JTable;
-import javax.swing.KeyStroke;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -54,7 +54,12 @@ public class DeleteTransactionAction extends DeleteAction {
 
         var deleteOption = confirmDelete(sb.toString());
         if (deleteOption == 0) {
+            try {
             transactionIndexes.stream().sorted(Comparator.reverseOrder()).forEach(transactionTableModel::deleteRow);
+            } catch (DataManipulationException ex) {
+                JOptionPane.showMessageDialog(
+                        null, "We were unable to delete the transaction. Please try again.");
+            }
         }
     }
 }
