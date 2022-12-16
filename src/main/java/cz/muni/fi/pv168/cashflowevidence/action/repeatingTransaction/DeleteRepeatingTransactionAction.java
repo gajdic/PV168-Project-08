@@ -38,6 +38,9 @@ public class DeleteRepeatingTransactionAction extends DeleteAction {
                 .forEach(transactionIndexes::add);
 
         var sb = new StringBuilder("Are you sure you want to delete repeating transactions: ");
+        if (transactionIndexes.size() == 1) {
+            sb = new StringBuilder("Are you sure you want to delete repeating transaction ");
+        }
 
         var idx = 0;
         while (idx < 5 && idx != transactionIndexes.size()) {

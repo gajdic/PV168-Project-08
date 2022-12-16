@@ -55,6 +55,9 @@ public class DeleteCategoryAction extends DeleteAction {
                 });
 
         var sb = new StringBuilder("Are you sure you want to delete categories: ");
+        if (categoryIndexes.size() == 1) {
+            sb = new StringBuilder("Are you sure you want to delete category ");
+        }
 
         var idx = 0;
         while (idx < 5 && idx != categoriesToBeDeleted.size()) {
@@ -73,7 +76,11 @@ public class DeleteCategoryAction extends DeleteAction {
                 .anyMatch(t -> categoriesToBeDeleted.contains(t.getCategory())) ||
                 repeatingTransactionTableModel.getEntities().stream()
                         .anyMatch(t -> categoriesToBeDeleted.contains(t.getCategory()))) {
-            sb.append("\nSome of them are used in existing transactions.");
+            if (categoryIndexes.size() == 1) {
+                sb.append("\nIt is used in some existing transactions.");
+            } else {
+                sb.append("\nSome of them are used in existing transactions.");
+            }
         }
 
         var deleteOption = confirmDelete(sb.toString());
