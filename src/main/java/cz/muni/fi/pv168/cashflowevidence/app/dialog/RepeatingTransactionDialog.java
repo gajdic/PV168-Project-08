@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.cashflowevidence.app.dialog;
 
 import com.github.lgooddatepicker.components.DatePicker;
+import com.privatejgoodies.common.base.SystemUtils;
 import cz.muni.fi.pv168.cashflowevidence.app.InputNumberFormatter;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.data.validation.Validator;
@@ -173,7 +174,8 @@ public class RepeatingTransactionDialog extends AbstractTransactionDialog {
                 nameField.getText(),
                 descriptionField.getText(),
                 amountField.getText().isEmpty() ? -1 : Double.parseDouble(amountField.getText()
-                        .replace("\u00a0", "").replace(",", ".")),
+                        .replace("\u00a0", "").replace(",",
+                                SystemUtils.IS_OS_WINDOWS ? "." : "")),
                 (Category) categoryComboBox.getSelectedItem(),
                 dateFromPicker.getDate().atTime(LocalTime.now()),
                 dateToPicker.getDate().atTime(LocalTime.now()),
