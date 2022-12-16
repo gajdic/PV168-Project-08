@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.cashflowevidence.app.dialog;
 
 import com.github.lgooddatepicker.components.DateTimePicker;
+import com.privatejgoodies.common.base.SystemUtils;
 import cz.muni.fi.pv168.cashflowevidence.app.InputNumberFormatter;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.data.validation.Validator;
@@ -112,7 +113,8 @@ public class TransactionDialog extends AbstractTransactionDialog {
             transaction.setName(nameField.getText());
             transaction.setDescription(descriptionField.getText());
             transaction.setAmount(amountField.getText().isEmpty() ? -1 : Double.parseDouble(amountField.getText()
-                    .replace("\u00a0", "").replace(",", ".")));
+                    .replace("\u00a0", "").replace(",",
+                            SystemUtils.IS_OS_WINDOWS ? "." : "")));
             transaction.setDate(dateTimePicker.getDateTimeStrict());
             transaction.setCategory((Category) categoryComboBox.getSelectedItem());
             dispose();
@@ -128,8 +130,9 @@ public class TransactionDialog extends AbstractTransactionDialog {
                 incomingRadioButton.isSelected() ? TransactionType.Incoming : TransactionType.Outgoing,
                 nameField.getText(),
                 descriptionField.getText(),
-                amountField.getText().isEmpty() ? -1 : Double.parseDouble(amountField.getText()
-                        .replace("\u00a0", "").replace(",", ".")),
+                                amountField.getText().isEmpty() ? -1 : Double.parseDouble(amountField.getText()
+                        .replace("\u00a0", "").replace(",",
+                                                SystemUtils.IS_OS_WINDOWS ? "." : "")),
                 dateTimePicker.getDateTimeStrict(),
                 (Category) categoryComboBox.getSelectedItem());
     }
