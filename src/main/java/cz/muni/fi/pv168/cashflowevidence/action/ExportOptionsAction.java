@@ -34,7 +34,7 @@ public class ExportOptionsAction extends AbstractAction{
                 .map(ExportAction::toString).toArray();
         return JOptionPane.showOptionDialog(
                 null,
-                "Choose export format", "Warning",
+                "Choose export format", "Export",
                 JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
                 null, options, options[0]
         );

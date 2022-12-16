@@ -48,9 +48,8 @@ public class CashFlowEvidence {
     public static final JFrame frame = getFrame();
 
     // file menu
-
-
     private final Action importCSVAction;
+    private final Action importAction;
     private final Action exportCSVAction;
     private final Action exportAction;
 
@@ -123,10 +122,16 @@ public class CashFlowEvidence {
         exportJsonAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "JSON"), this::refresh, this::updateBusy);
         exportPdfAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "PDF"), this::refresh, this::updateBusy);
 
+
         exportAction = new ExportOptionsAction(List.of(
                 (ExportAction) exportCSVAction,
                 (ExportAction) exportJsonAction,
                 (ExportAction) exportPdfAction));
+
+        importAction = new ImportOptionsAction(List.of(
+                (ImportAction) importCSVAction,
+                (ImportAction) importJsonAction
+        ));
 
         repeatingTaskScheduler = new RepeatingTaskScheduler(dependencyProvider, transactionTableModel);
         repeatingTaskScheduler.scheduleExistingTransactions();
@@ -271,7 +276,7 @@ public class CashFlowEvidence {
     private JMenuBar getMenuBar() {
 
         JMenu fileMenu = getMenu("File", KeyEvent.VK_F,
-                new ArrayList<>(List.of(importCSVAction, importJsonAction, exportCSVAction, exportJsonAction, exportPdfAction, exportAction, exitAction)));
+                new ArrayList<>(List.of(importCSVAction, importJsonAction, importAction, exportCSVAction, exportJsonAction, exportPdfAction, exportAction, exitAction)));
         JMenu transactionMenu = getMenu("Transaction", KeyEvent.VK_T,
                 new ArrayList<>(List.of(addTAction, editTAction, deleteTAction)));
         JMenu repeatingTransactionMenu = getMenu("Repeating Transaction", KeyEvent.VK_R,
