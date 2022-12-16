@@ -139,9 +139,9 @@ public class CashFlowEvidence {
 
 
 
-        importAction = new ImportAction(transactionTable, importer, getFormat(importer, "CSV"), transactions, this::refresh);
+        importAction = new ImportAction(transactionTable, importer, getFormat(importer, "CSV"), this::refresh);
         exportAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "CSV"), this::refresh);
-                importJsonAction = new ImportAction(transactionTable, importer, getFormat(importer, "JSON"), transactions, this::refresh);
+        importJsonAction = new ImportAction(transactionTable, importer, getFormat(importer, "JSON"), this::refresh);
         exportJsonAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "JSON"), this::refresh);
         exportPdfAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "PDF"), this::refresh);
 
