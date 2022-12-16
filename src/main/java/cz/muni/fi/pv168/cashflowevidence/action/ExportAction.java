@@ -1,7 +1,11 @@
 package cz.muni.fi.pv168.cashflowevidence.action;
 
+import cz.muni.fi.pv168.cashflowevidence.app.workers.AsyncExporter;
+import cz.muni.fi.pv168.cashflowevidence.app.workers.AsyncImporter;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.Batch;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.Exporter;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.BatchExporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.Format;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionTableModel;
 
@@ -10,16 +14,22 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class ExportAction extends AbstractAction {
     private final JTable table;
-    private final BatchExporter exporter;
+    private final Exporter exporter;
 
-    public ExportAction(JTable table, BatchExporter exporter) {
-        super("Export " + exporter.getFormat().getName(), UIManager.getIcon("FileChooser.fileIcon"));
+    private final Format format;
+
+    public ExportAction(JTable table, Exporter exporter, Format format, Runnable callback) {
+        super("Export " + format.getName(), UIManager.getIcon("FileChooser.fileIcon"));
         this.table = Objects.requireNonNull(table);
-        this.exporter = Objects.requireNonNull(exporter);
+        this.exporter = new AsyncExporter(Objects.requireNonNull(exporter),
+                callback
+        );
+        this.format = format;
         putValue(SHORT_DESCRIPTION, "Exports selected record");
         putValue(MNEMONIC_KEY, KeyEvent.VK_X);
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl X"));
@@ -29,22 +39,34 @@ public class ExportAction extends AbstractAction {
     public void actionPerformed(ActionEvent actionEvent) {
         var fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
-        fileChooser.setFileFilter(new FileNameExtensionFilter(exporter.getFormat().getName(),
-                exporter.getFormat().getName()));
-        fileChooser.setSelectedFile(new File("export." + exporter.getFormat().getName().toLowerCase()));
+        fileChooser.setFileFilter(new FileNameExtensionFilter(getExtension(),getExtension()));
+        fileChooser.setSelectedFile(new File("export." + getExtension()));
 
         int dialogResult = fileChooser.showSaveDialog(table);
         if (dialogResult == JFileChooser.APPROVE_OPTION) {
-            File exportFile = fileChooser.getSelectedFile();
-            var transactionTableModel = (TransactionTableModel) table.getModel();
-            var categories = transactionTableModel.getEntities().stream().map(Transaction::getCategory).toList();
-            var batch = new Batch(categories, transactionTableModel.getEntities());
+            String filePath = addFormatIfNotPresent(fileChooser.getSelectedFile().getAbsolutePath());
 
-            exporter.exportBatch(batch, exportFile.getAbsolutePath());
+            exporter.exportData(filePath);
         }
+
+
     }
 
+    private String getExtension() {
+        return format.getExtensions().stream().findFirst().orElse(format.getName());
+    }
+
+    private String addFormatIfNotPresent(String filePath) {
+        String extension = filePath.substring(filePath.lastIndexOf('.') + 1);
+        if (!extension.equals(getExtension())) {
+            filePath = filePath + "." + getExtension();
+        }
+
+        return filePath;
+    }
+
+
     @Override public String toString() {
-        return this.exporter.getFormat().getName();
+        return this.format.getName();
     }
 }

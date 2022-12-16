@@ -1,5 +1,7 @@
 package cz.muni.fi.pv168.cashflowevidence.data.validation;
 
+import org.tinylog.Logger;
+
 import java.util.*;
 
 /**
@@ -53,6 +55,9 @@ public final class ValidationResult {
 
     public void intoException() {
         if (!isValid()) {
+            Logger.error(toString());
+            // TODO: This exception was caught somewhere and it took me a while
+            // to find a source of the problem
             throw new ValidationException(toString(), validationErrors);
         }
     }

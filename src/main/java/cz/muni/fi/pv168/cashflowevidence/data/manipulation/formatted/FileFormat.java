@@ -9,4 +9,5 @@ public interface FileFormat {
      * Gets the {@link Format} of the implementation.
      */
     Format getFormat();
+
 }

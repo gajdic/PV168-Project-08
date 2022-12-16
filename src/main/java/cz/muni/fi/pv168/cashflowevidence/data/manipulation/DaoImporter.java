@@ -53,9 +53,6 @@ public class DaoImporter implements Importer {
             DatabaseAccessObject<TransactionEntity> transactionDao = transactionEntityDaoSupplier.get(tx::connection);
             DatabaseAccessObject<CategoryEntity> categoryDao =categoryEntityDaoSupplier.get(tx::connection);
 
-            transactionDao.deleteAll();
-            categoryDao.deleteAll();
-
             var categoryMapper = new CategoryMapper(categoryValidator);
             batch.getCategories().forEach(c -> {
                 categoryValidator.validate(c).intoException();

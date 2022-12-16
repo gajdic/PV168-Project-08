@@ -16,8 +16,13 @@ import cz.muni.fi.pv168.cashflowevidence.action.transaction.EditTransactionActio
 import cz.muni.fi.pv168.cashflowevidence.app.overview.CategoriesOverview;
 import cz.muni.fi.pv168.cashflowevidence.app.overview.RepeatingTransactionsOverview;
 import cz.muni.fi.pv168.cashflowevidence.app.overview.TransactionsOverview;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.Exporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.FileFormats;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.Importer;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.BatchExporter;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.BatchImporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.FileFormat;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.Format;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.csv.CsvExporter;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.csv.CsvImporter;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.json.JsonExporter;
@@ -29,6 +34,7 @@ import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryTableModel;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.*;
 import cz.muni.fi.pv168.cashflowevidence.service.RepeatingTaskScheduler;
 import cz.muni.fi.pv168.cashflowevidence.wiring.DependencyProvider;
+import org.tinylog.Logger;
 
 import javax.swing.Action;
 import javax.swing.Box;
@@ -128,18 +134,17 @@ public class CashFlowEvidence {
 
         initializeActions(dependencyProvider);
 
-        BatchImporter jsonImporter = new JsonImporter(categories);
-        BatchExporter jsonExporter = new JsonExporter();
-        BatchImporter csvImporter = new CsvImporter(categories);
-        BatchExporter csvExporter = new CsvExporter();
-        BatchExporter pdfExporter = new PdfExporter();
+        Importer importer = dependencyProvider.getImporter();
+        Exporter exporter = dependencyProvider.getExporter();
 
 
-        importAction = new ImportAction(transactionTable, csvImporter, transactions, this::refresh);
-        exportAction = new ExportAction(transactionTable, csvExporter);
-        importJsonAction = new ImportAction(transactionTable, jsonImporter, transactions, this::refresh);
-        exportJsonAction = new ExportAction(transactionTable, jsonExporter);
-        exportPdfAction = new ExportAction(transactionTable, pdfExporter);
+
+        importAction = new ImportAction(transactionTable, importer, getFormat(importer, "CSV"), transactions, this::refresh);
+        exportAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "CSV"), this::refresh);
+                importJsonAction = new ImportAction(transactionTable, importer, getFormat(importer, "JSON"), transactions, this::refresh);
+        exportJsonAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "JSON"), this::refresh);
+        exportPdfAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "PDF"), this::refresh);
+
 
         repeatingTaskScheduler = new RepeatingTaskScheduler(dependencyProvider, transactionTableModel);
         repeatingTaskScheduler.scheduleExistingTransactions();
@@ -153,6 +158,20 @@ public class CashFlowEvidence {
 
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
+
+    private Format getFormat(FileFormats fileFormats, String formatName) {
+        try {
+            return fileFormats.getFormats().stream().filter(
+                    format -> format.getName().equals(formatName)).findFirst().orElseThrow();
+        } catch (Exception e) {
+            // This is something, that should never occur, as it is not dependent on user input,
+            // yet nicer treatment of this exception would be beneficial
+            Logger.error("Error with formats initialization, " + formatName  + " is not supported");
+            throw new RuntimeException();
+        }
+
+    }
+
 
     private void initializeActions(DependencyProvider dependencyProvider) {
         var categoryValidator = dependencyProvider.getCategoryValidator();

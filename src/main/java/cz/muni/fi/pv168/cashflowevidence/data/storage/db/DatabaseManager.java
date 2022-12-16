@@ -4,6 +4,7 @@ import javax.sql.DataSource;
 
 import cz.muni.fi.pv168.cashflowevidence.exceptions.DataStorageException;
 import org.h2.jdbcx.JdbcConnectionPool;
+import org.tinylog.Logger;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -45,8 +46,7 @@ public class DatabaseManager {
     public static DatabaseManager createProductionInstance() {
         String connectionString = "jdbc:h2:%s;%s".formatted(createDbFileSystemPath(), DB_PROPERTIES_STRING);
 
-        // TODO: Change for logger when logging layer introduced
-        System.out.println("JDBC connection URI: " + connectionString);
+        Logger.info("JDBC connection URI: " + connectionString);
 
         return new DatabaseManager(connectionString);
     }
@@ -77,6 +77,8 @@ public class DatabaseManager {
         Path projectDbPath = Paths.get(userHomeDir, "pv168", "db", PROJECT_NAME);
 
         File parentDir = projectDbPath.getParent().toFile();
+
+        Logger.info("Created DB with file path " + parentDir.getPath());
 
         if (!parentDir.exists()) {
             throw new DataStorageException("Unable to create database root directory");
