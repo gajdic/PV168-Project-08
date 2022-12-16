@@ -2,26 +2,39 @@ package cz.muni.fi.pv168.cashflowevidence.renderer;
 
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
+import java.awt.Color;
+import java.awt.Component;
 
-public class CategoryColorListCellRenderer implements ListCellRenderer<Category> {
-    protected DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+public class CategoryColorListCellRenderer extends JLabel implements ListCellRenderer<Category> {
 
     @Override
     public Component getListCellRendererComponent(JList list, Category value, int index, boolean isSelected, boolean cellHasFocus) {
-        JLabel renderer = (JLabel) defaultRenderer.getListCellRendererComponent(list, value, index,
-                isSelected, cellHasFocus);
+        setOpaque(true);
 
         if (value == null) {
-            renderer.setBackground(Color.WHITE);
-            renderer.setText("None");
-            return renderer;
+            setText("None");
+            setBackground(Color.WHITE);
+            setForeground(Color.BLACK);
+
+            if (isSelected) {
+                list.setSelectionBackground(Color.WHITE);
+                list.setSelectionForeground(Color.BLACK);
+            }
+        } else {
+            setText(value.getName());
+            setBackground(value.getColor());
+            setForeground(pickTextColorBasedOnBgColor(getBackground()));
+
+            if (isSelected) {
+                list.setSelectionBackground(getBackground());
+                list.setSelectionForeground(pickTextColorBasedOnBgColor(getBackground()));
+            }
         }
 
-        renderer.setBackground(value.getColor());
-        renderer.setForeground(pickTextColorBasedOnBgColor(renderer.getBackground()));
-        return renderer;
+        return this;
     }
 
     // Calculates text color based on background contrast following the W3C guidelines

@@ -157,6 +157,7 @@ public class TransactionsOverview extends AbstractOverview {
         panel.add(allCategories);
         panel.add(specifiedCategories);
 
+        fillComboBox();
         categoriesJComboBox.setPreferredSize(new Dimension(120, 20));
         categoriesJComboBox.setRenderer(new CategoryColorListCellRenderer());
 
@@ -164,11 +165,7 @@ public class TransactionsOverview extends AbstractOverview {
             @Override
             public void focusGained(FocusEvent e) {
                 categoriesJComboBox.removeAllItems();
-                categoriesJComboBox.addItem(null);
-                List<Category> categoryList = categoryRepository.findAll();
-                for (Category category : categoryList) {
-                    categoriesJComboBox.addItem(category);
-                }
+                fillComboBox();
             }
         });
 
@@ -186,6 +183,14 @@ public class TransactionsOverview extends AbstractOverview {
 
     private void specifiedCategorySetTrue() {
         categoriesJComboBox.setEnabled(specifiedCategories.isSelected());
+    }
+
+    private void fillComboBox() {
+        List<Category> categoryList = categoryRepository.findAll();
+        categoriesJComboBox.addItem(null);
+        for (Category category : categoryList) {
+            categoriesJComboBox.addItem(category);
+        }
     }
 
     private JPanel filterActionsPanel() {
