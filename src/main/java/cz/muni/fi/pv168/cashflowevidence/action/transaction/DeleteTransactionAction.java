@@ -38,6 +38,9 @@ public class DeleteTransactionAction extends DeleteAction {
                 .forEach(transactionIndexes::add);
 
         var sb = new StringBuilder("Are you sure you want to delete transactions: ");
+        if (transactionIndexes.size() == 1) {
+            sb = new StringBuilder("Are you sure you want to delete transaction ");
+        }
 
         var idx = 0;
         while (idx < 5 && idx != transactionIndexes.size()) {
