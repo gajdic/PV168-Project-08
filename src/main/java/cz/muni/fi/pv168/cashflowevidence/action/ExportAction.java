@@ -20,7 +20,7 @@ public class ExportAction extends AbstractAction {
 
     private final Format format;
 
-    public ExportAction(JTable table, Exporter exporter, Format format, Runnable callback, Consumer<Boolean> busyReporter) {
+    public ExportAction(JTable table, Exporter exporter, Format format, Runnable callback, Consumer<Integer> busyReporter) {
         super("Export " + format.getName(), UIManager.getIcon("FileChooser.fileIcon"));
         this.table = Objects.requireNonNull(table);
         this.exporter = new AsyncExporter(Objects.requireNonNull(exporter),callback, busyReporter);

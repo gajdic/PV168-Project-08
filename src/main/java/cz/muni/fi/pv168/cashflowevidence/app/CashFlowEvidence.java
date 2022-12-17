@@ -89,6 +89,7 @@ public class CashFlowEvidence {
     private final JTable repeatingTransactionTable;
 
     private final JPanel busyPane = new JPanel();
+    private int busyCounter = 0;
 
     private final RepeatingTaskScheduler repeatingTaskScheduler;
 
@@ -117,9 +118,9 @@ public class CashFlowEvidence {
         Importer importer = dependencyProvider.getImporter();
         Exporter exporter = dependencyProvider.getExporter();
 
-        importAction = new ImportAction(transactionTable, importer, getFormat(importer, "CSV"), transactions, this::refresh, this::updateBusy);
+        importAction = new ImportAction(transactionTable, importer, getFormat(importer, "CSV"), this::refresh, this::updateBusy);
         exportAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "CSV"), this::refresh, this::updateBusy);
-        importJsonAction = new ImportAction(transactionTable, importer, getFormat(importer, "JSON"), transactions, this::refresh, this::updateBusy);
+        importJsonAction = new ImportAction(transactionTable, importer, getFormat(importer, "JSON"), this::refresh, this::updateBusy);
         exportJsonAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "JSON"), this::refresh, this::updateBusy);
         exportPdfAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "PDF"), this::refresh, this::updateBusy);
 
@@ -135,7 +136,7 @@ public class CashFlowEvidence {
         frame.add(getBusyPane(), BorderLayout.SOUTH);
         frame.setVisible(true);
 
-        updateBusy(false);
+        updateBusy(0);
 
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
@@ -351,9 +352,10 @@ public class CashFlowEvidence {
 
         return busyPane;
     }
-    private void updateBusy(boolean busy) {
-        (busyPane.getComponent(0)).setVisible(busy);
-        (busyPane.getComponent(1)).setVisible(busy);
+    private void updateBusy(int busyUpdate) {
+        busyCounter += busyUpdate;
+        (busyPane.getComponent(0)).setVisible(busyCounter > 0);
+        (busyPane.getComponent(1)).setVisible(busyCounter > 0);
     }
     private String calculateBalance(TransactionTableModel tableModel) {
         double amount = 0;

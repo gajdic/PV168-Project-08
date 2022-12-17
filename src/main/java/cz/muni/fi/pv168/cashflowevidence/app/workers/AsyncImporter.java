@@ -11,9 +11,9 @@ public class AsyncImporter implements Importer {
 
     private final Importer importer;
     private final Runnable onFinish;
-    private final Consumer<Boolean> busyReporter;
+    private final Consumer<Integer> busyReporter;
 
-    public AsyncImporter(Importer importer, Runnable onFinish, Consumer<Boolean> busyReporter) {
+    public AsyncImporter(Importer importer, Runnable onFinish, Consumer<Integer> busyReporter) {
         this.importer = importer;
         this.onFinish = onFinish;
         this.busyReporter = busyReporter;
@@ -24,7 +24,7 @@ public class AsyncImporter implements Importer {
         SwingWorker<Void, Void> asyncWorker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() throws Exception {
-                busyReporter.accept(true);
+                busyReporter.accept(1);
                 importer.importData(filePath);
                 return null;
             }
@@ -32,7 +32,7 @@ public class AsyncImporter implements Importer {
             @Override
             protected void done() {
                 super.done();
-                busyReporter.accept(false);
+                busyReporter.accept(-1);
                 onFinish.run();
             }
 
