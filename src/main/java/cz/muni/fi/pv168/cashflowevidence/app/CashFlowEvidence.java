@@ -19,15 +19,7 @@ import cz.muni.fi.pv168.cashflowevidence.app.overview.TransactionsOverview;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.Exporter;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.FileFormats;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.Importer;
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.BatchExporter;
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.BatchImporter;
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.FileFormat;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.Format;
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.csv.CsvExporter;
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.csv.CsvImporter;
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.json.JsonExporter;
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.json.JsonImporter;
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.pdf.PdfExporter;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryTableModel;
@@ -36,29 +28,15 @@ import cz.muni.fi.pv168.cashflowevidence.service.RepeatingTaskScheduler;
 import cz.muni.fi.pv168.cashflowevidence.wiring.DependencyProvider;
 import org.tinylog.Logger;
 
-import javax.swing.Action;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.AbstractTableModel;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -110,6 +88,8 @@ public class CashFlowEvidence {
 
     private final JTable repeatingTransactionTable;
 
+    private final JPanel busyPane = new JPanel();
+
     private final RepeatingTaskScheduler repeatingTaskScheduler;
 
     public CashFlowEvidence(DependencyProvider dependencyProvider) {
@@ -137,13 +117,11 @@ public class CashFlowEvidence {
         Importer importer = dependencyProvider.getImporter();
         Exporter exporter = dependencyProvider.getExporter();
 
-
-
-        importAction = new ImportAction(transactionTable, importer, getFormat(importer, "CSV"), this::refresh);
-        exportAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "CSV"), this::refresh);
-        importJsonAction = new ImportAction(transactionTable, importer, getFormat(importer, "JSON"), this::refresh);
-        exportJsonAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "JSON"), this::refresh);
-        exportPdfAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "PDF"), this::refresh);
+        importAction = new ImportAction(transactionTable, importer, getFormat(importer, "CSV"), transactions, this::refresh, this::updateBusy);
+        exportAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "CSV"), this::refresh, this::updateBusy);
+        importJsonAction = new ImportAction(transactionTable, importer, getFormat(importer, "JSON"), transactions, this::refresh, this::updateBusy);
+        exportJsonAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "JSON"), this::refresh, this::updateBusy);
+        exportPdfAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "PDF"), this::refresh, this::updateBusy);
 
 
         repeatingTaskScheduler = new RepeatingTaskScheduler(dependencyProvider, transactionTableModel);
@@ -154,7 +132,10 @@ public class CashFlowEvidence {
 
         JPanel content = getContent();
         frame.add(content, BorderLayout.CENTER);
+        frame.add(getBusyPane(), BorderLayout.SOUTH);
         frame.setVisible(true);
+
+        updateBusy(false);
 
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
@@ -361,6 +342,18 @@ public class CashFlowEvidence {
         panel.setBorder(new EmptyBorder(0, 10, 0, 10));
 
         return panel;
+    }
+
+    private JPanel getBusyPane() {
+        busyPane.setPreferredSize(new Dimension(100, 25));
+        busyPane.add(new JLabel(new ImageIcon("src/main/resources/cz/muni/fi/pv168/cashflowevidence/images/spinner.gif")));
+        busyPane.add(new JLabel("Loading ..."));
+
+        return busyPane;
+    }
+    private void updateBusy(boolean busy) {
+        (busyPane.getComponent(0)).setVisible(busy);
+        (busyPane.getComponent(1)).setVisible(busy);
     }
     private String calculateBalance(TransactionTableModel tableModel) {
         double amount = 0;

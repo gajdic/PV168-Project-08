@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class ExportAction extends AbstractAction {
     private final JTable table;
@@ -19,12 +20,10 @@ public class ExportAction extends AbstractAction {
 
     private final Format format;
 
-    public ExportAction(JTable table, Exporter exporter, Format format, Runnable callback) {
+    public ExportAction(JTable table, Exporter exporter, Format format, Runnable callback, Consumer<Boolean> busyReporter) {
         super("Export " + format.getName(), UIManager.getIcon("FileChooser.fileIcon"));
         this.table = Objects.requireNonNull(table);
-        this.exporter = new AsyncExporter(Objects.requireNonNull(exporter),
-                callback
-        );
+        this.exporter = new AsyncExporter(Objects.requireNonNull(exporter),callback, busyReporter);
         this.format = format;
         putValue(SHORT_DESCRIPTION, "Exports selected record");
         putValue(MNEMONIC_KEY, KeyEvent.VK_X);

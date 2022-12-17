@@ -5,15 +5,19 @@ import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.Format;
 
 import javax.swing.*;
 import java.util.Collection;
+import java.util.function.Consumer;
 
 public class AsyncExporter implements Exporter {
 
     private final Exporter exporter;
     private final Runnable onFinish;
 
-    public AsyncExporter(Exporter exporter, Runnable onFinish) {
+    private final Consumer<Boolean> busyReporter;
+
+    public AsyncExporter(Exporter exporter, Runnable onFinish, Consumer<Boolean> busyReporter) {
         this.exporter = exporter;
         this.onFinish = onFinish;
+        this.busyReporter = busyReporter;
     }
 
     @Override
@@ -26,6 +30,7 @@ public class AsyncExporter implements Exporter {
         SwingWorker<Void, Void> asyncWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
+                busyReporter.accept(true);
                 exporter.exportData(filePath);
                 return null;
             }
@@ -33,6 +38,7 @@ public class AsyncExporter implements Exporter {
             @Override
             protected void done() {
                 super.done();
+                busyReporter.accept(false);
                 onFinish.run();
             }
         };
