@@ -117,9 +117,9 @@ public class CashFlowEvidence {
         Importer importer = dependencyProvider.getImporter();
         Exporter exporter = dependencyProvider.getExporter();
 
-        importAction = new ImportAction(transactionTable, importer, getFormat(importer, "CSV"), transactions, this::refresh, this::updateBusy);
+        importAction = new ImportAction(transactionTable, importer, getFormat(importer, "CSV"), this::refresh, this::updateBusy);
         exportAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "CSV"), this::refresh, this::updateBusy);
-        importJsonAction = new ImportAction(transactionTable, importer, getFormat(importer, "JSON"), transactions, this::refresh, this::updateBusy);
+        importJsonAction = new ImportAction(transactionTable, importer, getFormat(importer, "JSON"), this::refresh, this::updateBusy);
         exportJsonAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "JSON"), this::refresh, this::updateBusy);
         exportPdfAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "PDF"), this::refresh, this::updateBusy);
 

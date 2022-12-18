@@ -4,7 +4,6 @@ import cz.muni.fi.pv168.cashflowevidence.app.workers.AsyncImporter;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.Importer;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.BatchImporter;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.Format;
-import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.exceptions.InvalidImportException;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 
@@ -31,7 +30,6 @@ public class ImportAction extends AbstractAction {
     public ImportAction(JTable table,
                         Importer importer,
                         Format format,
-                        Repository<Transaction> transactionRepository,
                         Runnable callback,
                         Consumer<Boolean> busyReporter)
     {
