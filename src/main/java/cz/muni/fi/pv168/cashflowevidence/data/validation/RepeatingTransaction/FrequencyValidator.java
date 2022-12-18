@@ -21,6 +21,11 @@ public class FrequencyValidator extends PropertyValidator<TransactionFrequency> 
             result.add("%s months cannot be less than 0"
                     .formatted(getName(frequency)));
         }
+        //For testing
+        if (frequency == TransactionFrequency.EachSecond && days < 0) {
+            result.add("%s seconds cannot be less than 0"
+                    .formatted(getName(frequency)));
+        }
 
         return result;
     }

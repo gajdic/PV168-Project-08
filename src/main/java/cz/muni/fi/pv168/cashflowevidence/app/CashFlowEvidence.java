@@ -349,7 +349,6 @@ public class CashFlowEvidence {
 
         tabbedPane.addTab("Transactions", new TransactionsOverview(transactionTable,
                 new ArrayList<>(Arrays.asList(addTAction, editTAction, deleteTAction)), balanceLabel, filteredBalanceLabel, categories));
-        //TODO actions
         tabbedPane.addTab("Repeating transactions", new RepeatingTransactionsOverview(repeatingTransactionTable,
                 new ArrayList<>(Arrays.asList(addRTAction, editRTAction, deleteRTAction))));
         tabbedPane.addTab("Categories", new CategoriesOverview(categoryTable,
