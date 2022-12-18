@@ -21,7 +21,7 @@ public class RepeatingTransactionValidator implements Validator<RepeatingTransac
                 extracting(RepeatingTransaction::getAmount, new DoubleMinValueValidator(0, "Amount")),
                 extracting(RepeatingTransaction::getDateTime, new DateTimeValidator("Date")),
                 extracting(RepeatingTransaction::getFrequency, new FrequencyValidator("Frequency", repeatingTransaction.getDays())),
-                extracting(RepeatingTransaction::getDateFrom, new TwoDatesValidator("Transaction from, to", repeatingTransaction.getDateTo()))
+                extracting(RepeatingTransaction::getDateFrom, new TwoDatesValidator("Transaction from, to", repeatingTransaction.getDateTo(), repeatingTransaction.getId()))
         );
 
         return Validator.compose(validators).validate(repeatingTransaction);

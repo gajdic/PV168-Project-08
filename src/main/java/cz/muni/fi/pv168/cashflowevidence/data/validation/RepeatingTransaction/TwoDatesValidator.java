@@ -8,10 +8,12 @@ import java.time.LocalDate;
 public class TwoDatesValidator extends PropertyValidator<LocalDate> {
 
     private final LocalDate dateTo;
+    private final Long id;
 
-    public TwoDatesValidator(String name, LocalDate dateTo) {
+    public TwoDatesValidator(String name, LocalDate dateTo, Long id) {
         super(name);
         this.dateTo = dateTo;
+        this.id = id;
     }
 
     @Override
@@ -23,7 +25,7 @@ public class TwoDatesValidator extends PropertyValidator<LocalDate> {
             return result;
         }
 
-        if (dateFrom.isBefore(LocalDate.now())) {
+        if (id == null && dateFrom.isBefore(LocalDate.now())) {
             result.add("Repeating transaction cannot start in the past.");
         }
 
