@@ -303,12 +303,29 @@ public class CashFlowEvidence {
     }
 
     private JPanel getBalancePanel() {
-        JPanel panel = new JPanel(new GridLayout(2, 2));
+        JPanel panel = new JPanel(new GridBagLayout());
 
-        panel.add(new JLabel("Total balance:"));
-        panel.add(balanceLabel);
-        panel.add(new JLabel("Filtered balance:"));
-        panel.add(filteredBalanceLabel);
+        var c = new GridBagConstraints();
+
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 0;
+        panel.add(new JLabel("Total balance:  "), c);
+
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 1;
+        c.gridy = 0;
+        panel.add(balanceLabel, c);
+
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 1;
+        panel.add(new JLabel("Filtered balance:  "), c);
+
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 1;
+        c.gridy = 1;
+        panel.add(filteredBalanceLabel, c);
 
         return panel;
     }
