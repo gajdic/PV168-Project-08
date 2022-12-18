@@ -1,18 +1,18 @@
 package cz.muni.fi.pv168.cashflowevidence.service;
 
-import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.RepeatingTransactionRepository;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
-import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.TransactionRepository;
-import cz.muni.fi.pv168.cashflowevidence.model.transaction.*;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.RepeatingTransaction;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.RepeatingTransactionTableModel;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionFrequency;
+import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionTableModel;
 import cz.muni.fi.pv168.cashflowevidence.wiring.DependencyProvider;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
-import javax.swing.table.AbstractTableModel;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -52,7 +52,6 @@ public class RepeatingTaskScheduler {
             // Dropping and replanning all transactions to not have to deal with looking which
             // to delete and recreate on update. This is not expected to run that often, so
             // the overhead should not be that big problem
-            // TODO: Fix the bugs that are there with planning and rescheduling the transactions
 
             if (tableModelEvent.getType() == TableModelEvent.DELETE) {
                 refreshPlannedTransactions();
