@@ -104,6 +104,7 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
                     getTransactionValidator(),
                     getCategoryValidator(),
                     transactions,
+                    categories,
                     List.of(new CsvImporter(getCategoryRepository()), new JsonImporter(getCategoryRepository()))
             );
         }

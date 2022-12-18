@@ -33,6 +33,7 @@ public class DaoImporter implements Importer {
     private final Validator<Transaction> transactionValidator;
     private final Validator<Category> categoryValidator;
     private final Repository<Transaction> transactionRepository;
+    private final Repository<Category> categoryRepository;
     private final FormatMapping<BatchImporter> importers;
 
 
@@ -43,6 +44,7 @@ public class DaoImporter implements Importer {
             Validator<Transaction> transactionValidator,
             Validator<Category> categoryValidator,
             Repository<Transaction> transactionRepository,
+            Repository<Category> categoryRepository,
             Collection<BatchImporter> importers) {
 
         this.transactionEntityDaoSupplier = transactionEntityDaoSupplier;
@@ -51,6 +53,7 @@ public class DaoImporter implements Importer {
         this.transactionValidator = transactionValidator;
         this.categoryValidator = categoryValidator;
         this.transactionRepository = transactionRepository;
+        this.categoryRepository = categoryRepository;
         this.importers = new FormatMapping<>(importers);
     }
 
@@ -107,13 +110,13 @@ public class DaoImporter implements Importer {
                 sb.append(duplicates.get(idx).getName()).append(", ");
                 idx += 1;
             }
-            sb.deleteCharAt(sb.toString().length() - 2);
+            sb.delete(sb.toString().length() - 2, sb.toString().length());
 
             var remainingDuplicates = duplicates.size() - idx;
             if (remainingDuplicates > 0) {
-                sb.append(String.format("and %d more ", remainingDuplicates));
+                sb.append(String.format("and %d more", remainingDuplicates));
             }
-            sb.append("?");
+            sb.append(". \nHow do you want to proceed?");
 
             int option = confirmDuplicateImports(sb.toString());
             switch (option) {
@@ -129,6 +132,12 @@ public class DaoImporter implements Importer {
                     importedTransactions.clear();
                     break;
             }
+        }
+        if (deletedCategory(importedTransactions)) {
+            String message =  "Some of the transactions you are trying to " +
+                            "import have category that no longer exists." +
+                    "Such transactions will be imported without their categories.";
+            JOptionPane.showMessageDialog(null, message, "Warning", JOptionPane.INFORMATION_MESSAGE);
         }
         return importedTransactions.stream().toList();
     }
@@ -152,5 +161,13 @@ public class DaoImporter implements Importer {
                 null,
                 options,
                 options[1]);
+    }
+
+    private boolean deletedCategory(Collection<Transaction> transactions) {
+        return transactions
+                .stream()
+                .anyMatch(t -> categoryRepository.findAll()
+                                .stream()
+                        .noneMatch(c -> Objects.equals(t.getCategory(), c)));
     }
 }
