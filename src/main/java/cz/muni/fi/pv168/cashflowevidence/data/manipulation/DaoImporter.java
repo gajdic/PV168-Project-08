@@ -17,7 +17,6 @@ import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 
 import javax.swing.*;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -102,32 +101,25 @@ public class DaoImporter implements Importer {
 
         if (duplicates.size() != 0) {
             var sb = new StringBuilder("You are trying to import multiple duplicate transactions: ");
+            if (duplicates.size() == 1) {
+                sb = new StringBuilder("You are trying to import duplicate transaction ");
+            }
             var idx = 0;
             while (idx < 5 && idx != duplicates.size()) {
                 sb.append(duplicates.get(idx).getName()).append(", ");
                 idx += 1;
             }
-            sb.deleteCharAt(sb.toString().length() - 2);
+            sb.delete(sb.toString().length() - 2, sb.toString().length());
 
             var remainingDuplicates = duplicates.size() - idx;
             if (remainingDuplicates > 0) {
-                sb.append(String.format("and %d more ", remainingDuplicates));
+                sb.append(String.format("and %d more", remainingDuplicates));
             }
-            sb.append("?");
-
-            int option = confirmDuplicateImports(sb.toString());
-            switch (option) {
-                case 0:
-                    break;
-                case 1:
-                    importedTransactions = importedTransactions
-                            .stream()
-                            .filter(t -> !duplicates.contains(t))
-                            .collect(Collectors.toList());
-                    break;
-                case 2:
-                    importedTransactions.clear();
-                    break;
+            sb.append(". \nHow do you want to proceed?");
+            if (duplicates.size() == 1) {
+                confirmOneDuplicateImport(sb.toString(), importedTransactions);
+            } else {
+                importedTransactions = confirmMultipleDuplicateImports(sb.toString(), importedTransactions, duplicates);
             }
         }
         return importedTransactions.stream().toList();
@@ -135,15 +127,17 @@ public class DaoImporter implements Importer {
 
     private List<Transaction> findDuplicate(Collection<Transaction> importedTransactions) {
         List<Transaction> storedTransactions = transactionRepository.findAll();
-        return  storedTransactions.stream()
-                .filter(st -> importedTransactions.stream().anyMatch(it -> Objects.equals(st, it)))
+        return  importedTransactions.stream()
+                .filter(it -> storedTransactions.stream().anyMatch(st -> Objects.equals(st, it)))
                 .toList();
     }
 
-    private int confirmDuplicateImports(String message) {
+    private Collection<Transaction> confirmMultipleDuplicateImports(String message,
+                                                            Collection<Transaction> importedTransactions,
+                                                            List<Transaction> duplicates) {
         Object[] options = {"Import all","Import only non duplicate", "Do not import any"};
 
-        return  JOptionPane.showOptionDialog(
+        int option = JOptionPane.showOptionDialog(
                 null,
                 message,
                 "Warning",
@@ -152,5 +146,42 @@ public class DaoImporter implements Importer {
                 null,
                 options,
                 options[1]);
+
+        switch (option) {
+            case 0:
+                break;
+            case 1:
+                importedTransactions = importedTransactions
+                        .stream()
+                        .filter(t -> !duplicates.contains(t))
+                        .collect(Collectors.toList());
+                break;
+            case 2:
+                importedTransactions.clear();
+                break;
+        }
+        return importedTransactions;
+    }
+    private void confirmOneDuplicateImport(String message,
+                                           Collection<Transaction> importedTransactions) {
+        Object[] options = {"Import", "Do not import"};
+
+        int option = JOptionPane.showOptionDialog(
+                null,
+                message,
+                "Warning",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                null);
+
+        switch (option) {
+            case 0:
+                break;
+            case 1:
+                importedTransactions.clear();
+                break;
+        }
     }
 }
