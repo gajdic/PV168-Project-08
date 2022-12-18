@@ -38,7 +38,6 @@ public class ImportAction extends AbstractAction {
         super("Import " + format.getName(), UIManager.getIcon("FileChooser.fileIcon"));
         this.table = Objects.requireNonNull(table);
         this.importer = new AsyncImporter(Objects.requireNonNull(importer), callback, busyReporter);
-        this.transactionRepository = transactionRepository;
         this.callback = callback;
         this.format = format;
         putValue(SHORT_DESCRIPTION, "Imports selected record");
