@@ -145,7 +145,7 @@ public class TransactionDialog extends AbstractTransactionDialog {
         categoryComboBox.setSelectedIndex(0);
         categoryComboBox.setRenderer(new CategoryColorListCellRenderer());
         categoryComboBox.setUI(new CustomComboBoxUI());
-        categoryComboBox.setPreferredSize(new Dimension(220,40));
+        categoryComboBox.setPreferredSize(new Dimension(200,23));
         categoryComboBox.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         categoryComboBox.addItemListener(e -> changeComboColor());
 

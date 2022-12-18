@@ -134,6 +134,7 @@ public class RepeatingTransactionDialog extends AbstractTransactionDialog {
         categoryComboBox.setSelectedIndex(0);
         categoryComboBox.setRenderer(new CategoryColorListCellRenderer());
         categoryComboBox.setUI(new CustomComboBoxUI());
+        categoryComboBox.setPreferredSize(new Dimension(200,23));
         categoryComboBox.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         categoryComboBox.addItemListener(e -> changeComboColor());
     }
@@ -159,6 +160,7 @@ public class RepeatingTransactionDialog extends AbstractTransactionDialog {
         }
         frequencyComboBox.addActionListener(e -> onCustomFrequency());
         frequencyComboBox.setUI(new BasicComboBoxUI());
+        frequencyComboBox.setPreferredSize(new Dimension(200,23));
         frequencyComboBox.setBorder(BorderFactory.createLineBorder(Color.GRAY));
     }
 
