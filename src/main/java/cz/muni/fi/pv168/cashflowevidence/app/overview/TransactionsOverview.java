@@ -2,6 +2,7 @@ package cz.muni.fi.pv168.cashflowevidence.app.overview;
 
 
 import com.github.lgooddatepicker.components.DatePicker;
+import cz.muni.fi.pv168.cashflowevidence.UI.CustomComboBoxUI;
 import cz.muni.fi.pv168.cashflowevidence.app.InputNumberFormatter;
 import cz.muni.fi.pv168.cashflowevidence.app.RightClickMenu;
 import cz.muni.fi.pv168.cashflowevidence.app.TransactionFilter;
@@ -178,19 +179,10 @@ public class TransactionsOverview extends AbstractOverview {
 
         categoriesJComboBox.addItemListener(e -> changeComboColor());
 
-        categoriesJComboBox.setUI(new BasicComboBoxUI() {
-            @Override
-            protected JButton createArrowButton() {
-                return new BasicArrowButton(BasicArrowButton.SOUTH,
-                        UIManager.getColor("ComboBox.buttonShadow"),
-                        UIManager.getColor("ComboBox.buttonShadow"),
-                        UIManager.getColor("ComboBox.buttonDarkShadow"),
-                        UIManager.getColor("ComboBox.buttonHighlight"));
-            }
-        });
+        categoriesJComboBox.setUI(new CustomComboBoxUI());
 
         panel.add(categoriesJComboBox);
-        categoriesJComboBox.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        categoriesJComboBox.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 
         categoriesPanel.add(new JLabel("Category"), BorderLayout.NORTH);
         categoriesPanel.add(panel, BorderLayout.SOUTH);

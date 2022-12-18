@@ -2,6 +2,7 @@ package cz.muni.fi.pv168.cashflowevidence.app.dialog;
 
 import com.github.lgooddatepicker.components.DatePicker;
 import com.privatejgoodies.common.base.SystemUtils;
+import cz.muni.fi.pv168.cashflowevidence.UI.CustomComboBoxUI;
 import cz.muni.fi.pv168.cashflowevidence.app.InputNumberFormatter;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.data.validation.Validator;
@@ -12,6 +13,7 @@ import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionType;
 import cz.muni.fi.pv168.cashflowevidence.renderer.CategoryColorListCellRenderer;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicComboBoxUI;
 import java.awt.*;
 import java.text.NumberFormat;
 import java.time.LocalDate;
@@ -131,6 +133,17 @@ public class RepeatingTransactionDialog extends AbstractTransactionDialog {
         categoryComboBox.insertItemAt(null, 0);
         categoryComboBox.setSelectedIndex(0);
         categoryComboBox.setRenderer(new CategoryColorListCellRenderer());
+        categoryComboBox.setUI(new CustomComboBoxUI());
+        categoryComboBox.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        categoryComboBox.addItemListener(e -> changeComboColor());
+    }
+    private void changeComboColor() {
+        Category c = (Category) categoryComboBox.getSelectedItem();
+        if (c != null) {
+            categoryComboBox.setBackground(c.getColor());
+        } else {
+            categoryComboBox.setBackground(Color.WHITE);
+        }
     }
 
     private void setupIncomingOutgoing() {
@@ -142,12 +155,11 @@ public class RepeatingTransactionDialog extends AbstractTransactionDialog {
 
     private void setupFrequencyComboBox () {
         for (TransactionFrequency frequency : TransactionFrequency.values()) {
-//            if (frequency == TransactionFrequency.EachSecond) {
-//                continue;
-//            }
             frequencyComboBox.addItem(frequency);
         }
         frequencyComboBox.addActionListener(e -> onCustomFrequency());
+        frequencyComboBox.setUI(new BasicComboBoxUI());
+        frequencyComboBox.setBorder(BorderFactory.createLineBorder(Color.GRAY));
     }
 
     private void setupDatePickers() {
