@@ -2,6 +2,7 @@ package cz.muni.fi.pv168.cashflowevidence.app.overview;
 
 
 import com.github.lgooddatepicker.components.DatePicker;
+import cz.muni.fi.pv168.cashflowevidence.UI.CustomComboBoxUI;
 import cz.muni.fi.pv168.cashflowevidence.app.InputNumberFormatter;
 import cz.muni.fi.pv168.cashflowevidence.app.RightClickMenu;
 import cz.muni.fi.pv168.cashflowevidence.app.TransactionFilter;
@@ -12,7 +13,10 @@ import cz.muni.fi.pv168.cashflowevidence.renderer.CategoryColorListCellRenderer;
 import cz.muni.fi.pv168.cashflowevidence.renderer.DateTimeCellRenderer;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicArrowButton;
+import javax.swing.plaf.basic.BasicComboBoxUI;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.FocusAdapter;
@@ -158,7 +162,7 @@ public class TransactionsOverview extends AbstractOverview {
         panel.add(specifiedCategories);
 
         fillComboBox();
-        categoriesJComboBox.setPreferredSize(new Dimension(120, 20));
+        categoriesJComboBox.setPreferredSize(new Dimension(120, 25));
         categoriesJComboBox.setRenderer(new CategoryColorListCellRenderer());
 
         categoriesJComboBox.addFocusListener(new FocusAdapter() {
@@ -173,7 +177,12 @@ public class TransactionsOverview extends AbstractOverview {
         allCategories.addActionListener(e -> specifiedCategorySetTrue());
         specifiedCategories.addActionListener(e -> specifiedCategorySetTrue());
 
+        categoriesJComboBox.addItemListener(e -> changeComboColor());
+
+        categoriesJComboBox.setUI(new CustomComboBoxUI());
+
         panel.add(categoriesJComboBox);
+        categoriesJComboBox.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 
         categoriesPanel.add(new JLabel("Category"), BorderLayout.NORTH);
         categoriesPanel.add(panel, BorderLayout.SOUTH);
@@ -181,8 +190,24 @@ public class TransactionsOverview extends AbstractOverview {
         return categoriesPanel;
     }
 
+    private void changeComboColor() {
+        Category c = (Category) categoriesJComboBox.getSelectedItem();
+        if (c != null) {
+            categoriesJComboBox.setBackground(c.getColor());
+        } else {
+            categoriesJComboBox.setBackground(Color.WHITE);
+        }
+    }
+
     private void specifiedCategorySetTrue() {
-        categoriesJComboBox.setEnabled(specifiedCategories.isSelected());
+        if (specifiedCategories.isSelected()) {
+            categoriesJComboBox.setEnabled(true);
+            changeComboColor();
+        } else {
+            categoriesJComboBox.setEnabled(false);
+            categoriesJComboBox.setBackground(Color.WHITE);
+            categoriesJComboBox.setSelectedIndex(0);
+        }
     }
 
     private void fillComboBox() {

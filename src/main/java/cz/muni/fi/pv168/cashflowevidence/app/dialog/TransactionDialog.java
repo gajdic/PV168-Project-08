@@ -2,6 +2,7 @@ package cz.muni.fi.pv168.cashflowevidence.app.dialog;
 
 import com.github.lgooddatepicker.components.DateTimePicker;
 import com.privatejgoodies.common.base.SystemUtils;
+import cz.muni.fi.pv168.cashflowevidence.UI.CustomComboBoxUI;
 import cz.muni.fi.pv168.cashflowevidence.app.InputNumberFormatter;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.data.validation.Validator;
@@ -10,6 +11,7 @@ import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionType;
 import cz.muni.fi.pv168.cashflowevidence.renderer.CategoryColorListCellRenderer;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
@@ -17,6 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.time.LocalDateTime;
 
@@ -141,10 +144,24 @@ public class TransactionDialog extends AbstractTransactionDialog {
         categoryComboBox.insertItemAt(null, 0);
         categoryComboBox.setSelectedIndex(0);
         categoryComboBox.setRenderer(new CategoryColorListCellRenderer());
+        categoryComboBox.setUI(new CustomComboBoxUI());
+        categoryComboBox.setPreferredSize(new Dimension(200,23));
+        categoryComboBox.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        categoryComboBox.addItemListener(e -> changeComboColor());
+
 
         dateTimePicker = new DateTimePicker();
         dateTimePicker.setDateTimeStrict(LocalDateTime.now());
 
         amountField = new JFormattedTextField(new InputNumberFormatter(InputNumberFormatter.getDecimalFormat()));
+    }
+
+    private void changeComboColor() {
+        Category c = (Category) categoryComboBox.getSelectedItem();
+        if (c != null) {
+            categoryComboBox.setBackground(c.getColor());
+        } else {
+            categoryComboBox.setBackground(Color.WHITE);
+        }
     }
 }
