@@ -12,9 +12,9 @@ public class AsyncExporter implements Exporter {
     private final Exporter exporter;
     private final Runnable onFinish;
 
-    private final Consumer<Boolean> busyReporter;
+    private final Consumer<Integer> busyReporter;
 
-    public AsyncExporter(Exporter exporter, Runnable onFinish, Consumer<Boolean> busyReporter) {
+    public AsyncExporter(Exporter exporter, Runnable onFinish, Consumer<Integer> busyReporter) {
         this.exporter = exporter;
         this.onFinish = onFinish;
         this.busyReporter = busyReporter;
@@ -30,7 +30,7 @@ public class AsyncExporter implements Exporter {
         SwingWorker<Void, Void> asyncWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                busyReporter.accept(true);
+                busyReporter.accept(1);
                 exporter.exportData(filePath);
                 return null;
             }
@@ -38,7 +38,7 @@ public class AsyncExporter implements Exporter {
             @Override
             protected void done() {
                 super.done();
-                busyReporter.accept(false);
+                busyReporter.accept(-1);
                 onFinish.run();
             }
         };

@@ -31,7 +31,7 @@ public class ImportAction extends AbstractAction {
                         Importer importer,
                         Format format,
                         Runnable callback,
-                        Consumer<Boolean> busyReporter)
+                        Consumer<Integer> busyReporter)
     {
         super("Import " + format.getName(), UIManager.getIcon("FileChooser.fileIcon"));
         this.table = Objects.requireNonNull(table);

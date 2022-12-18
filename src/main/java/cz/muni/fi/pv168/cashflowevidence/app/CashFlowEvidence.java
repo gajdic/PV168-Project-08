@@ -89,6 +89,7 @@ public class CashFlowEvidence {
     private final JTable repeatingTransactionTable;
 
     private final JPanel busyPane = new JPanel();
+    private int busyCounter = 0;
 
     private final RepeatingTaskScheduler repeatingTaskScheduler;
 
@@ -135,7 +136,7 @@ public class CashFlowEvidence {
         frame.add(getBusyPane(), BorderLayout.SOUTH);
         frame.setVisible(true);
 
-        updateBusy(false);
+        updateBusy(0);
 
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
@@ -350,9 +351,10 @@ public class CashFlowEvidence {
 
         return busyPane;
     }
-    private void updateBusy(boolean busy) {
-        (busyPane.getComponent(0)).setVisible(busy);
-        (busyPane.getComponent(1)).setVisible(busy);
+    private void updateBusy(int busyUpdate) {
+        busyCounter += busyUpdate;
+        (busyPane.getComponent(0)).setVisible(busyCounter > 0);
+        (busyPane.getComponent(1)).setVisible(busyCounter > 0);
     }
     private String calculateBalance(TransactionTableModel tableModel) {
         double amount = 0;
