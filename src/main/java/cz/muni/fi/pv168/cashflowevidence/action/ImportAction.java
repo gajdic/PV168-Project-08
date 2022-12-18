@@ -2,7 +2,7 @@ package cz.muni.fi.pv168.cashflowevidence.action;
 
 import cz.muni.fi.pv168.cashflowevidence.app.workers.AsyncImporter;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.Importer;
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.BatchImporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.DataManipulationException;
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.Format;
 import cz.muni.fi.pv168.cashflowevidence.exceptions.InvalidImportException;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
@@ -61,7 +61,8 @@ public class ImportAction extends AbstractAction {
             String fileName = importFile.getAbsolutePath();
 
             importer.importData(fileName);
-        } catch (InvalidImportException ex) {
+        } catch (InvalidImportException | DataManipulationException ex) {
+
             JOptionPane.showMessageDialog(
                     null, "Nothing was imported. \n\nThe file that you provided is invalid, please try again.");
             return;
