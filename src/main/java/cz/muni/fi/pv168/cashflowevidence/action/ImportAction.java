@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class ImportAction extends AbstractAction {
 
@@ -30,13 +31,14 @@ public class ImportAction extends AbstractAction {
     public ImportAction(JTable table,
                         Importer importer,
                         Format format,
-                        Runnable callback)
+                        Repository<Transaction> transactionRepository,
+                        Runnable callback,
+                        Consumer<Boolean> busyReporter)
     {
         super("Import " + format.getName(), UIManager.getIcon("FileChooser.fileIcon"));
         this.table = Objects.requireNonNull(table);
-        this.importer = new AsyncImporter(Objects.requireNonNull(importer),
-                callback
-                );
+        this.importer = new AsyncImporter(Objects.requireNonNull(importer), callback, busyReporter);
+        this.transactionRepository = transactionRepository;
         this.callback = callback;
         this.format = format;
         putValue(SHORT_DESCRIPTION, "Imports selected record");
