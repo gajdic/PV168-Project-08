@@ -92,15 +92,36 @@ public class RepeatingTaskSchedulerTest {
     }
 
     @Test
-    void scheduleRepeatingTransactionFutureChangeDate() {
-        // TODO:
-    }
+    void scheduleRepeatingTransactionsFutureDelete() {
+        repeatingTransaction = new RepeatingTransaction(TransactionType.Incoming, "repeatingTrEveryTenSeconds",
+                "desc",666, null,
+                LocalDateTime.now().plusSeconds(2), LocalDateTime.now().plusSeconds(100), 5);
+        repeatingTransaction.setFrequency(TransactionFrequency.EachSecond);
 
-    @Test
-    void repeatingTransactionMovedToPastNotRecreating() {
-        // TODO: When repeating transaction is moved to past, it should not recreate already existing transactions
-        // Or prohibit moving the transaction into past
 
+        repeatingTransactionRepository.create(repeatingTransaction);
+
+        scheduler.scheduleExistingTransactions();
+
+        try {
+            Thread.sleep(20000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        assertThat(transactionRepository.findAll().size()).isEqualTo(4);
+
+        repeatingTransactionRepository.deleteByIndex(0);
+
+        scheduler.refreshPlannedTransactions();
+
+        try {
+            Thread.sleep(20000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        assertThat(transactionRepository.findAll().size()).isEqualTo(4);
     }
 
 }
