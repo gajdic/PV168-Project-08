@@ -13,15 +13,15 @@ import java.nio.charset.StandardCharsets;
 public class HelpAction extends AbstractAction {
 
     public HelpAction() {
-        super("Help");
-        putValue(SHORT_DESCRIPTION, "Shows help dialog");
-        putValue(MNEMONIC_KEY, KeyEvent.VK_H);
+        super("Information");
+        putValue(SHORT_DESCRIPTION, "Shows information about the app");
+        putValue(MNEMONIC_KEY, KeyEvent.VK_N);
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl H"));
     }
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        JFrame frame = new JFrame("Help");
+        JFrame frame = new JFrame("Information");
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setSize(new Dimension(400, 500));
         frame.setLocationRelativeTo(null);

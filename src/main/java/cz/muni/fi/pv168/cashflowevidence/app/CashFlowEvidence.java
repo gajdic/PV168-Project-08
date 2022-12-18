@@ -296,7 +296,7 @@ public class CashFlowEvidence {
         JMenu categoryMenu = getMenu("Category", KeyEvent.VK_C,
                 new ArrayList<>(List.of(addCAction, editCAction, deleteCAction)));
 
-        JMenu helpMenu = getMenu("Help", KeyEvent.VK_H,
+        JMenu helpMenu = getMenu("Information", KeyEvent.VK_N,
                 new ArrayList<>(List.of(helpAction)));
 
         JMenuBar menuBar = new JMenuBar();
