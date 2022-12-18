@@ -27,7 +27,6 @@ public class ExportAction extends AbstractAction {
         this.format = format;
         putValue(SHORT_DESCRIPTION, "Exports selected record");
         putValue(MNEMONIC_KEY, KeyEvent.VK_X);
-        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl X"));
     }
 
     @Override

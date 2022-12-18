@@ -30,6 +30,8 @@ public class DeleteCategoryAction extends DeleteAction {
         putValue(SHORT_DESCRIPTION, "Deletes selected record");
         putValue(MNEMONIC_KEY, KeyEvent.VK_D);
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl D"));
+        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE,0));
+
 
         this.categoryTable = categoryTable;
         this.transactionTable = transactionTable;

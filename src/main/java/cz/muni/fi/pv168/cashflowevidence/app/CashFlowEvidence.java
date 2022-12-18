@@ -1,9 +1,6 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
-import cz.muni.fi.pv168.cashflowevidence.action.ExitApplicationAction;
-import cz.muni.fi.pv168.cashflowevidence.action.ExportAction;
-import cz.muni.fi.pv168.cashflowevidence.action.HelpAction;
-import cz.muni.fi.pv168.cashflowevidence.action.ImportAction;
+import cz.muni.fi.pv168.cashflowevidence.action.*;
 import cz.muni.fi.pv168.cashflowevidence.action.category.AddCategoryAction;
 import cz.muni.fi.pv168.cashflowevidence.action.category.DeleteCategoryAction;
 import cz.muni.fi.pv168.cashflowevidence.action.category.EditCategoryAction;
@@ -51,10 +48,11 @@ public class CashFlowEvidence {
     public static final JFrame frame = getFrame();
 
     // file menu
-
-
+    private final Action importCSVAction;
     private final Action importAction;
+    private final Action exportCSVAction;
     private final Action exportAction;
+
     private final Action exitAction = new ExitApplicationAction();
     private final Action importJsonAction;
     private final Action exportJsonAction;
@@ -73,6 +71,8 @@ public class CashFlowEvidence {
     private Action addCAction;
     private Action editCAction;
     private Action deleteCAction;
+
+    private Action addOptionsAction;
 
     private final Action helpAction = new HelpAction();
 
@@ -118,12 +118,22 @@ public class CashFlowEvidence {
         Importer importer = dependencyProvider.getImporter();
         Exporter exporter = dependencyProvider.getExporter();
 
-        importAction = new ImportAction(transactionTable, importer, getFormat(importer, "CSV"), this::refresh, this::updateBusy);
-        exportAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "CSV"), this::refresh, this::updateBusy);
+        importCSVAction = new ImportAction(transactionTable, importer, getFormat(importer, "CSV"), this::refresh, this::updateBusy);
+        exportCSVAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "CSV"), this::refresh, this::updateBusy);
         importJsonAction = new ImportAction(transactionTable, importer, getFormat(importer, "JSON"), this::refresh, this::updateBusy);
         exportJsonAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "JSON"), this::refresh, this::updateBusy);
         exportPdfAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "PDF"), this::refresh, this::updateBusy);
 
+
+        exportAction = new ExportOptionsAction(List.of(
+                exportCSVAction,
+                exportJsonAction,
+                exportPdfAction));
+
+        importAction = new ImportOptionsAction(List.of(
+                importCSVAction,
+                importJsonAction
+        ));
 
         repeatingTaskScheduler = new RepeatingTaskScheduler(dependencyProvider, transactionTableModel);
         repeatingTaskScheduler.scheduleExistingTransactions();
@@ -171,6 +181,8 @@ public class CashFlowEvidence {
         addCAction = new AddCategoryAction(categoryTable, categoryValidator);
         editCAction = new EditCategoryAction(categoryTable, categoryValidator);
         deleteCAction = new DeleteCategoryAction(categoryTable, transactionTable, repeatingTransactionTable);
+
+        addOptionsAction = new AddOptionsAction(List.of(addTAction, addRTAction, addCAction));
     }
 
     private JPanel getContent(){
@@ -268,10 +280,18 @@ public class CashFlowEvidence {
     private JMenuBar getMenuBar() {
 
         JMenu fileMenu = getMenu("File", KeyEvent.VK_F,
-                new ArrayList<>(List.of(importAction, importJsonAction, exportAction, exportJsonAction, exportPdfAction, exitAction)));
+                new ArrayList<>(List.of(importCSVAction,
+                        importJsonAction,
+                        importAction,
+                        exportCSVAction,
+                        exportJsonAction,
+                        exportPdfAction,
+                        exportAction,
+                        addOptionsAction,
+                        exitAction)));
         JMenu transactionMenu = getMenu("Transaction", KeyEvent.VK_T,
                 new ArrayList<>(List.of(addTAction, editTAction, deleteTAction)));
-        JMenu repeatingTransactionMenu = getMenu("Repeating Transaction", KeyEvent.VK_R,
+        JMenu repeatingTransactionMenu = getMenu("Repeating Transaction", KeyEvent.VK_P,
                 new ArrayList<>(List.of(addRTAction, editRTAction, deleteRTAction)));
         JMenu categoryMenu = getMenu("Category", KeyEvent.VK_C,
                 new ArrayList<>(List.of(addCAction, editCAction, deleteCAction)));

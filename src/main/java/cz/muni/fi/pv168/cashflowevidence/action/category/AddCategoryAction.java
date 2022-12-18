@@ -22,7 +22,6 @@ public class AddCategoryAction extends AbstractAction {
         super("Add", UIManager.getIcon("FileChooser.fileIcon"));
         putValue(SHORT_DESCRIPTION, "Adds new record");
         putValue(MNEMONIC_KEY, KeyEvent.VK_A);
-        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl N"));
 
         this.categoryTable = categoryTable;
         this.validator = validator;
@@ -42,5 +41,9 @@ public class AddCategoryAction extends AbstractAction {
                         null, "We were unable to create the category. Please try again.");
             }
         }
+    }
+
+    @Override public String toString() {
+        return "Category";
     }
 }

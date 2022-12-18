@@ -40,7 +40,6 @@ public class ImportAction extends AbstractAction {
         this.format = format;
         putValue(SHORT_DESCRIPTION, "Imports selected record");
         putValue(MNEMONIC_KEY, KeyEvent.VK_I);
-        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl I"));
     }
 
     @Override
@@ -70,4 +69,10 @@ public class ImportAction extends AbstractAction {
 
         callback.run();
     }
+
+    @Override
+    public String toString() {
+        return this.format.getName();
+    }
+
 }
