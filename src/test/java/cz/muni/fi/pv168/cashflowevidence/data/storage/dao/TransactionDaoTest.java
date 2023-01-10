@@ -56,11 +56,7 @@ public class TransactionDaoTest {
         assertThat(createdTransaction.id())
                 .isGreaterThan(1);
 
-        assertThat(createdTransaction.name()).isEqualTo(params.name());
-        assertThat(createdTransaction.description()).isEqualTo(params.description());
-        assertThat(createdTransaction.amount()).isEqualTo(params.amount());
-        assertThat(createdTransaction.type()).isEqualTo(params.type());
-        assertThat(createdTransaction.categoryId()).isEqualTo(params.categoryId());
+        assertThat(createdTransaction).isEqualTo(params);
 
         var foundCreated = transactionDao.findById(createdTransaction.id());
 

@@ -1,5 +1,7 @@
 package cz.muni.fi.pv168.cashflowevidence.data.storage.entity;
 
+import java.util.Objects;
+
 /**
  * Represents the Category entity
  *
@@ -14,5 +16,19 @@ public record CategoryEntity(
 ) {
     public CategoryEntity(String name, String color) {
         this(null, name, color);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CategoryEntity that = (CategoryEntity) o;
+        return Objects.equals(name, that.name) && Objects.equals(color, that.color);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, color);
     }
 }

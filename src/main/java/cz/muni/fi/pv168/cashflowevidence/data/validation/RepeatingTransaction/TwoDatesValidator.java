@@ -8,18 +8,29 @@ import java.time.LocalDate;
 public class TwoDatesValidator extends PropertyValidator<LocalDate> {
 
     private final LocalDate dateTo;
+    private final Long id;
 
-    public TwoDatesValidator(String name, LocalDate dateTo) {
+    public TwoDatesValidator(String name, LocalDate dateTo, Long id) {
         super(name);
         this.dateTo = dateTo;
+        this.id = id;
     }
 
     @Override
     public ValidationResult validate(LocalDate dateFrom) {
         var result = new ValidationResult();
 
-        if (dateFrom == null || dateFrom.isAfter(dateTo)) {
-            result.add("'Date from' is either empty or after the 'Date to'.");
+        if (dateFrom == null) {
+            result.add("Repeat from field cannot be empty.");
+            return result;
+        }
+
+        if (id == null && dateFrom.isBefore(LocalDate.now())) {
+            result.add("Repeating transaction cannot start in the past.");
+        }
+
+        if (dateFrom.isAfter(dateTo)) {
+            result.add("Repeat from date cannot be after Repeat to date");
         }
 
         return result;

@@ -1,40 +1,53 @@
 package cz.muni.fi.pv168.cashflowevidence.action;
 
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.TransactionImporter;
+import cz.muni.fi.pv168.cashflowevidence.app.workers.AsyncImporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.Importer;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.DataManipulationException;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.Format;
 import cz.muni.fi.pv168.cashflowevidence.exceptions.InvalidImportException;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
-import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionTableModel;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
-
-import static cz.muni.fi.pv168.cashflowevidence.app.CashFlowEvidence.frame;
+import java.util.function.Consumer;
 
 public class ImportAction extends AbstractAction {
 
     private final JTable table;
-    private final TransactionImporter importer;
+    private final Importer importer;
 
-    public ImportAction(JTable table, TransactionImporter importer) {
-        super("Import " + importer.getFormat(), UIManager.getIcon("FileChooser.fileIcon"));
+    private final Format format;
+
+    private final Runnable callback;
+
+    public ImportAction(JTable table,
+                        Importer importer,
+                        Format format,
+                        Runnable callback,
+                        Consumer<Integer> busyReporter)
+    {
+        super("Import " + format.getName(), UIManager.getIcon("FileChooser.fileIcon"));
         this.table = Objects.requireNonNull(table);
-        this.importer = Objects.requireNonNull(importer);
+        this.importer = new AsyncImporter(Objects.requireNonNull(importer), callback, busyReporter);
+        this.callback = callback;
+        this.format = format;
         putValue(SHORT_DESCRIPTION, "Imports selected record");
         putValue(MNEMONIC_KEY, KeyEvent.VK_I);
-        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl I"));
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         var fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
-        fileChooser.setFileFilter(new FileNameExtensionFilter(importer.getFormat().toString(),
-                importer.getFormat().toString()));
+        String fileFormat = format.getExtensions().stream().findFirst().orElse(format.getName());
+        fileChooser.setFileFilter(new FileNameExtensionFilter(fileFormat, fileFormat));
 
         int dialogResult = fileChooser.showOpenDialog(table);
         if (dialogResult != JFileChooser.APPROVE_OPTION) {
@@ -42,19 +55,24 @@ public class ImportAction extends AbstractAction {
         }
 
         File importFile = fileChooser.getSelectedFile();
-        Collection<Transaction> importedTransactions = null;
 
         try {
-            importedTransactions = importer.importRecords(importFile.getAbsolutePath());
-        } catch (InvalidImportException ex) {
-            JOptionPane.showMessageDialog(frame,
-                    "There has been an error with the import, the chosen file is invalid. Nothing was imported," +
-                            "please try again");
-            ex.printStackTrace();
+            String fileName = importFile.getAbsolutePath();
+
+            importer.importData(fileName);
+        } catch (InvalidImportException | DataManipulationException ex) {
+
+            JOptionPane.showMessageDialog(
+                    null, "Nothing was imported. \n\nThe file that you provided is invalid, please try again.");
             return;
         }
 
-        TransactionTableModel transactionTableModel = (TransactionTableModel) table.getModel();
-        importedTransactions.forEach(transactionTableModel::addRow);
+        callback.run();
     }
+
+    @Override
+    public String toString() {
+        return this.format.getName();
+    }
+
 }

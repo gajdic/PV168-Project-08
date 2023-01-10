@@ -1,9 +1,6 @@
 package cz.muni.fi.pv168.cashflowevidence.app;
 
-import cz.muni.fi.pv168.cashflowevidence.action.ExitApplicationAction;
-import cz.muni.fi.pv168.cashflowevidence.action.ExportAction;
-import cz.muni.fi.pv168.cashflowevidence.action.HelpAction;
-import cz.muni.fi.pv168.cashflowevidence.action.ImportAction;
+import cz.muni.fi.pv168.cashflowevidence.action.*;
 import cz.muni.fi.pv168.cashflowevidence.action.category.AddCategoryAction;
 import cz.muni.fi.pv168.cashflowevidence.action.category.DeleteCategoryAction;
 import cz.muni.fi.pv168.cashflowevidence.action.category.EditCategoryAction;
@@ -16,43 +13,27 @@ import cz.muni.fi.pv168.cashflowevidence.action.transaction.EditTransactionActio
 import cz.muni.fi.pv168.cashflowevidence.app.overview.CategoriesOverview;
 import cz.muni.fi.pv168.cashflowevidence.app.overview.RepeatingTransactionsOverview;
 import cz.muni.fi.pv168.cashflowevidence.app.overview.TransactionsOverview;
-import cz.muni.fi.pv168.cashflowevidence.data.adapter.TransactionCSVSerializer;
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.JsonTransactionExporter;
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.JsonTransactionImporter;
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.TransactionExporter;
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.TransactionImporter;
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.TransactionPerLineExporter;
-import cz.muni.fi.pv168.cashflowevidence.data.manipulation.TransactionPerLineImporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.Exporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.FileFormats;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.Importer;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.Format;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryTableModel;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.*;
 import cz.muni.fi.pv168.cashflowevidence.service.RepeatingTaskScheduler;
 import cz.muni.fi.pv168.cashflowevidence.wiring.DependencyProvider;
+import org.tinylog.Logger;
 
-import javax.swing.Action;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.AbstractTableModel;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -67,13 +48,15 @@ public class CashFlowEvidence {
     public static final JFrame frame = getFrame();
 
     // file menu
-
-
+    private final Action importCSVAction;
     private final Action importAction;
+    private final Action exportCSVAction;
     private final Action exportAction;
+
     private final Action exitAction = new ExitApplicationAction();
     private final Action importJsonAction;
     private final Action exportJsonAction;
+    private final Action exportPdfAction;
     private final Repository<Category> categories;
     private final Repository<Transaction> transactions;
     private final Repository<RepeatingTransaction> repeatingTransactions;
@@ -89,6 +72,8 @@ public class CashFlowEvidence {
     private Action editCAction;
     private Action deleteCAction;
 
+    private Action addOptionsAction;
+
     private final Action helpAction = new HelpAction();
 
     // help menu
@@ -102,6 +87,9 @@ public class CashFlowEvidence {
     private final JTable transactionTable;
 
     private final JTable repeatingTransactionTable;
+
+    private final JPanel busyPane = new JPanel();
+    private int busyCounter = 0;
 
     private final RepeatingTaskScheduler repeatingTaskScheduler;
 
@@ -127,16 +115,25 @@ public class CashFlowEvidence {
 
         initializeActions(dependencyProvider);
 
-        TransactionImporter jsonImporter = new JsonTransactionImporter();
-        TransactionExporter jsonExporter = new JsonTransactionExporter();
-        TransactionImporter csvImporter = new TransactionPerLineImporter(new TransactionCSVSerializer());
-        TransactionExporter csvExporter = new TransactionPerLineExporter(new TransactionCSVSerializer());
+        Importer importer = dependencyProvider.getImporter();
+        Exporter exporter = dependencyProvider.getExporter();
+
+        importCSVAction = new ImportAction(transactionTable, importer, getFormat(importer, "CSV"), this::refresh, this::updateBusy);
+        exportCSVAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "CSV"), this::refresh, this::updateBusy);
+        importJsonAction = new ImportAction(transactionTable, importer, getFormat(importer, "JSON"), this::refresh, this::updateBusy);
+        exportJsonAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "JSON"), this::refresh, this::updateBusy);
+        exportPdfAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "PDF"), this::refresh, this::updateBusy);
 
 
-        importAction = new ImportAction(transactionTable, csvImporter);
-        exportAction = new ExportAction(transactionTable, csvExporter);
-        importJsonAction = new ImportAction(transactionTable, jsonImporter);
-        exportJsonAction = new ExportAction(transactionTable, jsonExporter);
+        exportAction = new ExportOptionsAction(List.of(
+                exportCSVAction,
+                exportJsonAction,
+                exportPdfAction));
+
+        importAction = new ImportOptionsAction(List.of(
+                importCSVAction,
+                importJsonAction
+        ));
 
         repeatingTaskScheduler = new RepeatingTaskScheduler(dependencyProvider, transactionTableModel);
         repeatingTaskScheduler.scheduleExistingTransactions();
@@ -146,10 +143,27 @@ public class CashFlowEvidence {
 
         JPanel content = getContent();
         frame.add(content, BorderLayout.CENTER);
+        frame.add(getBusyPane(), BorderLayout.SOUTH);
         frame.setVisible(true);
+
+        updateBusy(0);
 
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
+
+    private Format getFormat(FileFormats fileFormats, String formatName) {
+        try {
+            return fileFormats.getFormats().stream().filter(
+                    format -> format.getName().equals(formatName)).findFirst().orElseThrow();
+        } catch (Exception e) {
+            // This is something, that should never occur, as it is not dependent on user input,
+            // yet nicer treatment of this exception would be beneficial
+            Logger.error("Error with formats initialization, " + formatName  + " is not supported");
+            throw new RuntimeException();
+        }
+
+    }
+
 
     private void initializeActions(DependencyProvider dependencyProvider) {
         var categoryValidator = dependencyProvider.getCategoryValidator();
@@ -166,7 +180,9 @@ public class CashFlowEvidence {
 
         addCAction = new AddCategoryAction(categoryTable, categoryValidator);
         editCAction = new EditCategoryAction(categoryTable, categoryValidator);
-        deleteCAction = new DeleteCategoryAction(categoryTable, transactionTable);
+        deleteCAction = new DeleteCategoryAction(categoryTable, transactionTable, repeatingTransactionTable);
+
+        addOptionsAction = new AddOptionsAction(List.of(addTAction, addRTAction, addCAction));
     }
 
     private JPanel getContent(){
@@ -264,15 +280,23 @@ public class CashFlowEvidence {
     private JMenuBar getMenuBar() {
 
         JMenu fileMenu = getMenu("File", KeyEvent.VK_F,
-                new ArrayList<>(Arrays.asList(importAction, importJsonAction, exportAction, exportJsonAction, exitAction)));
+                new ArrayList<>(List.of(importCSVAction,
+                        importJsonAction,
+                        importAction,
+                        exportCSVAction,
+                        exportJsonAction,
+                        exportPdfAction,
+                        exportAction,
+                        addOptionsAction,
+                        exitAction)));
         JMenu transactionMenu = getMenu("Transaction", KeyEvent.VK_T,
-                new ArrayList<>(Arrays.asList(addTAction, editTAction, deleteTAction)));
-        JMenu repeatingTransactionMenu = getMenu("Repeating Transaction", KeyEvent.VK_R,
-                new ArrayList<>(Arrays.asList(addRTAction, editRTAction, deleteRTAction)));
+                new ArrayList<>(List.of(addTAction, editTAction, deleteTAction)));
+        JMenu repeatingTransactionMenu = getMenu("Repeating Transaction", KeyEvent.VK_P,
+                new ArrayList<>(List.of(addRTAction, editRTAction, deleteRTAction)));
         JMenu categoryMenu = getMenu("Category", KeyEvent.VK_C,
-                new ArrayList<>(Arrays.asList(addCAction, editCAction, deleteCAction)));
+                new ArrayList<>(List.of(addCAction, editCAction, deleteCAction)));
 
-        JMenu helpMenu = getMenu("Help", KeyEvent.VK_H,
+        JMenu helpMenu = getMenu("Information", KeyEvent.VK_N,
                 new ArrayList<>(List.of(helpAction)));
 
         JMenuBar menuBar = new JMenuBar();
@@ -299,12 +323,29 @@ public class CashFlowEvidence {
     }
 
     private JPanel getBalancePanel() {
-        JPanel panel = new JPanel(new GridLayout(2, 2));
+        JPanel panel = new JPanel(new GridBagLayout());
 
-        panel.add(new JLabel("Total balance:"));
-        panel.add(balanceLabel);
-        panel.add(new JLabel("Filtered balance:"));
-        panel.add(filteredBalanceLabel);
+        var c = new GridBagConstraints();
+
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 0;
+        panel.add(new JLabel("Total balance:  "), c);
+
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 1;
+        c.gridy = 0;
+        panel.add(balanceLabel, c);
+
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 1;
+        panel.add(new JLabel("Filtered balance:  "), c);
+
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 1;
+        c.gridy = 1;
+        panel.add(filteredBalanceLabel, c);
 
         return panel;
     }
@@ -327,7 +368,6 @@ public class CashFlowEvidence {
 
         tabbedPane.addTab("Transactions", new TransactionsOverview(transactionTable,
                 new ArrayList<>(Arrays.asList(addTAction, editTAction, deleteTAction)), balanceLabel, filteredBalanceLabel, categories));
-        //TODO actions
         tabbedPane.addTab("Repeating transactions", new RepeatingTransactionsOverview(repeatingTransactionTable,
                 new ArrayList<>(Arrays.asList(addRTAction, editRTAction, deleteRTAction))));
         tabbedPane.addTab("Categories", new CategoriesOverview(categoryTable,
@@ -339,6 +379,19 @@ public class CashFlowEvidence {
         panel.setBorder(new EmptyBorder(0, 10, 0, 10));
 
         return panel;
+    }
+
+    private JPanel getBusyPane() {
+        busyPane.setPreferredSize(new Dimension(100, 25));
+        busyPane.add(new JLabel(new ImageIcon("src/main/resources/cz/muni/fi/pv168/cashflowevidence/images/spinner.gif")));
+        busyPane.add(new JLabel("Loading ..."));
+
+        return busyPane;
+    }
+    private void updateBusy(int busyUpdate) {
+        busyCounter += busyUpdate;
+        (busyPane.getComponent(0)).setVisible(busyCounter > 0);
+        (busyPane.getComponent(1)).setVisible(busyCounter > 0);
     }
     private String calculateBalance(TransactionTableModel tableModel) {
         double amount = 0;
@@ -354,10 +407,10 @@ public class CashFlowEvidence {
         return Transaction.formatAmount(amount) + " €";
     }
 
-    //TODO, imports
     private void refresh() {
         categories.refresh();
         transactions.refresh();
         repeatingTransactions.refresh();
+        ((TransactionTableModel) transactionTable.getModel()).fireTableDataChanged();
     }
 }

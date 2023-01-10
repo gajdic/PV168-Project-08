@@ -24,9 +24,7 @@ import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @author Jan Gajda
- */
+
 class RepeatingTransactionRepositoryTest {
 
     private DatabaseManager databaseManager;

@@ -5,6 +5,8 @@ import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 
 /**
  * Represents the Transaction entity
@@ -49,4 +51,31 @@ public record RepeatingTransactionEntity (
                              TransactionFrequency frequency) {
         this(null, categoryId, name, description, amount, type, createdAt, nextCreateAt, days, dateFrom, dateTo, frequency);
         }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RepeatingTransactionEntity that = (RepeatingTransactionEntity) o;
+        return type == that.type &&
+                frequency == that.frequency &&
+                Double.compare(that.amount, amount) == 0 &&
+                Objects.equals(categoryId, that.categoryId) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(description, that.description) &&
+                Objects.equals(
+                        createdAt.truncatedTo(ChronoUnit.SECONDS), that.createdAt.truncatedTo(ChronoUnit.SECONDS)) &&
+                Objects.equals(
+                        nextCreatedAt.truncatedTo(ChronoUnit.SECONDS), that.nextCreatedAt.truncatedTo(ChronoUnit.SECONDS)) &&
+                Objects.equals(
+                        dateFrom.truncatedTo(ChronoUnit.SECONDS), that.dateFrom.truncatedTo(ChronoUnit.SECONDS)) &&
+                Objects.equals(
+                        dateTo.truncatedTo(ChronoUnit.SECONDS), that.dateTo.truncatedTo(ChronoUnit.SECONDS));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, categoryId, name, description, amount, type, createdAt, nextCreatedAt, days, dateFrom, dateTo, frequency);
+    }
 }

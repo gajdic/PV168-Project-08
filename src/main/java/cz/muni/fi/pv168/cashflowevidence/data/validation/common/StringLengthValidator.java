@@ -22,7 +22,7 @@ public final class StringLengthValidator extends PropertyValidator<String>  {
         var length = string == null ? 0 : string.length();
 
         if ( min > length ||  length > max ) {
-            result.add("'%s' is not between %d (inclusive) and %d (inclusive)"
+            result.add("%s length is not between %d and %d"
                     .formatted(getName(string), min, max)
             );
         }

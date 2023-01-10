@@ -1,0 +1,19 @@
+Cashflow Evidence - your way to track transactions
+
+Our application provides following functionalities:
+
+Transactions
+Options to add, edit and delete records about your spending.
+
+Categories
+Define custom categories, which can be assigned to transactions.
+
+Repeating transactions
+Define templates for future expanses, with the possibility of setting a custom repetitions.
+
+Imports and exports
+Import and export your transactions in csv, json and pdf (only export).
+
+
+Created by Martin Pilát, Tomáš Štucka, Jan Gajda and David Rajnoha as part of a school project
+in the PV168 course at FI MU.

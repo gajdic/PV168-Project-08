@@ -1,17 +1,14 @@
 package cz.muni.fi.pv168.cashflowevidence.action.transaction;
 
 import cz.muni.fi.pv168.cashflowevidence.app.dialog.TransactionDialog;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.DataManipulationException;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.data.validation.Validator;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
-import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionTableModel;
 
-import javax.swing.AbstractAction;
-import javax.swing.JTable;
-import javax.swing.KeyStroke;
-import javax.swing.UIManager;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
@@ -45,7 +42,12 @@ public class EditTransactionAction extends AbstractAction {
         var categoryDialog = new TransactionDialog("Edit Transaction", transactionTableModel.getEntity(modelRow),categoryRepository, validator);
         var transaction = categoryDialog.showDialog();
         if (transaction != null && validator.validate(transaction).isValid()) {
-            transactionTableModel.updateRow(modelRow, transaction);
+            try {
+                transactionTableModel.updateRow(modelRow, transaction);
+            } catch (DataManipulationException ex) {
+                JOptionPane.showMessageDialog(
+                        null, "We were unable to update the transaction. Please try again.");
+            }
         }
     }
 }

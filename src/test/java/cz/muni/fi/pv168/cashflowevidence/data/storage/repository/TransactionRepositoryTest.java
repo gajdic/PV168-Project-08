@@ -19,9 +19,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @author Jan Gajda
- */
+
 class TransactionRepositoryTest {
 
     private DatabaseManager databaseManager;

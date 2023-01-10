@@ -1,21 +1,28 @@
 package cz.muni.fi.pv168.cashflowevidence.data.adapter;
 
+import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.exceptions.InvalidCSVFormatException;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionType;
 
-import java.awt.*;
+import javax.swing.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.List;
+import java.util.Objects;
 
 
 // TODO: Add tests
-public class TransactionCSVSerializer implements TransactionSerializer
-{
-    public Transaction deserialize(String csvLine) throws InvalidCSVFormatException {
+public class TransactionCSVSerializer implements TransactionSerializer {
+
+    Repository<Category> categoryRepository;
+    public Transaction deserialize(String csvLine, Repository<Category> categoryRepository) throws InvalidCSVFormatException {
+        this.categoryRepository = categoryRepository;
         String[] tokens = csvLine.split(",");
         if (tokens.length != 7) {
+            JOptionPane.showMessageDialog(
+                    null, "Format of the provided CSV file is invalid.\n\n Invalid Line: %s".formatted(csvLine));
             throw new InvalidCSVFormatException(
                     "The line: " + csvLine + " is not valid."
             );
@@ -32,13 +39,19 @@ public class TransactionCSVSerializer implements TransactionSerializer
     }
 
     public String serialize(Transaction transaction) {
-        return transaction.getName() + ',' +
-                transaction.getDescription() + ',' +
-                transaction.getAmount() + ',' +
-                transaction.getDateTime() + ',' +
-                transaction.getCategory().getName() + ',' +
-                transaction.getCategory().getColorString() + ',' +
-                transaction.getTransactionType();
+        String name = transaction.getName();
+        String description = transaction.getDescription();
+        double amount = transaction.getAmount();
+        LocalDateTime date = transaction.getDateTime();
+        String categoryName = null;
+        String categoryColor = null;
+        TransactionType type = transaction.getTransactionType();
+        if (transaction.getCategory() != null) {
+            categoryName = transaction.getCategory().getName();
+            categoryColor = transaction.getCategory().getColorString();
+        }
+        return name + ',' + description + ',' + amount + ',' + date + ',' +
+                categoryName + ',' + categoryColor + ',' + type;
     }
 
     private Double convertAmount(String token) throws InvalidCSVFormatException {
@@ -61,15 +74,16 @@ public class TransactionCSVSerializer implements TransactionSerializer
         }
     }
 
-    private Category convertCategory(String categoryName, String categoryColor) throws InvalidCSVFormatException {
-        // TODO: Update when data layer exists
-        Category category = new Category(categoryName, Color.decode(categoryColor));
-        return category;
+    private Category convertCategory(String categoryName, String categoryColor) {
+        List<Category> categories = categoryRepository.findAll();
+        return categories.stream()
+                .filter(c -> Objects.equals(c.getName(), categoryName) &&
+                        Objects.equals(c.getColorString(), categoryColor))
+                .findFirst()
+                .orElse(null);
     }
 
     private TransactionType convertType(String name) {
         return TransactionType.valueOf(name);
-
     }
-
 }

@@ -1,5 +1,14 @@
 package cz.muni.fi.pv168.cashflowevidence.wiring;
 
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.DaoExporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.DaoImporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.Exporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.Importer;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.csv.CsvExporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.csv.CsvImporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.json.JsonExporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.json.JsonImporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.pdf.PdfExporter;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.dao.CategoryDao;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.dao.RepeatingTransactionDao;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.dao.TransactionDao;
@@ -19,6 +28,8 @@ import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.RepeatingTransaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 
+import java.util.List;
+
 public abstract class CommonDependencyProvider implements DependencyProvider {
 
     private final DatabaseManager databaseManager;
@@ -29,6 +40,8 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
     private final Validator<Category> categoryValidator;
     private final Validator<Transaction> transactionValidator;
     private final Validator<RepeatingTransaction> repeatingTransactionValidator;
+    private Importer importer;
+    private Exporter exporter;
 
 
     protected CommonDependencyProvider(DatabaseManager databaseManager) {
@@ -78,4 +91,36 @@ public abstract class CommonDependencyProvider implements DependencyProvider {
     public Validator<RepeatingTransaction> getRepeatingTransactionValidator() {
         return repeatingTransactionValidator;
     }
+
+    @Override
+    public Importer getImporter() {
+        if (importer == null) {
+            var database = getDatabaseManager();
+
+            importer = new DaoImporter(
+                    TransactionDao::new,
+                    CategoryDao::new,
+                    database::getTransactionHandler,
+                    getTransactionValidator(),
+                    getCategoryValidator(),
+                    transactions,
+                    List.of(new CsvImporter(getCategoryRepository()), new JsonImporter(getCategoryRepository()))
+            );
+        }
+        return importer;
+    }
+
+    @Override
+    public Exporter getExporter() {
+        if (exporter == null) {
+
+            exporter = new DaoExporter(
+                    categories,
+                    transactions,
+                    List.of(new CsvExporter(), new JsonExporter(), new PdfExporter())
+            );
+        }
+        return exporter;
+    }
+
 }

@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.cashflowevidence.action.category;
 
 import cz.muni.fi.pv168.cashflowevidence.app.dialog.CategoryDialog;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.DataManipulationException;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.data.validation.Validator;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
@@ -8,10 +9,7 @@ import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryListModel;
 import cz.muni.fi.pv168.cashflowevidence.model.category.CategoryTableModel;
 
 
-import javax.swing.AbstractAction;
-import javax.swing.JTable;
-import javax.swing.KeyStroke;
-import javax.swing.UIManager;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
@@ -24,9 +22,8 @@ public class AddCategoryAction extends AbstractAction {
         super("Add", UIManager.getIcon("FileChooser.fileIcon"));
         putValue(SHORT_DESCRIPTION, "Adds new record");
         putValue(MNEMONIC_KEY, KeyEvent.VK_A);
-        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl N"));
 
-        this.categoryTable = categoryTable;;
+        this.categoryTable = categoryTable;
         this.validator = validator;
     }
 
@@ -37,7 +34,16 @@ public class AddCategoryAction extends AbstractAction {
         Category category = categoryDialog.showDialog();
 
         if (category != null && validator.validate(category).isValid()) {
-            categoryTableModel.addRow(category);
+            try {
+                categoryTableModel.addRow(category);
+            } catch (DataManipulationException ex) {
+                JOptionPane.showMessageDialog(
+                        null, "We were unable to create the category. Please try again.");
+            }
         }
+    }
+
+    @Override public String toString() {
+        return "Category";
     }
 }

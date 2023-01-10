@@ -10,11 +10,11 @@ abstract public class DeleteAction extends AbstractAction {
         super("Delete", UIManager.getIcon("FileChooser.fileIcon"));
     }
 
-    protected int confirmDelete() {
+    protected int confirmDelete(String message) {
         Object[] options = { "Yes", "Cancel" };
         return JOptionPane.showOptionDialog(
                 null,
-                "Are you sure you want to delete this item?", "Warning",
+                message, "Warning",
                 JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
                 null, options, options[1]
         );

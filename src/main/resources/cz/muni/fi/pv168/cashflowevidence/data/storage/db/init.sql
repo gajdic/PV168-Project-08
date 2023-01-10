@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS Transaction
     description  VARCHAR(250),
     amount       DOUBLE NOT NULL,
     type         ENUM('outgoing', 'incoming') NOT NULL,
-    categoryId   BIGINT REFERENCES Category (id),
+    categoryId   BIGINT,
     createdAt    TIMESTAMP NOT NULL
 );
 
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS RepeatingTransaction
     description  VARCHAR(250),
     amount       DOUBLE NOT NULL,
     type         ENUM('outgoing', 'incoming') NOT NULL,
-    categoryId   BIGINT REFERENCES Category (id),
+    categoryId   BIGINT,
     createdAt    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     nextCreateAt TIMESTAMP NOT NULL,
     days         INT NOT NULL,

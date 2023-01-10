@@ -20,6 +20,7 @@ public class InputNumberFormatter extends NumberFormatter {
         if (Objects.equals(text, "")) {
             return null;
         }
+
         return super.stringToValue(text);
     }
 

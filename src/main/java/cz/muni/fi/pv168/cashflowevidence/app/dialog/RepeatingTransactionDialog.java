@@ -1,6 +1,8 @@
 package cz.muni.fi.pv168.cashflowevidence.app.dialog;
 
 import com.github.lgooddatepicker.components.DatePicker;
+import com.privatejgoodies.common.base.SystemUtils;
+import cz.muni.fi.pv168.cashflowevidence.UI.CustomComboBoxUI;
 import cz.muni.fi.pv168.cashflowevidence.app.InputNumberFormatter;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.data.validation.Validator;
@@ -8,8 +10,10 @@ import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.RepeatingTransaction;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionFrequency;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.TransactionType;
+import cz.muni.fi.pv168.cashflowevidence.renderer.CategoryColorListCellRenderer;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicComboBoxUI;
 import java.awt.*;
 import java.text.NumberFormat;
 import java.time.LocalDate;
@@ -41,7 +45,7 @@ public class RepeatingTransactionDialog extends AbstractTransactionDialog {
     private JPanel customFrequencyPanel;
 
     private RepeatingTransaction repeatingTransaction;
-    private Validator<RepeatingTransaction> validator;
+    private final Validator<RepeatingTransaction> validator;
 
     public RepeatingTransactionDialog(String title, Repository<Category> categoryRepository, Validator<RepeatingTransaction> validator) {
         super(title, categoryRepository);
@@ -78,7 +82,7 @@ public class RepeatingTransactionDialog extends AbstractTransactionDialog {
             return;
         }
 
-        showWarningDialog(validation.getValidationErrors().toString());
+        showWarningDialog(validation.getValidationErrors());
     }
 
     public RepeatingTransaction showDialog() {
@@ -128,6 +132,19 @@ public class RepeatingTransactionDialog extends AbstractTransactionDialog {
         }
         categoryComboBox.insertItemAt(null, 0);
         categoryComboBox.setSelectedIndex(0);
+        categoryComboBox.setRenderer(new CategoryColorListCellRenderer());
+        categoryComboBox.setUI(new CustomComboBoxUI());
+        categoryComboBox.setPreferredSize(new Dimension(200,23));
+        categoryComboBox.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        categoryComboBox.addItemListener(e -> changeComboColor());
+    }
+    private void changeComboColor() {
+        Category c = (Category) categoryComboBox.getSelectedItem();
+        if (c != null) {
+            categoryComboBox.setBackground(c.getColor());
+        } else {
+            categoryComboBox.setBackground(Color.WHITE);
+        }
     }
 
     private void setupIncomingOutgoing() {
@@ -139,12 +156,12 @@ public class RepeatingTransactionDialog extends AbstractTransactionDialog {
 
     private void setupFrequencyComboBox () {
         for (TransactionFrequency frequency : TransactionFrequency.values()) {
-//            if (frequency == TransactionFrequency.EachSecond) {
-//                continue;
-//            }
             frequencyComboBox.addItem(frequency);
         }
         frequencyComboBox.addActionListener(e -> onCustomFrequency());
+        frequencyComboBox.setUI(new BasicComboBoxUI());
+        frequencyComboBox.setPreferredSize(new Dimension(200,23));
+        frequencyComboBox.setBorder(BorderFactory.createLineBorder(Color.GRAY));
     }
 
     private void setupDatePickers() {
@@ -171,7 +188,8 @@ public class RepeatingTransactionDialog extends AbstractTransactionDialog {
                 nameField.getText(),
                 descriptionField.getText(),
                 amountField.getText().isEmpty() ? -1 : Double.parseDouble(amountField.getText()
-                        .replace("\u00a0", "").replace(",", ".")),
+                        .replace("\u00a0", "").replace(",",
+                                SystemUtils.IS_OS_WINDOWS ? "." : "")),
                 (Category) categoryComboBox.getSelectedItem(),
                 dateFromPicker.getDate().atTime(LocalTime.now()),
                 dateToPicker.getDate().atTime(LocalTime.now()),

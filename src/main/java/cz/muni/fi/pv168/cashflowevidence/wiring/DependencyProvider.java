@@ -1,5 +1,7 @@
 package cz.muni.fi.pv168.cashflowevidence.wiring;
 
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.Exporter;
+import cz.muni.fi.pv168.cashflowevidence.data.manipulation.Importer;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.db.DatabaseManager;
 
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.CategoryRepository;
@@ -20,5 +22,6 @@ public interface DependencyProvider {
     Validator<Category> getCategoryValidator();
     Validator<Transaction> getTransactionValidator();
     Validator<RepeatingTransaction> getRepeatingTransactionValidator();
-
+    Importer getImporter();
+    Exporter getExporter();
 }

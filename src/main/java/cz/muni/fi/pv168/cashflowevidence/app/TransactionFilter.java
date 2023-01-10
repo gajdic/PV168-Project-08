@@ -158,6 +158,10 @@ public class TransactionFilter {
             @Override
             public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
                 Category category = (Category) categoriesJComboBox.getSelectedItem();
+                if (category == null) {
+                    return entry.getValue(4) == null;
+                }
+
                 return entry.getValue(4) != null && entry.getValue(4).equals(category);
             }
         };

@@ -16,7 +16,7 @@ public class DoubleMinValueValidator extends PropertyValidator<Double> {
         var result = new ValidationResult();
 
         if (value < 0) {
-            result.add("'%s' cannot be less than %f"
+            result.add("%s cannot be less than %.0f"
                     .formatted(getName(value), min)
             );
         }

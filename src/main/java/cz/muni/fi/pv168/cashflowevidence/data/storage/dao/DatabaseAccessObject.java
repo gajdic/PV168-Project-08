@@ -50,4 +50,11 @@ public interface DatabaseAccessObject<T> {
      * @throws DataStorageException when something goes wrong with the datasource
      */
     T update(T entity);
+
+    /**
+     * Deletes all entities using the underling data source.
+     *
+     * @return the number of deleted entities
+     */
+    int deleteAll();
 }
