@@ -44,5 +44,10 @@ public class AsyncExporter implements Exporter {
         };
         asyncWorker.execute();
     }
+
+    @Override
+    public void setTransactionTable(JTable transactionTable) {
+
+    }
 }
 

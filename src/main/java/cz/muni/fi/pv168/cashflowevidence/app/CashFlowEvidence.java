@@ -117,6 +117,7 @@ public class CashFlowEvidence {
 
         Importer importer = dependencyProvider.getImporter();
         Exporter exporter = dependencyProvider.getExporter();
+        exporter.setTransactionTable(transactionTable);
 
         importCSVAction = new ImportAction(transactionTable, importer, getFormat(importer, "CSV"), this::refresh, this::updateBusy);
         exportCSVAction = new ExportAction(transactionTable, exporter, getFormat(exporter, "CSV"), this::refresh, this::updateBusy);
