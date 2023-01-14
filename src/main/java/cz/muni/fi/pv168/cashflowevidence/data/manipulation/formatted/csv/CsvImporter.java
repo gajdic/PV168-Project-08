@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public final class CsvImporter implements BatchImporter {
@@ -45,9 +46,11 @@ public final class CsvImporter implements BatchImporter {
     public Batch importBatch(String filePath) {
         Logger.info("Loading transactions from {}", filePath);
         try (var reader = Files.newBufferedReader(Path.of(filePath))) {
+            AtomicInteger index = new AtomicInteger(1);
+
             var transactions = reader.lines()
                     .peek(Logger::trace)
-                    .map(this::parseTransaction)
+                    .map(line -> parseTransaction(line, index.getAndIncrement()))
                     .peek(Logger::debug)
                     .collect(Collectors.toList());
 
@@ -61,7 +64,7 @@ public final class CsvImporter implements BatchImporter {
         }
     }
 
-    private Transaction parseTransaction(String line) {
+    private Transaction parseTransaction(String line, int idx) {
         try {
             var fields = line.split(SEPARATOR);
             Category category = convertCategory(fields);
@@ -75,7 +78,8 @@ public final class CsvImporter implements BatchImporter {
                     category
             );
         } catch (Exception ex) {
-            throw new InvalidImportException("Invalid file format.");
+            Logger.error("Transaction " + line + " has invalid format.");
+            throw new InvalidImportException("Transaction on line " + idx + " has invalid format.");
         }
     }
 

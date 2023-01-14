@@ -67,9 +67,13 @@ public final class JsonImporter implements BatchImporter {
             throw new InvalidImportException("Invalid json format", ex);
         }
 
+        int idx = 0;
         for (Transaction transaction: transactions) {
-            if (!validator.isValidTransaction(transaction))
-                throw new InvalidImportException("Transaction " + transaction + " is not valid." + validator.getErrorMessage());
+            idx++;
+            if (!validator.isValidTransaction(transaction)) {
+                Logger.error("Transaction " + transaction + " has invalid format.");
+                throw new InvalidImportException("Transaction on line " + idx + " has invalid format.");
+            }
         }
 
         Logger.info("Loaded {} records", transactions.size());
