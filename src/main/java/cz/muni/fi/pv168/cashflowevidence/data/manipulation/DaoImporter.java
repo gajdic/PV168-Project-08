@@ -13,6 +13,7 @@ import cz.muni.fi.pv168.cashflowevidence.data.storage.mapper.CategoryMapper;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.mapper.TransactionMapper;
 import cz.muni.fi.pv168.cashflowevidence.data.storage.repository.Repository;
 import cz.muni.fi.pv168.cashflowevidence.data.validation.Validator;
+import cz.muni.fi.pv168.cashflowevidence.exceptions.InvalidImportException;
 import cz.muni.fi.pv168.cashflowevidence.model.category.Category;
 import cz.muni.fi.pv168.cashflowevidence.model.transaction.Transaction;
 
@@ -55,7 +56,15 @@ public class DaoImporter implements Importer {
 
     @Override
     public void importData(String filePath) {
-        var batch = getImporter(filePath).importBatch(filePath);
+        Batch batch;
+        try {
+            batch = getImporter(filePath).importBatch(filePath);
+        }
+        catch (InvalidImportException ex) {
+            JOptionPane.showMessageDialog(
+                    null, String.format("Import failed. %s", ex.getMessage()));
+            return;
+        }
 
         try (var tx = transactionHandlerSupplier.get()) {
             DatabaseAccessObject<TransactionEntity> transactionDao = transactionEntityDaoSupplier.get(tx::connection);
@@ -89,7 +98,7 @@ public class DaoImporter implements Importer {
         var importer = importers.findByExtension(extension);
         if (importer == null) {
             JOptionPane.showMessageDialog(
-                    null, "Something went wrong while importing your transactions.");
+                    null, "Import failed. Invalid file format.");
             throw new BatchOperationException("Extension %s has no registered formatter".formatted(extension));
         }
 

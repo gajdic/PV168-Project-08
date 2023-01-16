@@ -2,6 +2,7 @@ package cz.muni.fi.pv168.cashflowevidence.data.manipulation;
 
 import cz.muni.fi.pv168.cashflowevidence.data.manipulation.formatted.Format;
 
+import javax.swing.*;
 import java.util.Collection;
 
 /**
@@ -18,4 +19,5 @@ public interface Exporter extends FileFormats {
      */
     void exportData(String filePath);
 
+    void setTransactionTable(JTable transactionTable);
 }
